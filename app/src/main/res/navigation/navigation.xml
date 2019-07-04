@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/navigation"
+            app:startDestination="@id/splashFragment">
+    <fragment android:id="@+id/map_fragment"
+              android:name="my.projects.historyaroundkotlin.presentation.view.map.MapFragment"
+              android:label="MapFragment">
+        <action android:id="@+id/action_mapFragment_to_detailFragment" app:destination="@id/detail_fragment"/>
+        <action android:id="@+id/action_mapFragment_to_favouritesFragment" app:destination="@id/favourites_fragment"/>
+    </fragment>
+    <fragment android:id="@+id/detail_fragment"
+              android:name="my.projects.historyaroundkotlin.presentation.view.detail.DetailFragment"
+              android:label="DetailFragment">
+        <action android:id="@+id/action_detailFragment_to_favouritesFragment" app:destination="@id/favourites_fragment"/>
+    </fragment>
+    <fragment android:id="@+id/favourites_fragment"
+              android:name="my.projects.historyaroundkotlin.presentation.view.favourites.FavouritesFragment"
+              android:label="FavouritesFragment"/>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="my.projects.historyaroundkotlin.presentation.view.splash.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_permissionFragment"
+            app:destination="@id/permissionFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_map_fragment"
+            app:destination="@id/map_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/permissionFragment"
+        android:name="my.projects.historyaroundkotlin.presentation.view.permission.PermissionFragment"
+        android:label="PermissionFragment" >
+        <action
+            android:id="@+id/action_permissionFragment_to_map_fragment"
+            app:destination="@id/map_fragment" />
+    </fragment>
+</navigation>
