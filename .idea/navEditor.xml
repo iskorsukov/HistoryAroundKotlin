@@ -210,6 +210,11 @@
                                                     <LayoutPositions />
                                                   </value>
                                                 </entry>
+                                                <entry key="action_mapFragment_to_preferencesFragment">
+                                                  <value>
+                                                    <LayoutPositions />
+                                                  </value>
+                                                </entry>
                                               </map>
                                             </option>
                                           </LayoutPositions>
@@ -223,6 +228,15 @@
                                                 <option name="x" value="914" />
                                                 <option name="y" value="584" />
                                               </Point>
+                                            </option>
+                                            <option name="myPositions">
+                                              <map>
+                                                <entry key="action_preferencesFragment_to_loadingLocationFragment">
+                                                  <value>
+                                                    <LayoutPositions />
+                                                  </value>
+                                                </entry>
+                                              </map>
                                             </option>
                                           </LayoutPositions>
                                         </value>

@@ -61,5 +61,5 @@
     <!-- Preferences -->
     <string name="prefs_radius_title">Radius in meters</string>
     <string name="prefs_radius_key">pref_radius</string>
-    <string name="prefs_radius_default_value">500</string>
+    <string name="prefs_radius_default_value">250</string>
 </resources>

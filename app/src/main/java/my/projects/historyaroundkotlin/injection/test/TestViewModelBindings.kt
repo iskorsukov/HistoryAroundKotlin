@@ -10,6 +10,7 @@ import my.projects.historyaroundkotlin.presentation.viewmodel.main.detail.Detail
 import my.projects.historyaroundkotlin.presentation.viewmodel.main.map.MapFlowViewModel
 import my.projects.historyaroundkotlin.presentation.viewmodel.start.permission.PermissionFlowViewModel
 
+// Override this to provide custom/mock viewmodels
 @Module
 open class TestViewModelBindings {
 

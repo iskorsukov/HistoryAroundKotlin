@@ -1,7 +1,7 @@
 package my.projects.historyaroundkotlin.presentation.view.base
 
 import androidx.navigation.NavController
-import my.projects.historyaroundkotlin.injection.navigation.NavControllerSource
+import my.projects.historyaroundkotlin.service.navigation.NavControllerSource
 import my.projects.historyaroundkotlin.injection.test.DaggerTestAppComponent
 import my.projects.historyaroundkotlin.utils.MockitoUtil
 import org.mockito.Mockito
