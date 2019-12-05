@@ -10,4 +10,5 @@ data class ArticleDetails(val pageid: Long,
                           val extract: String,
                           val thumbnail: ArticleThumbnail?,
                           val coordinates: Pair<Double, Double>,
-                          val url: String): Serializable
+                          val url: String
+): Serializable

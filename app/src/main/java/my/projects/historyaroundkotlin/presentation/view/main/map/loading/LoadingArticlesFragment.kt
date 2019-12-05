@@ -43,8 +43,9 @@ class LoadingArticlesFragment: BaseLoadingFragment<ArticlesErrorStatus, Articles
     }
 
     override fun applyContentState(viewState: ArticlesViewState) {
+        val locationPair = args.locationArgument.location.latitude to args.locationArgument.location.longitude
         navController().navigate(LoadingArticlesFragmentDirections.actionLoadingArticlesFragmentToMapFragment(
-            MapDataArgument(args.locationArgument.location, ArrayList(viewState.items!!.toMutableList()))
+            MapDataArgument(locationPair, ArrayList(viewState.items!!.toMutableList()))
         ))
     }
 }

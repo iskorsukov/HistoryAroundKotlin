@@ -1,3 +1,5 @@
 package my.projects.historyaroundkotlin.model.geo
 
-data class GeoItem(val pageid: Long)
+import java.io.Serializable
+
+data class GeoItem(val pageid: Long): Serializable

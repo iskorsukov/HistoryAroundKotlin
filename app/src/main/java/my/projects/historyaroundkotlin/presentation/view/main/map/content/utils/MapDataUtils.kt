@@ -69,3 +69,7 @@ private fun markerDistance(first: Pair<Double, Double>, second: Pair<Double, Dou
 fun Location.toGeoPoint(): GeoPoint {
     return GeoPoint(latitude, longitude)
 }
+
+fun Pair<Double, Double>.toGeoPoint(): GeoPoint {
+    return GeoPoint(first, second)
+}
