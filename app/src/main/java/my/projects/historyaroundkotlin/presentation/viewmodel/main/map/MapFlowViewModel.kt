@@ -58,15 +58,13 @@ class MapFlowViewModel @Inject constructor(
     }
 
     private fun loadLocation(): Single<Location> {
-        return locationSource.getLocationUpdatesObservable()
-            .timeout(10, TimeUnit.SECONDS)
+        return locationSource.getLastKnownLocation()
+            .switchIfEmpty(locationSource.getLocationUpdatesObservable().firstOrError())
+            .timeout(15, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnTerminate {
-                stopLocationUpdates()
-            }
+            .doOnEvent { _, _ -> stopLocationUpdates() }
             .doOnDispose(this::stopLocationUpdates)
-            .firstOrError()
     }
 
     private fun handleLocationError(throwable: Throwable, liveData: MutableLiveData<LocationViewState>) {
