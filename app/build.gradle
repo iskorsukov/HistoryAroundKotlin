@@ -5,6 +5,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
+apply plugin: "kotlin-allopen"
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -24,6 +28,19 @@ android {
     dataBinding {
         enabled = true
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    allOpen {
+        annotation("my.projects.historyaroundkotlin.mock.Mockable")
+    }
 }
 
 dependencies {
@@ -31,21 +48,45 @@ dependencies {
 
     // Kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.0.2'
+    implementation 'androidx.core:core-ktx:1.1.0'
 
     // AppCompat
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+
+    // Preferences
+    implementation "androidx.preference:preference:1.1.0"
 
     // ConstraintLayout
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
+    // RecyclerView
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
     // Testing
     testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.ext:truth:1.2.0'
+    androidTestImplementation 'com.google.truth:truth:0.42'
+    androidTestImplementation 'androidx.test:core:1.2.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+
+    // Fragment testing
+    def fragment_version = "1.1.0"
+    debugImplementation ("androidx.fragment:fragment-testing:$fragment_version") {
+        exclude group: "androidx.test", module: "core"
+    }
+
+    // Mockito
+    def mockito_version = "2.28.2"
+    androidTestImplementation "org.mockito:mockito-core:$mockito_version"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_version"
 
     // Lifecycle
-    def lifecycle_version = "2.0.0"
+    def lifecycle_version = "2.1.0"
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
@@ -55,7 +96,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
 
     // Navigation
-    def nav_version = "2.1.0-alpha05"
+    def nav_version = "2.1.0"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
@@ -64,6 +105,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
     // Rx
     //RxJava
@@ -84,4 +126,26 @@ dependencies {
     implementation "com.google.dagger:dagger-android:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+
+    // Google Location
+    def location_version = "17.0.0"
+    implementation "com.google.android.gms:play-services-location:$location_version"
+
+    // OsmDroid
+    def osmdroid_version = "6.1.2"
+    implementation "org.osmdroid:osmdroid-android:$osmdroid_version"
+
+    // Room
+    def room_version = "2.2.2"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    // Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:$room_version"
+    // RxJava support for Room
+    implementation "androidx.room:room-rxjava2:$room_version"
+
+    // Glide
+    def glide_version = "4.10.0"
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 }
