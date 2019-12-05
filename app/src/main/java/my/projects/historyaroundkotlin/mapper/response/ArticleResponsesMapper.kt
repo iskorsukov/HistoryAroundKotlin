@@ -8,8 +8,9 @@ import my.projects.historyaroundkotlin.model.article.ArticleItem
 import my.projects.historyaroundkotlin.model.common.ArticleThumbnail
 import my.projects.historyaroundkotlin.model.detail.ArticleDetails
 import my.projects.historyaroundkotlin.model.geo.GeoItem
+import javax.inject.Inject
 
-class ArticleResponsesMapper {
+class ArticleResponsesMapper @Inject constructor() {
 
     fun mapGeoResponse(geoItemResponse: GeoItemResponse): GeoItem {
         return GeoItem(geoItemResponse.pageid)
@@ -17,10 +18,10 @@ class ArticleResponsesMapper {
 
     fun mapArticleResponse(articleResponse: ArticleItemResponse): ArticleItem {
         return ArticleItem(
-            articleResponse.pageid,
+            articleResponse.pageid.toString(),
             articleResponse.title,
-            articleResponse.description,
-            articleResponse.coordinates.lat to articleResponse.coordinates.lon,
+            articleResponse.description ?: "",
+            articleResponse.coordinates!![0].lat to articleResponse.coordinates!![0].lon,
             articleResponse.thumbnail?.run {
                 mapThumbnailResponse(this)
             }
@@ -35,6 +36,7 @@ class ArticleResponsesMapper {
             articleDetailsResponse.thumbnail?.run {
                 mapThumbnailResponse(this)
             },
+            articleDetailsResponse.coordinates!![0].lat to articleDetailsResponse.coordinates!![0].lon,
             articleDetailsResponse.fullurl
         )
     }

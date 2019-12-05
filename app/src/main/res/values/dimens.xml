@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Article list item -->
+    <dimen name="article_item_width">200dp</dimen>
+
+    <!-- Loading screen -->
+    <dimen name="loading_icon_size">96dp</dimen>
+    <dimen name="loading_label_text_size">20sp</dimen>
+    <dimen name="loading_message_text_size">16sp</dimen>
+    <dimen name="loading_padding">16dp</dimen>
+
+    <!-- Error screen -->
+    <dimen name="error_icon_size">96dp</dimen>
+    <dimen name="error_label_text_size">20sp</dimen>
+    <dimen name="error_message_text_size">16sp</dimen>
+    <dimen name="error_padding">16dp</dimen>
+</resources>

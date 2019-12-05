@@ -15,5 +15,7 @@ data class ArticleDetailsEntity(
     val title: String,
     val extract: String,
     val thumbnailId: Long?,
+    val lat: Double,
+    val lon: Double,
     val url: String
 )

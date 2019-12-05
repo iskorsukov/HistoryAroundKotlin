@@ -11,7 +11,7 @@ class ArticleEntitiesMapper {
 
     fun mapArticleEntity(articleEntity: ArticleEntity, thumbnailEntity: ArticleThumbnailEntity?): ArticleItem {
         return ArticleItem(
-            articleEntity.pageid,
+            articleEntity.pageid.toString(),
             articleEntity.title,
             articleEntity.description,
             articleEntity.lat to articleEntity.lon,
@@ -29,6 +29,7 @@ class ArticleEntitiesMapper {
             thumbnailEntity?.run {
                 mapThumbnailEntity(this)
             },
+            articleDetailsEntity.lat to articleDetailsEntity.lon,
             articleDetailsEntity.url
         )
     }
@@ -43,7 +44,7 @@ class ArticleEntitiesMapper {
 
     fun mapArticleToEntity(articleItem: ArticleItem): ArticleEntity {
         return ArticleEntity(
-            articleItem.pageid,
+            articleItem.pageid.toLong(),
             articleItem.title,
             articleItem.description,
             articleItem.latlng.first,
@@ -58,6 +59,8 @@ class ArticleEntitiesMapper {
             details.title,
             details.extract,
             null,
+            details.coordinates.first,
+            details.coordinates.second,
             details.url
         )
     }

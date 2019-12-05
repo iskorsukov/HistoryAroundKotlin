@@ -1,18 +1,16 @@
 package my.projects.historyaroundkotlin.injection
 
+import androidx.lifecycle.ViewModelProvider
 import dagger.Component
-import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.splash.SplashViewModel
-import my.projects.historyaroundkotlin.service.api.WikiApi
+import my.projects.historyaroundkotlin.injection.navigation.NavControllerSource
+import my.projects.historyaroundkotlin.presentation.view.MainActivity
+import javax.inject.Singleton
 
-@Component(modules = arrayOf(ApiModule::class, LocationModule::class))
-public interface AppComponent {
-    fun inject(viewModel: DetailViewModel)
-    fun inject(viewModel: SplashViewModel)
-    fun inject(viewModel: MapViewModel)
-    fun inject(viewModel: PermissionViewModel)
-    fun inject(viewModel: FavouritesViewModel)
+@Component(modules = [ApiModule::class, LocationModule::class, AppModule::class, AppBindings::class, PermissionsModule::class, ViewModelFactoryModule::class, ViewModelBindings::class])
+@Singleton
+interface AppComponent {
+    fun viewModelFactory(): ViewModelProvider.Factory
+    fun navControllerSource(): NavControllerSource
+
+    fun inject(mainActivity: MainActivity)
 }

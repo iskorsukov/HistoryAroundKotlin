@@ -3,6 +3,7 @@ package my.projects.historyaroundkotlin.injection
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import my.projects.historyaroundkotlin.service.location.LocationSource
