@@ -1,18 +1,15 @@
 package my.projects.historyaroundkotlin.presentation.viewmodel.main.map
 
-import android.content.Context
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.preference.PreferenceManager
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.mock.Mockable
 import my.projects.historyaroundkotlin.model.article.ArticleItem
 import my.projects.historyaroundkotlin.presentation.viewstate.main.common.LoadingResultState
@@ -23,11 +20,16 @@ import my.projects.historyaroundkotlin.presentation.viewstate.main.map.location.
 import my.projects.historyaroundkotlin.presentation.viewstate.main.map.location.LocationViewState
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.location.LocationSource
+import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Mockable
-class MapFlowViewModel @Inject constructor(private val locationSource: LocationSource, private val wikiSource: WikiSource, private val appContext: Context) : ViewModel() {
+class MapFlowViewModel @Inject constructor(
+    private val locationSource: LocationSource,
+    private val wikiSource: WikiSource,
+    private val preferencesSource: PreferencesSource
+) : ViewModel() {
 
     private var locationUpdatesDisposable: Disposable? = null
     private var loadArticlesDisposable: Disposable? = null
@@ -88,7 +90,7 @@ class MapFlowViewModel @Inject constructor(private val locationSource: LocationS
         loadArticlesDisposable?.dispose()
 
         val liveData = MutableLiveData<ArticlesViewState>()
-        val radius = PreferenceManager.getDefaultSharedPreferences(appContext).getInt(appContext.getString(R.string.prefs_radius_key), 500)
+        val radius = preferencesSource.getRadiusPreference()
         loadArticlesDisposable = loadArticleItems(location, radius)
             .subscribe ({ articleItems ->
                 Log.i("TEST", "loaded ${articleItems.size} items")
@@ -101,7 +103,7 @@ class MapFlowViewModel @Inject constructor(private val locationSource: LocationS
     }
 
     private fun loadArticleItems(location: Location, radius: Int): Single<List<ArticleItem>> {
-        return wikiSource.loadArticleItems(Pair(location.latitude, location.longitude), 500)
+        return wikiSource.loadArticleItems(Pair(location.latitude, location.longitude), radius)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

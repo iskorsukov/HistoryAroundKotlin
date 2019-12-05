@@ -2,7 +2,7 @@ package my.projects.historyaroundkotlin.injection
 
 import androidx.lifecycle.ViewModelProvider
 import dagger.Component
-import my.projects.historyaroundkotlin.injection.navigation.NavControllerSource
+import my.projects.historyaroundkotlin.service.navigation.NavControllerSource
 import my.projects.historyaroundkotlin.presentation.view.MainActivity
 import javax.inject.Singleton
 

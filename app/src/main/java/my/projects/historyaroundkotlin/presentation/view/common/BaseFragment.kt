@@ -8,7 +8,7 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import my.projects.historyaroundkotlin.HistoryAroundApp
-import my.projects.historyaroundkotlin.injection.navigation.NavControllerSource
+import my.projects.historyaroundkotlin.service.navigation.NavControllerSource
 
 abstract class BaseFragment: Fragment() {
 

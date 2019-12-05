@@ -124,6 +124,10 @@ class MapFragment : BaseFragment(), ArticleListItemListener {
                 navController().navigate(MapFragmentDirections.actionMapFragmentToLoadingLocationFragment())
                 return true
             }
+            R.id.menuSettings -> {
+                navController().navigate(MapFragmentDirections.actionMapFragmentToPreferencesFragment())
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

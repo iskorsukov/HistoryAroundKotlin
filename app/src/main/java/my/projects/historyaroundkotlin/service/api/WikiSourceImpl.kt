@@ -17,7 +17,7 @@ class WikiSourceImpl @Inject constructor (
         return api.loadGeoData(radius, latlng.first.toString() + "|" + latlng.second.toString())
             .flatMap { geoResponse ->
                     val geoItems: List<GeoItem> = geoResponse.query.data.map(mapper::mapGeoResponse)
-                    val pageIdsString: String = geoItems.joinToString("|") {geoItem -> geoItem.pageid.toString() }
+                    val pageIdsString: String = geoItems.take(50).joinToString("|") {geoItem -> geoItem.pageid.toString() }
                     api.loadArticlesData(pageIdsString)
             }
             .map {
