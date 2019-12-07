@@ -13,9 +13,15 @@ class ArticlesCluster {
         center = if (items.isEmpty()) {
             item.item.latlng
         } else {
-            (center.first + item.item.latlng.first) / 2 to (center.second + item.item.latlng.second) / 2
+            calculateCenter()
         }
         items.add(item)
+    }
+
+    private fun calculateCenter(): Pair<Double, Double> {
+        val avgLat = items.map { it.item.latlng.first }.sum() / items.size
+        val avgLon = items.map { it.item.latlng.second }.sum() / items.size
+        return avgLat to avgLon
     }
 }
 
