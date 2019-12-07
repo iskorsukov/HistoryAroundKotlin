@@ -2,6 +2,7 @@ package my.projects.historyaroundkotlin.presentation.view.main.map.content
 
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -170,6 +171,7 @@ class MapFragment : BaseFragment(), ArticleListItemListener {
                 setMarker(requireContext().resources.getDrawable(R.drawable.ic_location_marker_focused))
                 showArticlesSelector(articleItems)
             }
+            mapView.invalidate()
             return true
         }
 
