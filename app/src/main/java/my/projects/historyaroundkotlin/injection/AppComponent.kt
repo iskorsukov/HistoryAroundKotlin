@@ -6,7 +6,7 @@ import my.projects.historyaroundkotlin.service.navigation.NavControllerSource
 import my.projects.historyaroundkotlin.presentation.view.MainActivity
 import javax.inject.Singleton
 
-@Component(modules = [ApiModule::class, LocationModule::class, AppModule::class, AppBindings::class, PermissionsModule::class, ViewModelFactoryModule::class, ViewModelBindings::class])
+@Component(modules = [ApiModule::class, LocationModule::class, AppModule::class, AppBindings::class, PermissionsModule::class, ViewModelFactoryModule::class, ViewModelBindings::class, StorageModule::class])
 @Singleton
 interface AppComponent {
     fun viewModelFactory(): ViewModelProvider.Factory

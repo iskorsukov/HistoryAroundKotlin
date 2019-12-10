@@ -21,6 +21,6 @@
         android:textAlignment="center"
         android:layout_marginTop="16dp"
 
-        android:text="@string/loading_articles_label"/>
+        android:text="@string/loading_favorites_label"/>
 
 </LinearLayout>

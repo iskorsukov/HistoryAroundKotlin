@@ -15,20 +15,7 @@ class ArticleListItemHolder(view: View, listener: ArticleListItemListener): Bind
             item.item.thumbnail?.apply {
                 Glide.with(itemView).load(this.url).into(articleItemImage)
             }
-        }
-        itemView.setOnClickListener {
-            listener.onItemSelected(item.item)
-        }
-    }
-
-    fun setHighLight(highlight: Boolean) {
-        itemView.apply {
-            val colorId = if (highlight) {
-                context.resources.getColor(R.color.articleItemHighlightBg)
-            } else {
-                context.resources.getColor(R.color.articleItemDefaultBg)
-            }
-            setBackgroundColor(colorId)
+            setOnClickListener { listener.onItemSelected(item.item) }
         }
     }
 }

@@ -9,6 +9,7 @@ import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.model.detail.ArticleDetails
 import my.projects.historyaroundkotlin.presentation.argument.ArticleDetailsArgument
 import my.projects.historyaroundkotlin.presentation.view.base.BaseNavControllerFragmentTest
+import my.projects.historyaroundkotlin.presentation.viewstate.main.detail.ArticleDetailsViewData
 import org.junit.Test
 
 class DetailFragmentTest: BaseNavControllerFragmentTest<DetailFragment>() {
@@ -24,7 +25,7 @@ class DetailFragmentTest: BaseNavControllerFragmentTest<DetailFragment>() {
         )
 
         val args = Bundle()
-        args.putSerializable("detailsArgument", ArticleDetailsArgument(details))
+        args.putSerializable("detailsArgument", ArticleDetailsArgument(ArticleDetailsViewData(details, false)))
 
         return args
     }

@@ -33,7 +33,8 @@ class LoadingDetailsFragment: BaseLoadingFragment<DetailErrorStatus, DetailViewS
     }
 
     private fun loadArticleDetails() {
-        flowViewModel.loadArticleDetails(args.pageid).observe(this, Observer {
+        flowViewModel.loadArticleDetails(args.pageid)
+        flowViewModel.detailsLiveData.observe(this, Observer {
             applyViewState(it)
         })
     }
@@ -44,7 +45,7 @@ class LoadingDetailsFragment: BaseLoadingFragment<DetailErrorStatus, DetailViewS
 
     override fun applyContentState(viewState: DetailViewState) {
         navController().navigate(LoadingDetailsFragmentDirections.actionLoadingDetailsFragmentToDetailFragment(
-            ArticleDetailsArgument(viewState.articleDetails!!)
+            ArticleDetailsArgument(viewState.viewData!!)
         ))
     }
 }

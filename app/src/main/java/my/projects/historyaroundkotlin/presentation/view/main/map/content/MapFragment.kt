@@ -129,6 +129,10 @@ class MapFragment : BaseFragment(), ArticleListItemListener {
                 navController().navigate(MapFragmentDirections.actionMapFragmentToPreferencesFragment())
                 return true
             }
+            R.id.menuFavorites -> {
+                navController().navigate(MapFragmentDirections.actionMapFragmentToFavoritesFlow())
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

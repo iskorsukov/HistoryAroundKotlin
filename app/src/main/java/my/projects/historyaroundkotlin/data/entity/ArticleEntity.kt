@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(foreignKeys = [ForeignKey(
     entity = ArticleThumbnailEntity::class,
     parentColumns = arrayOf("thumbnailId"),
-    childColumns = arrayOf("thumbnailId"))],
+    childColumns = arrayOf("thumbnailId"),
+    onDelete = ForeignKey.CASCADE)],
     tableName = "articles"
 )
 data class ArticleEntity(
