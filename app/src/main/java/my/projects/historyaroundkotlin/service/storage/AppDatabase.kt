@@ -6,7 +6,7 @@ import my.projects.historyaroundkotlin.data.entity.ArticleEntity
 import my.projects.historyaroundkotlin.data.entity.ArticleThumbnailEntity
 import my.projects.historyaroundkotlin.service.favorites.FavouritesDao
 
-@Database(entities = arrayOf(ArticleEntity::class, ArticleThumbnailEntity::class), version = 1)
+@Database(entities = arrayOf(ArticleEntity::class), version = 1)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getFavouritesDao(): FavouritesDao
 }

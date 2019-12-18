@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import my.projects.historyaroundkotlin.presentation.viewmodel.main.detail.DetailFlowViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.main.favourites.FavouritesViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.main.map.MapFlowViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.start.permission.PermissionFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
 import javax.inject.Singleton
 
 @Module
@@ -15,8 +15,8 @@ abstract class ViewModelBindings {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PermissionFlowViewModel::class)
-    abstract fun bindPermissionsViewModel(myViewModel: PermissionFlowViewModel): ViewModel
+    @ViewModelKey(PermissionViewModel::class)
+    abstract fun bindPermissionsViewModel(myViewModel: PermissionViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -26,7 +26,6 @@ abstract class ViewModelBindings {
     @Binds
     @IntoMap
     @ViewModelKey(DetailFlowViewModel::class)
-    @Singleton
     abstract fun bindDetailsViewModel(myViewModel: DetailFlowViewModel): ViewModel
 
     @Binds

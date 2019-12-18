@@ -8,435 +8,99 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
-                  <entry key="main_flow">
+                  <entry key="detailFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="496" />
-                            <option name="y" value="84" />
+                            <option name="x" value="751" />
+                            <option name="y" value="284" />
                           </Point>
-                        </option>
-                        <option name="myPositions">
-                          <map>
-                            <entry key="detail_flow">
-                              <value>
-                                <LayoutPositions>
-                                  <option name="myPosition">
-                                    <Point>
-                                      <option name="x" value="128" />
-                                      <option name="y" value="-10" />
-                                    </Point>
-                                  </option>
-                                  <option name="myPositions">
-                                    <map>
-                                      <entry key="detailFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="12" />
-                                                <option name="y" value="12" />
-                                              </Point>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="errorDetailsFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="-20" />
-                                                <option name="y" value="-339" />
-                                              </Point>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="loadingDetailsFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="-343" />
-                                                <option name="y" value="-90" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_loadingDetailsFragment_to_detail_fragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_loadingDetailsFragment_to_errorDetailsFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                    </map>
-                                  </option>
-                                </LayoutPositions>
-                              </value>
-                            </entry>
-                            <entry key="favorites_flow">
-                              <value>
-                                <LayoutPositions>
-                                  <option name="myPosition">
-                                    <Point>
-                                      <option name="x" value="49" />
-                                      <option name="y" value="183" />
-                                    </Point>
-                                  </option>
-                                  <option name="myPositions">
-                                    <map>
-                                      <entry key="errorFavoritesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="368" />
-                                                <option name="y" value="-208" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_errorFavoritesFragment_to_loadingFavoritesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="favouritesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="390" />
-                                                <option name="y" value="156" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_favouritesFragment_to_detail_flow">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="loadingFavoritesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="12" />
-                                                <option name="y" value="12" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_loadingFavoritesFragment_to_errorFavoritesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_loadingFavoritesFragment_to_favouritesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                    </map>
-                                  </option>
-                                </LayoutPositions>
-                              </value>
-                            </entry>
-                            <entry key="map_flow">
-                              <value>
-                                <LayoutPositions>
-                                  <option name="myPosition">
-                                    <Point>
-                                      <option name="x" value="-266" />
-                                      <option name="y" value="-20" />
-                                    </Point>
-                                  </option>
-                                  <option name="myPositions">
-                                    <map>
-                                      <entry key="errorArticlesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="882" />
-                                                <option name="y" value="-224" />
-                                              </Point>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="errorLocationFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="254" />
-                                                <option name="y" value="-216" />
-                                              </Point>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="errorLocationServicesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="300" />
-                                                <option name="y" value="196" />
-                                              </Point>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="loadingArticlesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="580" />
-                                                <option name="y" value="10" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_loadingArticlesFragment_to_errorArticlesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_loadingArticlesFragment_to_mapFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="loadingLocationFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="12" />
-                                                <option name="y" value="12" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_loadingLocationFragment_to_errorLocationFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_loadingLocationFragment_to_errorLocationServicesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_loadingLocationFragment_to_loadingArticlesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="mapFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="1038" />
-                                                <option name="y" value="186" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_mapFragment_to_detail_flow">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_mapFragment_to_favorites_flow">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_mapFragment_to_loadingLocationFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                                <entry key="action_mapFragment_to_preferencesFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                      <entry key="preferencesFragment">
-                                        <value>
-                                          <LayoutPositions>
-                                            <option name="myPosition">
-                                              <Point>
-                                                <option name="x" value="914" />
-                                                <option name="y" value="584" />
-                                              </Point>
-                                            </option>
-                                            <option name="myPositions">
-                                              <map>
-                                                <entry key="action_preferencesFragment_to_loadingLocationFragment">
-                                                  <value>
-                                                    <LayoutPositions />
-                                                  </value>
-                                                </entry>
-                                              </map>
-                                            </option>
-                                          </LayoutPositions>
-                                        </value>
-                                      </entry>
-                                    </map>
-                                  </option>
-                                </LayoutPositions>
-                              </value>
-                            </entry>
-                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="permissions_flow">
+                  <entry key="favoritesFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="232" />
-                            <option name="y" value="-72" />
+                            <option name="x" value="579" />
+                            <option name="y" value="707" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="errorPermissionsFragment">
-                              <value>
-                                <LayoutPositions>
-                                  <option name="myPosition">
-                                    <Point>
-                                      <option name="x" value="256" />
-                                      <option name="y" value="12" />
-                                    </Point>
-                                  </option>
-                                </LayoutPositions>
-                              </value>
-                            </entry>
-                            <entry key="loadingPermissionsFragment">
-                              <value>
-                                <LayoutPositions>
-                                  <option name="myPosition">
-                                    <Point>
-                                      <option name="x" value="-102" />
-                                      <option name="y" value="145" />
-                                    </Point>
-                                  </option>
-                                  <option name="myPositions">
-                                    <map>
-                                      <entry key="action_loadingPermissionsFragment_to_errorPermissionsFragment">
-                                        <value>
-                                          <LayoutPositions />
-                                        </value>
-                                      </entry>
-                                      <entry key="action_loadingPermissionsFragment_to_main_flow">
-                                        <value>
-                                          <LayoutPositions />
-                                        </value>
-                                      </entry>
-                                      <entry key="action_loadingPermissionsFragment_to_permissionFragment">
-                                        <value>
-                                          <LayoutPositions />
-                                        </value>
-                                      </entry>
-                                    </map>
-                                  </option>
-                                </LayoutPositions>
-                              </value>
-                            </entry>
-                            <entry key="permissionFragment">
-                              <value>
-                                <LayoutPositions>
-                                  <option name="myPosition">
-                                    <Point>
-                                      <option name="x" value="256" />
-                                      <option name="y" value="368" />
-                                    </Point>
-                                  </option>
-                                  <option name="myPositions">
-                                    <map>
-                                      <entry key="action_permissionFragment_to_main_flow">
-                                        <value>
-                                          <LayoutPositions />
-                                        </value>
-                                      </entry>
-                                    </map>
-                                  </option>
-                                </LayoutPositions>
-                              </value>
-                            </entry>
-                          </map>
-                        </option>
-                      </LayoutPositions>
-                    </value>
-                  </entry>
-                  <entry key="splashFragment">
-                    <value>
-                      <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="12" />
-                            <option name="y" value="12" />
-                          </Point>
-                        </option>
-                        <option name="myPositions">
-                          <map>
-                            <entry key="action_splashFragment_to_permissions_flow">
+                            <entry key="action_favoritesFragment_to_detailFragment">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
                           </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="mapFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="391" />
+                            <option name="y" value="277" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_mapFragment_to_detailFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_mapFragment_to_favoritesFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_mapFragment_to_preferencesFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="permissionFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="72" />
+                            <option name="y" value="280" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_permissionFragment_to_mapFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="preferencesFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="582" />
+                            <option name="y" value="-102" />
+                          </Point>
                         </option>
                       </LayoutPositions>
                     </value>

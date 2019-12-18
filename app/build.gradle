@@ -95,6 +95,9 @@ dependencies {
     // ReactiveStreams support for LiveData
     implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
 
+    // LiveEvent
+    implementation "com.github.hadilq.liveevent:liveevent:1.2.0"
+
     // Navigation
     def nav_version = "2.1.0"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

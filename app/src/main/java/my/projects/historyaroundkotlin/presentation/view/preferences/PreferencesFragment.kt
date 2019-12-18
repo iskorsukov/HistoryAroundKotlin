@@ -1,30 +1,27 @@
 package my.projects.historyaroundkotlin.presentation.view.preferences
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import my.projects.historyaroundkotlin.HistoryAroundApp
 import my.projects.historyaroundkotlin.R
+import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
 
 class PreferencesFragment: PreferenceFragmentCompat() {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                navigateToLoadingLocationFragment()
-            }
-        })
-    }
+    private lateinit var preferencesSource: PreferencesSource
 
-    private fun navigateToLoadingLocationFragment() {
-        val navControllerSource = (requireContext().applicationContext as HistoryAroundApp).appComponent.navControllerSource()
-        val navController = navControllerSource.navController(this)
-        navController.navigate(PreferencesFragmentDirections.actionPreferencesFragmentToLoadingLocationFragment())
-    }
+    private val listener: SharedPreferences.OnSharedPreferenceChangeListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            if (key == getString(R.string.prefs_radius_key)) {
+                sharedPreferences.getString(key, null)?.apply {
+                    preferencesSource.pushRadiusValueChanged(this.toInt())
+                }
+            }
+        }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -38,5 +35,24 @@ class PreferencesFragment: PreferenceFragmentCompat() {
                 "${preference.value} meters"
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initPreferencesSource()
+    }
+
+    private fun initPreferencesSource() {
+        preferencesSource = (context!!.applicationContext as HistoryAroundApp).appComponent.preferencesSource()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 }

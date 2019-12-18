@@ -8,23 +8,23 @@ import javax.inject.Inject
 
 class ArticleEntitiesMapper @Inject constructor() {
 
-    fun mapArticleEntity(articleEntity: ArticleEntity, thumbnailEntity: ArticleThumbnailEntity?): ArticleItem {
+    fun mapArticleEntity(articleEntity: ArticleEntity): ArticleItem {
         return ArticleItem(
             articleEntity.pageid.toString(),
             articleEntity.title,
             articleEntity.description,
             articleEntity.lat to articleEntity.lon,
-            thumbnailEntity?.run {
+            articleEntity.thumbnail?.run {
                 mapThumbnailEntity(this)
             }
         )
     }
 
-    fun mapThumbnailEntity(thumbnailEntity: ArticleThumbnailEntity): ArticleThumbnail {
+    private fun mapThumbnailEntity(thumbnailEntity: ArticleThumbnailEntity): ArticleThumbnail {
         return ArticleThumbnail(
-            thumbnailEntity.url,
-            thumbnailEntity.width,
-            thumbnailEntity.height
+            thumbnailEntity.thumbnailUrl,
+            thumbnailEntity.thumbnailWidth,
+            thumbnailEntity.thumbnailHeight
         )
     }
 
@@ -35,13 +35,13 @@ class ArticleEntitiesMapper @Inject constructor() {
             articleItem.description,
             articleItem.latlng.first,
             articleItem.latlng.second,
-            null
+            articleItem.thumbnail?.run { mapThumbnailToEntity(this) }
         )
     }
 
-    fun mapThumbnailToEntity(thumbnail: ArticleThumbnail): ArticleThumbnailEntity {
+    private fun mapThumbnailToEntity(thumbnail: ArticleThumbnail): ArticleThumbnailEntity {
         return ArticleThumbnailEntity(
-            -1L,
+            null,
             thumbnail.url,
             thumbnail.width,
             thumbnail.height

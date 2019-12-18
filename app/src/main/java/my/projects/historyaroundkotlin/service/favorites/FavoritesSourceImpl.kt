@@ -2,8 +2,8 @@ package my.projects.historyaroundkotlin.service.favorites
 
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.SingleSource
 import my.projects.historyaroundkotlin.data.entity.ArticleEntity
 import my.projects.historyaroundkotlin.mapper.entity.ArticleEntitiesMapper
 import my.projects.historyaroundkotlin.model.article.ArticleItem
@@ -20,30 +20,18 @@ class FavoritesSourceImpl @Inject constructor(
 
     override fun addToFavorites(articleItem: ArticleItem): Completable {
         val articleEntity = mapper.mapArticleToEntity(articleItem)
-        val thumbnailEntity = articleItem.thumbnail?.let {
-            mapper.mapThumbnailToEntity(it)
-        }
-        return thumbnailEntity?.let {
-            articlesDao.insertArticleWithThumbnail(articleEntity, thumbnailEntity)
-        } ?: articlesDao.insertArticle(articleEntity)
+        return articlesDao.insertArticle(articleEntity)
     }
 
-    override fun getFavoriteArticles(): Single<List<ArticleItem>> {
-        return articlesDao.getArticles()
-            .toObservable()
-            .flatMapIterable { item -> item }
-            .flatMapSingle { articleEntity: ArticleEntity ->
-                articleEntity.thumbnailId?.run {
-                    articlesDao.getThumbnail(this).flatMapSingle {
-                        Single.just(mapper.mapArticleEntity(articleEntity, it))
-                    }
-                } ?: Single.just(mapper.mapArticleEntity(articleEntity, null))
-            }.toList()
+    override fun getFavoriteArticles(): Observable<List<ArticleItem>> {
+        return articlesDao.getArticles().map {
+            it.map {entity -> mapper.mapArticleEntity(entity) }
+        }
     }
 
     override fun removeFromFavorites(articleItem: ArticleItem): Completable {
         return articleItem.thumbnail?.run {
-            articlesDao.deleteArticleWithThumbnail(mapper.mapArticleToEntity(articleItem))
+            articlesDao.deleteArticle(mapper.mapArticleToEntity(articleItem))
         } ?: articlesDao.deleteArticle(mapper.mapArticleToEntity(articleItem))
     }
 

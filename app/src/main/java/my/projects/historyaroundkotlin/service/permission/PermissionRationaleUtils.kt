@@ -1,7 +1,7 @@
 package my.projects.historyaroundkotlin.service.permission
 
 import my.projects.historyaroundkotlin.R
-import my.projects.historyaroundkotlin.presentation.viewstate.start.permission.PermissionRationale
+import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionRationale
 
 class PermissionRationaleUtils {
 
@@ -20,16 +20,18 @@ class PermissionRationaleUtils {
                 R.string.internet_rationale
             )
 
-        val STORAGE_RATIONALE = PermissionRationale(
-            R.drawable.ic_storage,
-            R.string.storage_permission_label,
-            R.string.storage_rationale
-        )
+        val STORAGE_RATIONALE =
+            PermissionRationale(
+                R.drawable.ic_storage,
+                R.string.storage_permission_label,
+                R.string.storage_rationale
+            )
 
-        val NETWORK_STATE_RATIONALE = PermissionRationale(
-            R.drawable.ic_network_state,
-            R.string.network_state_permission_label,
-            R.string.network_state_rationale
-        )
+        val NETWORK_STATE_RATIONALE =
+            PermissionRationale(
+                R.drawable.ic_network_state,
+                R.string.network_state_permission_label,
+                R.string.network_state_rationale
+            )
     }
 }
