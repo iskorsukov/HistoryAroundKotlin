@@ -1,5 +1,6 @@
 package my.projects.historyaroundkotlin.presentation.viewmodel.permission
 
+import android.content.pm.PackageManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,7 @@ import my.projects.historyaroundkotlin.mock.Mockable
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.NavigateToMapAction
+import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionErrorItem
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionViewState
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionsViewData
@@ -81,6 +83,17 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
                     PermissionErrorItem.PERMISSIONS_ERROR
                 )
         })
+    }
+
+    fun onRequestPermissionsResult(permissions: Array<out String>, grantResults: IntArray, fragment: Fragment) {
+        var permissionDenied = false
+        for (i in grantResults.indices) {
+            permissionDenied = grantResults[i] == PackageManager.PERMISSION_DENIED && !permissionSource.shouldShowRequestPermissionRationale(permissions[i], fragment)
+            if (permissionDenied) break
+        }
+        if (permissionDenied) {
+            viewActionLiveEvent.value = ShowPermissionDeniedDialogAction()
+        }
     }
 
     override fun onCleared() {

@@ -8,6 +8,7 @@ interface PermissionSource {
     fun allPermissionsGranted(): Single<Boolean>
     fun getNotGrantedPermissions(): Single<List<String>>
     fun requestPermissions(permissions: List<String>, fragment: Fragment, requestCode: Int)
+    fun shouldShowRequestPermissionRationale(permission: String, fragment: Fragment): Boolean
 
     fun mapPermissionToRationale(permission: String): PermissionRationale?
 }

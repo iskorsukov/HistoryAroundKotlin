@@ -1,14 +1,19 @@
 package my.projects.historyaroundkotlin.presentation.view.common.fragment
 
 import android.view.View
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.fragment_base_error.*
 import kotlinx.android.synthetic.main.fragment_base_lce.*
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewdata.ViewData
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.ErrorItem
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.ViewState
+import my.projects.historyaroundkotlin.presentation.view.util.viewModelFactory
 
-abstract class BaseLCEViewStateFragment<C: ViewData, E: ErrorItem>: BaseLCEFragment() {
+abstract class BaseLCEViewStateFragment<C: ViewData, E: ErrorItem, VM: ViewModel>: BaseLCEFragment() {
+
+    protected lateinit var viewModel: VM
 
     open fun applyViewState(viewState: ViewState<C, E>) {
         applyLCEVisibility(viewState.lceState)
@@ -41,4 +46,10 @@ abstract class BaseLCEViewStateFragment<C: ViewData, E: ErrorItem>: BaseLCEFragm
     }
 
     abstract fun showContent(content: C)
+
+    abstract fun viewModelClass(): Class<VM>
+
+    fun initViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory()).get(viewModelClass())
+    }
 }

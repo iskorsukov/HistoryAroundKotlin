@@ -7,22 +7,25 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
 import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.presentation.view.common.fragment.BaseLCEViewStateActionFragment
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
+import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.OpenInMapAction
+import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.ViewInBrowserAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailErrorItem
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
-import my.projects.historyaroundkotlin.presentation.view.util.viewModelFactory
 import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
 
-class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErrorItem>() {
+class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErrorItem, DetailFlowViewModel>() {
 
-    private lateinit var viewModel: DetailFlowViewModel
     private val args: DetailFragmentArgs by navArgs()
+
+    override fun viewModelClass(): Class<DetailFlowViewModel> {
+        return DetailFlowViewModel::class.java
+    }
 
     override fun contentLayout(): Int {
         return R.layout.fragment_detail
@@ -30,13 +33,11 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initViewModel()
         observeViewState()
-        loadDetails()
-    }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory())[DetailFlowViewModel::class.java]
+        loadDetails()
     }
 
     private fun observeViewState() {
@@ -50,7 +51,25 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
-        // STUB no actions yet
+        when (viewAction) {
+            is OpenInMapAction -> openInMap(viewAction.data!!)
+            is ViewInBrowserAction -> openInBrowser(viewAction.data!!)
+        }
+    }
+
+    private fun openInMap(latlon: Pair<Double, Double>) {
+        val geoIntentString = "geo:${latlon.first},${latlon.second}"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoIntentString))
+        if (intent.resolveActivity(context!!.packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(context, R.string.no_map_app_error, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openInBrowser(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
     }
 
     override fun showContent(content: DetailViewData) {
@@ -59,17 +78,10 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
             articleDetailsExtract.text = item.extract
             Glide.with(this@DetailFragment).load(item.thumbnail?.url).into(articleDetailsImage)
             openInWikiButton.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
-                startActivity(intent)
+                viewModel.onViewInBrowserButtonClicked(item.url)
             }
             openInMapButton.setOnClickListener {
-                val geoIntentString = "geo:${item.coordinates.first},${item.coordinates.second}"
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoIntentString))
-                if (intent.resolveActivity(context!!.packageManager) != null) {
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(context, R.string.no_map_app_error, Toast.LENGTH_LONG).show()
-                }
+                viewModel.onOpenInMapButtonClicked(item.coordinates)
             }
             favoriteButton.setImageDrawable(if (isFavorite) getDrawable(R.drawable.ic_star_black) else getDrawable(R.drawable.ic_star_border_black))
             favoriteButton.setOnClickListener {

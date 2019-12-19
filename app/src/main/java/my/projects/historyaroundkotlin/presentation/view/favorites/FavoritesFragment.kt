@@ -17,9 +17,11 @@ import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.vie
 import my.projects.historyaroundkotlin.presentation.view.util.viewModelFactory
 import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
 
-class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesViewData, FavoritesErrorItem>() {
+class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesViewData, FavoritesErrorItem, FavouritesViewModel>() {
 
-    private lateinit var viewModel: FavouritesViewModel
+    override fun viewModelClass(): Class<FavouritesViewModel> {
+        return FavouritesViewModel::class.java
+    }
 
     override fun contentLayout(): Int {
         return R.layout.fragment_favorites
@@ -27,18 +29,15 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesViewData, Favo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configureRecyclerView()
-        initViewModel()
 
+        configureRecyclerView()
+
+        initViewModel()
         observeViewState()
     }
 
     private fun configureRecyclerView() {
         favoritesRecycler.layoutManager = LinearLayoutManager(context!!)
-    }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory())[FavouritesViewModel::class.java]
     }
 
     private fun observeViewState() {

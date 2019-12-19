@@ -1,8 +1,10 @@
 package my.projects.historyaroundkotlin.presentation.viewmodel.detail
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.hadilq.liveevent.LiveEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.zipWith
@@ -11,6 +13,9 @@ import my.projects.historyaroundkotlin.mock.Mockable
 import my.projects.historyaroundkotlin.model.detail.ArticleDetails
 import my.projects.historyaroundkotlin.model.detail.toArticleItem
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
+import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
+import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.OpenInMapAction
+import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.ViewInBrowserAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailErrorItem
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailViewState
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
@@ -24,6 +29,7 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
     private var detailsDisposable: Disposable? = null
 
     val viewStateLiveData: LiveData<DetailViewState> = MutableLiveData<DetailViewState>()
+    val viewActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadArticleDetails(id: String) {
         detailsDisposable?.dispose()
@@ -96,6 +102,14 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
             }, {
                 it.printStackTrace()
             })
+    }
+
+    fun onOpenInMapButtonClicked(latlon: Pair<Double, Double>) {
+        viewActionLiveData.value = OpenInMapAction(latlon)
+    }
+
+    fun onViewInBrowserButtonClicked(url: String) {
+        viewActionLiveData.value = ViewInBrowserAction(Uri.parse(url))
     }
 
     override fun onCleared() {

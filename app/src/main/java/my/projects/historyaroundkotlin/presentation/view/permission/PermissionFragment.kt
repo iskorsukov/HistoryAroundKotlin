@@ -1,13 +1,11 @@
 package my.projects.historyaroundkotlin.presentation.view.permission
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_permission.*
 import my.projects.historyaroundkotlin.R
@@ -17,15 +15,17 @@ import my.projects.historyaroundkotlin.presentation.view.common.fragment.BaseLCE
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.permission.adapter.PermissionsAdapter
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.NavigateToMapAction
+import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionErrorItem
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionsViewData
-import my.projects.historyaroundkotlin.presentation.view.util.viewModelFactory
 import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
 
 @Mockable
-class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, PermissionErrorItem>(), ItemListener {
+class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, PermissionErrorItem, PermissionViewModel>(), ItemListener {
 
-    private lateinit var viewModel: PermissionViewModel
+    override fun viewModelClass(): Class<PermissionViewModel> {
+        return PermissionViewModel::class.java
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,10 +34,6 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, P
 
         initViewModel()
         observeViewState()
-    }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory())[PermissionViewModel::class.java]
     }
 
     private fun configureRecyclerView() {
@@ -65,7 +61,25 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, P
         when (viewAction) {
             is NavigateToMapAction ->
                 navController().navigate(PermissionFragmentDirections.actionPermissionFragmentToMapFragment())
+            is ShowPermissionDeniedDialogAction ->
+                showGrantPermissionFromSettingsDialog()
         }
+    }
+
+    private fun showGrantPermissionFromSettingsDialog() {
+        val builder = AlertDialog.Builder(context!!)
+        builder.apply {
+            setTitle(R.string.permissions_denied_title)
+            setMessage(R.string.permissions_denied_message)
+            setPositiveButton(R.string.settings) { dialog, _ ->
+                startActivity(Intent(Settings.ACTION_SETTINGS))
+                dialog.dismiss()
+            }
+            setNegativeButton(R.string.ignore) { dialog, _ ->
+                dialog.dismiss()
+            }
+        }
+        builder.create().show()
     }
 
     override fun showContent(content: PermissionsViewData) {
@@ -84,32 +98,7 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, P
         if (requestCode != PermissionViewModel.PERMISSIONS_REQUEST_CODE) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         } else {
-            // TODO push request result to viewmodel
-            var permissionDenied = false
-            for (i in grantResults.indices) {
-                permissionDenied = grantResults[i] == PackageManager.PERMISSION_DENIED && !shouldShowRequestPermissionRationale(permissions[i])
-                if (permissionDenied) break
-            }
-            if (permissionDenied) {
-                showGrantPermissionFromSettingsDialog()
-            }
-            //viewModel.checkPermissions()
+            viewModel.onRequestPermissionsResult(permissions, grantResults, this)
         }
-    }
-
-    private fun showGrantPermissionFromSettingsDialog() {
-        val builder = AlertDialog.Builder(context!!)
-        builder.apply {
-            setTitle(R.string.permissions_denied_title)
-            setMessage(R.string.permissions_denied_message)
-            setPositiveButton(R.string.settings) { dialog, _ ->
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-                dialog.dismiss()
-            }
-            setNegativeButton(R.string.ignore) { dialog, _ ->
-                dialog.dismiss()
-            }
-        }
-        builder.create().show()
     }
 }

@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -22,7 +21,6 @@ import my.projects.historyaroundkotlin.presentation.view.map.viewaction.Navigate
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.ShowArticleSelectorAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapErrorItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.*
-import my.projects.historyaroundkotlin.presentation.view.util.viewModelFactory
 import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
@@ -35,9 +33,13 @@ import org.osmdroid.views.overlay.IconOverlay
 import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
 
-class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() {
+class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, MapFlowViewModel>() {
 
-    private lateinit var viewModel: MapFlowViewModel
+    private val zoomLevelListener = ZoomLevelListener(zoomStep = 0.1)
+
+    override fun viewModelClass(): Class<MapFlowViewModel> {
+        return MapFlowViewModel::class.java
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() 
         super.onViewCreated(view, savedInstanceState)
 
         initViewModel()
+
         initMapView()
         configureRecyclerView()
         configureMyLocationFAB()
@@ -60,17 +63,16 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() 
         observeViewState()
     }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory())[MapFlowViewModel::class.java]
-    }
-
     private fun initMapView() {
+        mapView.removeMapListener(zoomLevelListener)
+
         mapView.setTileSource(TileSourceFactory.MAPNIK)
+
         mapView.setMultiTouchControls(true)
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.controller.setZoom(16.0)
-        viewModel.onCenterOnUserLocationClicked() // to reposition map to user location when view is recreated
-        mapView.addMapListener(ZoomMarkerGroupListener())
+
+        mapView.addMapListener(zoomLevelListener)
     }
 
     private fun configureRecyclerView() {
@@ -84,6 +86,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() 
         viewModel.mapActionLiveData.observe(viewLifecycleOwner, Observer {
             applyViewAction(it)
         })
+        viewModel.onCenterOnUserLocationClicked() // to reposition map to user location when view is recreated
     }
 
     private fun configureMyLocationFAB() {
@@ -177,10 +180,9 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() 
         return super.onOptionsItemSelected(item)
     }
 
-    private inner class ZoomMarkerGroupListener: MapListener {
+    private inner class ZoomLevelListener(private val zoomStep: Double): MapListener {
 
         private var lastZoomLevel: Double = .0
-        private val step = .1
 
         override fun onScroll(event: ScrollEvent?): Boolean {
             return false
@@ -189,7 +191,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() 
         override fun onZoom(event: ZoomEvent?): Boolean {
             event?.apply {
                 val currentZoomLevel: Double = event.zoomLevel
-                if (Math.abs(currentZoomLevel - lastZoomLevel) >= step) {
+                if (Math.abs(currentZoomLevel - lastZoomLevel) >= zoomStep) {
                     lastZoomLevel = currentZoomLevel
                     viewModel.onZoomLevelChanged(lastZoomLevel)
                 }
@@ -203,7 +205,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem>() 
         private var selectedItem: ArticlesOverlayItem? = null
 
         override fun onItemLongPress(index: Int, item: ArticlesOverlayItem?): Boolean {
-            return true
+            return false
         }
 
         override fun onItemSingleTapUp(index: Int, item: ArticlesOverlayItem?): Boolean {
