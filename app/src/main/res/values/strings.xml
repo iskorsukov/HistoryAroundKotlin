@@ -13,37 +13,46 @@
 
     <!-- Permissions -->
     <string name="permissions_message">You need to grant the app some permissions before you can use it</string>
-    <string name="location_permission_label">Permission to access location</string>
-    <string name="location_rationale">The app need access to your location to look for interesting places around you\nIt will not store or use it in any other way</string>
-    <string name="internet_permission_label">Permission to access the Internet</string>
-    <string name="internet_rationale">The app needs access to the Internet in order to find interesting information about places around you</string>
     <string name="grant_permissions">Grant permissions</string>
     <string name="permissions_denied_title">Permissions denied</string>
     <string name="permissions_denied_message">It seems you have denied the app one or more of the permissions it needs to run. To use the app please grant the permissions in device app settings.</string>
+    <!-- Location -->
+    <string name="location_permission_label">Permission to access location</string>
+    <string name="location_rationale">The app need access to your location to look for interesting places around you\nIt will not store or use it in any other way</string>
+    <!-- Internet -->
+    <string name="internet_permission_label">Permission to access the Internet</string>
+    <string name="internet_rationale">The app needs access to the Internet in order to find interesting information about places around you</string>
+    <!-- Storage -->
     <string name="storage_permission_label">Storage permission</string>
     <string name="storage_rationale">The app needs permission to write to your storage in order to save map tiles so as not to load them every time you open the map screen</string>
+    <!-- Network State -->
     <string name="network_state_permission_label">Access to network state</string>
     <string name="network_state_rationale">The app needs access to network state to figure out whether it is possible to load data from the Internet</string>
 
     <!-- Loading location -->
     <string name="loading_location_label">Figuring out your location</string>
+    <!-- Location Service Error -->
     <string name="location_error_services_label">Location Services are unavailable</string>
     <string name="location_error_services_message">Make sure you have geolocation turned on in device settings and try again</string>
+    <!-- Location Error -->
     <string name="location_error_label">Could not determine your location</string>
     <string name="location_error_message">Make sure geolocation is turned on and your geolocation services are able to determine your location and try again</string>
 
     <!-- Loading articles -->
     <string name="loading_articles_label">Loading information about places of interest around you</string>
+    <!-- Articles Error -->
     <string name="loading_articles_error_label">Could not load information from Wikipedia</string>
     <string name="loading_articles_error_message">Make sure you have Internet connection and Wikipedia is accessible, and try again</string>
 
     <!-- Loading details -->
     <string name="loading_details_label">Loading information about the place</string>
+    <!-- Details error -->
     <string name="loading_details_error_label">Could not load information from Wikipedia</string>
     <string name="loading_details_error_message">Make sure you have Internet connection and Wikipedia is accessible, and try again</string>
 
     <!-- Loading permissions -->
     <string name="loading_permissions_label">Checking permissions</string>
+    <!-- Permissions error -->
     <string name="loading_permissions_error_label">Failed to check permissions</string>
     <string name="loading_permissions_error_message">Please try again</string>
 
@@ -62,4 +71,10 @@
     <string name="prefs_radius_title">Radius in meters</string>
     <string name="prefs_radius_key">pref_radius</string>
     <string name="prefs_radius_default_value">250</string>
+
+    <!-- Loading favorites -->
+    <string name="loading_favorites_label">Loading your favorite items</string>
+    <!-- Favorites error -->
+    <string name="loading_favorites_error_label">Failed to load favorite items</string>
+    <string name="loading_favorites_error_message">Something went wrong, please try again</string>
 </resources>

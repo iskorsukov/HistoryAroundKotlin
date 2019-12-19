@@ -15,4 +15,10 @@
     <dimen name="error_label_text_size">20sp</dimen>
     <dimen name="error_message_text_size">16sp</dimen>
     <dimen name="error_padding">16dp</dimen>
+
+    <!-- Favorite items -->
+    <dimen name="favorite_item_thumbnail_height">100dp</dimen>
+
+    <!-- Text -->
+    <dimen name="text_size_small">12sp</dimen>
 </resources>

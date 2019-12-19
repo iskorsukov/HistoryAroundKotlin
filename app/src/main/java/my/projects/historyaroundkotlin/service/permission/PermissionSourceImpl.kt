@@ -3,13 +3,13 @@ package my.projects.historyaroundkotlin.service.permission
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import io.reactivex.Single
-import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.injection.PermissionsList
-import my.projects.historyaroundkotlin.presentation.viewstate.start.permission.PermissionRationale
+import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionRationale
 import javax.inject.Inject
 
 class PermissionSourceImpl @Inject constructor(
@@ -44,5 +44,9 @@ class PermissionSourceImpl @Inject constructor(
 
     override fun mapPermissionToRationale(permission: String): PermissionRationale? {
         return permissionRationaleMap[permission]
+    }
+
+    override fun shouldShowRequestPermissionRationale(permission: String, fragment: Fragment): Boolean {
+        return fragment.shouldShowRequestPermissionRationale(permission)
     }
 }

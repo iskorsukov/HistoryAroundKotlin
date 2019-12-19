@@ -6,17 +6,22 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/permissionsRecyclerView"
+
         android:layout_width="match_parent"
         android:layout_height="0dp"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/grantPermissionsButton"/>
 
     <Button
         android:id="@+id/grantPermissionsButton"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:text="@string/grant_permissions"
         android:layout_margin="8dp"
+
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

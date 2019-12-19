@@ -1,14 +1,13 @@
 package my.projects.historyaroundkotlin.injection.test
 
 import androidx.lifecycle.ViewModel
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import my.projects.historyaroundkotlin.injection.ViewModelKey
-import my.projects.historyaroundkotlin.presentation.viewmodel.main.detail.DetailFlowViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.main.map.MapFlowViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.start.permission.PermissionFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
 
 // Override this to provide custom/mock viewmodels
 @Module
@@ -16,8 +15,8 @@ open class TestViewModelBindings {
 
     @Provides
     @IntoMap
-    @ViewModelKey(PermissionFlowViewModel::class)
-    open fun bindPermissionsViewModel(myViewModel: PermissionFlowViewModel): ViewModel {
+    @ViewModelKey(PermissionViewModel::class)
+    open fun bindPermissionsViewModel(myViewModel: PermissionViewModel): ViewModel {
         return myViewModel
     }
 
