@@ -204,6 +204,11 @@ class MapFlowViewModel @Inject constructor(
         }
     }
 
+    fun onRefresh() {
+        (mapDataLiveData as MutableLiveData).value = MapViewState(LCEState.LOADING, null, null)
+        loadArticles()
+    }
+
     private fun List<ArticlesClusterItem>.toViewData(): List<ArticleItemViewData> {
         return this.foldRight(HashSet(), { overlayItem: ArticlesClusterItem, set: HashSet<ArticleItemViewData> ->
             set.addAll(overlayItem.items)
