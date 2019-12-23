@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 import my.projects.historyaroundkotlin.injection.ViewModelKey
 import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
 import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
 import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
 
@@ -31,6 +32,13 @@ open class TestViewModelBindings {
     @IntoMap
     @ViewModelKey(DetailFlowViewModel::class)
     open fun bindDetailsViewModel(myViewModel: DetailFlowViewModel): ViewModel {
+        return myViewModel
+    }
+
+    @Provides
+    @IntoMap
+    @ViewModelKey(FavouritesViewModel::class)
+    open fun bindFavoritesViewModel(myViewModel: FavouritesViewModel): ViewModel {
         return myViewModel
     }
 }
