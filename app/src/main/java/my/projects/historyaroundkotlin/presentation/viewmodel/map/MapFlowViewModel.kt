@@ -26,6 +26,9 @@ import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticlesClusterItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticlesOverlayItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.MapViewData
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.throwable.ArticlesErrorThrowable
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.throwable.LocationErrorThrowable
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.throwable.LocationServicesErrorThrowable
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.location.LocationSource
 import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
@@ -83,7 +86,7 @@ class MapFlowViewModel @Inject constructor(
 
     private fun checkLocationServicesAvailable(): Completable {
         return locationSource.checkLocationServicesAvailability().timeout(5, TimeUnit.SECONDS).onErrorResumeNext {
-            Completable.error(IllegalStateException("Location Services unavailable"))
+            Completable.error(LocationServicesErrorThrowable())
         }
     }
 
@@ -95,6 +98,9 @@ class MapFlowViewModel @Inject constructor(
                 .doOnEvent { _, _ -> stopLocationUpdates() }
                 .doOnDispose(this::stopLocationUpdates))
             .timeout(15, TimeUnit.SECONDS)
+            .onErrorResumeNext {
+                Single.error(LocationErrorThrowable())
+            }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -102,6 +108,8 @@ class MapFlowViewModel @Inject constructor(
     private fun loadArticles(location: Location): Observable<List<ArticleItem>> {
         return preferencesSource.getRadiusPreference().flatMapSingle {
             loadArticleItems(location, it)
+        }.onErrorResumeNext { throwable: Throwable ->
+            Observable.error<List<ArticleItem>>(ArticlesErrorThrowable())
         }
     }
 
@@ -115,26 +123,26 @@ class MapFlowViewModel @Inject constructor(
     private fun handleError(throwable: Throwable) {
         throwable.printStackTrace()
         when (throwable) {
-            is IllegalStateException -> // location services check error
+            is LocationServicesErrorThrowable ->
                 (mapDataLiveData as MutableLiveData).value =
                     MapViewState(
                         LCEState.ERROR,
                         null,
                         MapErrorItem.LOCATION_SERVICES_ERROR
                     )
-            is IOException -> // IO error
-                (mapDataLiveData as MutableLiveData).value =
-                    MapViewState(
-                        LCEState.ERROR,
-                        null,
-                        MapErrorItem.ARTICLES_ERROR
-                    )
-            else -> // location error
+            is LocationErrorThrowable ->
                 (mapDataLiveData as MutableLiveData).value =
                     MapViewState(
                         LCEState.ERROR,
                         null,
                         MapErrorItem.LOCATION_ERROR
+                    )
+            else ->
+                (mapDataLiveData as MutableLiveData).value =
+                    MapViewState(
+                        LCEState.ERROR,
+                        null,
+                        MapErrorItem.ARTICLES_ERROR
                     )
         }
     }
