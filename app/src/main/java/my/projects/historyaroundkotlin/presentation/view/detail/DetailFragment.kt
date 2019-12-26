@@ -44,6 +44,9 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
         viewModel.viewStateLiveData.observe(viewLifecycleOwner, Observer {
             applyViewState(it)
         })
+        viewModel.viewActionLiveData.observe(viewLifecycleOwner, Observer {
+            applyViewAction(it)
+        })
     }
 
     private fun loadDetails() {

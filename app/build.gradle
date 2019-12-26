@@ -70,9 +70,14 @@ dependencies {
     androidTestImplementation 'androidx.test:core:1.2.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "android.arch.core:core-testing:1.1.1"
+    // Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    // UIAutomator
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+
 
     // Fragment testing
     def fragment_version = "1.1.0"

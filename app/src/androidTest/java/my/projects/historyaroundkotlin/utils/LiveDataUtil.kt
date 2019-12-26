@@ -10,14 +10,16 @@ import java.util.concurrent.TimeoutException
 fun <T> waitForValue(liveData: LiveData<T>): T {
     val latch = CountDownLatch(1)
     val handler = Handler(Looper.getMainLooper())
-    var value: T? = null
-    handler.post {
-        liveData.observeForever {
-            value = it
-            latch.countDown()
+    var value: T? = liveData.value
+    if (value == null) {
+        handler.post {
+            liveData.observeForever {
+                value = it
+                latch.countDown()
+            }
         }
+        latch.await(2, TimeUnit.SECONDS)
     }
-    latch.await(2, TimeUnit.SECONDS)
     if (value == null) {
         throw TimeoutException("Did not get a value before timeout")
     } else {

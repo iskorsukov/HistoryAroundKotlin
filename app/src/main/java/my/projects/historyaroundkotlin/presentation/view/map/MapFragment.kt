@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -163,21 +164,12 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menuRefresh -> {
-                viewModel.loadArticles()
-                return true
-            }
-            R.id.menuSettings -> {
-                navController().navigate(MapFragmentDirections.actionMapFragmentToPreferencesFragment())
-                return true
-            }
-            R.id.menuFavorites -> {
-                navController().navigate(MapFragmentDirections.actionMapFragmentToFavoritesFragment())
-                return true
-            }
+        return if (item.itemId == R.id.menuRefresh) {
+            viewModel.onRefresh()
+            true
+        } else {
+            item.onNavDestinationSelected(navController()) || super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private inner class ZoomLevelListener(private val zoomStep: Double): MapListener {

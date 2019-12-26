@@ -5,5 +5,5 @@ import my.projects.historyaroundkotlin.presentation.view.map.utils.toGeoPoint
 class ArticlesClusterItem(val location: Pair<Double, Double>, val items: List<ArticleItemViewData>)
 
 fun ArticlesClusterItem.toOverlayItem(): ArticlesOverlayItem {
-    return ArticlesOverlayItem("", "", location.toGeoPoint(), items)
+    return ArticlesOverlayItem(items.joinToString { it.item.title }, "", location.toGeoPoint(), items)
 }

@@ -94,6 +94,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
         if (permissionDenied) {
             viewActionLiveEvent.value = ShowPermissionDeniedDialogAction()
         }
+        checkPermissions()
     }
 
     override fun onCleared() {
