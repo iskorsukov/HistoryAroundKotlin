@@ -1,10 +1,7 @@
 package my.projects.historyaroundkotlin.service.permission
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import io.reactivex.Single
@@ -14,17 +11,9 @@ import javax.inject.Inject
 
 class PermissionSourceImpl @Inject constructor(
     private val context: Context,
-    @PermissionsList private val permissions: List<String>
+    @PermissionsList private val permissions: List<String>,
+    private val permissionMapper: PermissionRationaleMapper
 ): PermissionSource {
-
-    private val permissionRationaleMap = HashMap<String, PermissionRationale>()
-
-    init {
-        permissionRationaleMap[Manifest.permission.ACCESS_FINE_LOCATION] = PermissionRationaleUtils.LOCATION_RATIONALE
-        permissionRationaleMap[Manifest.permission.INTERNET] = PermissionRationaleUtils.INTERNET_RATIONALE
-        permissionRationaleMap[Manifest.permission.WRITE_EXTERNAL_STORAGE] = PermissionRationaleUtils.STORAGE_RATIONALE
-        permissionRationaleMap[Manifest.permission.ACCESS_NETWORK_STATE] = PermissionRationaleUtils.NETWORK_STATE_RATIONALE
-    }
 
     override fun allPermissionsGranted(): Single<Boolean> {
         return Single.fromCallable {
@@ -43,7 +32,7 @@ class PermissionSourceImpl @Inject constructor(
     }
 
     override fun mapPermissionToRationale(permission: String): PermissionRationale? {
-        return permissionRationaleMap[permission]
+        return permissionMapper.mapToRationale(permission)
     }
 
     override fun shouldShowRequestPermissionRationale(permission: String, fragment: Fragment): Boolean {

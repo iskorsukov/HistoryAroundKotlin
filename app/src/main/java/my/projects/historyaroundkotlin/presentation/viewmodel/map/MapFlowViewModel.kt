@@ -62,7 +62,6 @@ class MapFlowViewModel @Inject constructor(
 
         var lastLoadedLocation: Location? = null
 
-        startLocationUpdates()
         loadArticlesDisposable = checkLocationServicesAvailable()
             .andThen(loadLocation())
             .flatMapObservable {
@@ -90,12 +89,14 @@ class MapFlowViewModel @Inject constructor(
 
     private fun loadLocation(): Single<Location> {
         return locationSource.getLastKnownLocation()
-            .switchIfEmpty(locationSource.getLocationUpdatesObservable().firstOrError())
+            .switchIfEmpty(locationSource.getLocationUpdatesObservable()
+                .firstOrError()
+                .doOnSubscribe { startLocationUpdates() }
+                .doOnEvent { _, _ -> stopLocationUpdates() }
+                .doOnDispose(this::stopLocationUpdates))
             .timeout(15, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnEvent { _, _ -> stopLocationUpdates() }
-            .doOnDispose(this::stopLocationUpdates)
     }
 
     private fun loadArticles(location: Location): Observable<List<ArticleItem>> {
