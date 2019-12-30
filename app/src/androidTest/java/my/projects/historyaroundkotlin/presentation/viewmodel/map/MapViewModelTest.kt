@@ -8,11 +8,16 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertTrue
 import my.projects.historyaroundkotlin.model.article.ArticleItem
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
+import my.projects.historyaroundkotlin.presentation.view.map.viewaction.CenterOnLocationAction
+import my.projects.historyaroundkotlin.presentation.view.map.viewaction.NavigateToDetailsAction
+import my.projects.historyaroundkotlin.presentation.view.map.viewaction.ShowArticleSelectorAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapErrorItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticlesClusterItem
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.toOverlayItem
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.location.LocationSource
 import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
@@ -42,7 +47,7 @@ class MapViewModelTest {
 
     @Before
     fun setupViewModel() {
-        viewModel = MapFlowViewModel(locationSource, wikiSource, preferencesSource)
+        viewModel = Mockito.spy(MapFlowViewModel(locationSource, wikiSource, preferencesSource))
     }
 
     private fun getSampleLocation(): Location {
@@ -113,6 +118,14 @@ class MapViewModelTest {
     }
 
     @Test
+    fun loadsArticlesOnObserve() {
+        val liveData = viewModel.mapDataLiveData
+        TimeUnit.SECONDS.sleep(2)
+
+        Mockito.verify(wikiSource).loadArticleItems(MockitoUtil.any(), ArgumentMatchers.anyInt())
+    }
+
+    @Test
     fun pushesContentStateOnArticlesLoaded() {
         val liveData = viewModel.mapDataLiveData
         TimeUnit.SECONDS.sleep(2)
@@ -167,5 +180,38 @@ class MapViewModelTest {
         Mockito.verify(locationSource).getLastKnownLocation()
         Mockito.verify(preferencesSource).getRadiusPreference()
         Mockito.verify(wikiSource).loadArticleItems(MockitoUtil.any(), ArgumentMatchers.anyInt())
+    }
+
+    @Test
+    fun pushesCenterOnLocationActionOnEvent() {
+        viewModel.mapDataLiveData
+        TimeUnit.SECONDS.sleep(2)
+
+        val liveData = viewModel.mapActionLiveData
+        viewModel.onCenterOnUserLocationClicked()
+
+        assertTrue(waitForValue(liveData) is CenterOnLocationAction)
+    }
+
+    @Test
+    fun pushesNavigateToDetailsActionOnArticleSelected() {
+        viewModel.mapDataLiveData
+        TimeUnit.SECONDS.sleep(2)
+
+        val liveData = viewModel.mapActionLiveData
+        viewModel.onItemSelected(getSampleArticles()[0])
+
+        assertTrue(waitForValue(liveData) is NavigateToDetailsAction)
+    }
+
+    @Test
+    fun pushesShowArticleSelectorActionOnMarkerSelected() {
+        viewModel.mapDataLiveData
+        TimeUnit.SECONDS.sleep(2)
+
+        val liveData = viewModel.mapActionLiveData
+        viewModel.onMarkerSelected(getSampleClusters()[0].toOverlayItem())
+
+        assertTrue(waitForValue(liveData) is ShowArticleSelectorAction)
     }
 }

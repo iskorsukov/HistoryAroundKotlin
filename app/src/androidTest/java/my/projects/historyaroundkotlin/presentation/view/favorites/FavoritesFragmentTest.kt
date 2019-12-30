@@ -18,12 +18,14 @@ import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.Fav
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
 import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
 import my.projects.historyaroundkotlin.utils.MockitoUtil
+import org.hamcrest.CoreMatchers.allOf
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.internal.util.MockUtil
 import org.mockito.junit.MockitoJUnit
+import java.util.concurrent.TimeUnit
 
 class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, FavouritesViewModel>() {
 
@@ -100,8 +102,8 @@ class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, Favour
 
     private fun checkShowsItems() {
         for (article in getSampleData()) {
-            onView(withId(R.id.favoriteItemTitle)).check(matches(withText(article.title)))
-            onView(withId(R.id.favoriteItemDescription)).check(matches(withText(article.description)))
+            onView(allOf(withId(R.id.favoriteItemTitle), withText(article.title))).check(matches(isDisplayed()))
+            onView(allOf(withId(R.id.favoriteItemDescription), withText(article.description))).check(matches(isDisplayed()))
         }
     }
 
@@ -123,6 +125,7 @@ class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, Favour
     fun navigatesToDetailsOnAction() {
         launchFragment(FavoritesFragment::class.java)
         pushNavigateToDetailsAction()
+        TimeUnit.SECONDS.sleep(2)
 
         Mockito.verify(mockNavController).navigate(ArgumentMatchers.argThat { directions: NavDirections ->
             directions.actionId == R.id.action_favoritesFragment_to_detailFragment

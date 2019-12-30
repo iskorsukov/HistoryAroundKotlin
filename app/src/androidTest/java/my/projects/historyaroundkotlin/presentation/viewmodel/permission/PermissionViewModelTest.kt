@@ -39,7 +39,7 @@ class PermissionViewModelTest {
 
     @Before
     fun initViewModel() {
-        viewModel = PermissionViewModel(mockPermissionSource)
+        viewModel = Mockito.spy(PermissionViewModel(mockPermissionSource))
     }
 
     private fun getSamplePermissions(): List<String> {
@@ -111,6 +111,7 @@ class PermissionViewModelTest {
 
         val liveData = viewModel.viewActionLiveEvent
         viewModel.checkPermissions()
+        TimeUnit.SECONDS.sleep(2)
 
         val action = waitForValue(liveData)
         assertTrue(action is NavigateToMapAction)
@@ -151,7 +152,7 @@ class PermissionViewModelTest {
 
         viewModel.onRequestPermissionsResult(getSamplePermissions().toTypedArray(), intArrayOf(PackageManager.PERMISSION_GRANTED, PackageManager.PERMISSION_GRANTED), mockFragment)
 
-        Mockito.verify(mockPermissionSource).getNotGrantedPermissions()
+        Mockito.verify(viewModel).checkPermissions()
     }
 
     @Test

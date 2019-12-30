@@ -115,5 +115,4 @@ class FavoritesViewModelTest {
         assertTrue(action is NavigateToDetailsAction)
     }
 
-
 }
