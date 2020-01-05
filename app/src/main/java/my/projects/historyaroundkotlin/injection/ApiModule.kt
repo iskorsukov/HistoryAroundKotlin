@@ -15,16 +15,12 @@ class ApiModule {
 
     @Provides
     @BaseWikiUrlFormatString
-    fun providesBaseWikiUrlFormatString(): String = "https://%s.wikipedia.org/w/"
+    fun providesBaseWikiUrlFormatString(): String = "https://wikipedia.org/w/"
 
     @Provides
-    @LanguageString
-    fun providesLanguageString(): String = "ru"
-
-    @Provides
-    fun providesWikiApi(@BaseWikiUrlFormatString baseWikiUrlFormatString: String, @LanguageString language: String, client: OkHttpClient): WikiApi {
+    fun providesWikiApi(@BaseWikiUrlFormatString baseWikiUrlFormatString: String, client: OkHttpClient): WikiApi {
         val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(baseWikiUrlFormatString.format(language))
+            .baseUrl(baseWikiUrlFormatString)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client)
