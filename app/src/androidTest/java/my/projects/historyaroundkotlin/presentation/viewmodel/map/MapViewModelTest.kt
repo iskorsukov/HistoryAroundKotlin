@@ -39,7 +39,7 @@ class MapViewModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: MapFlowViewModel
+    private lateinit var viewModel: MapViewModel
 
     private val locationSource = Mockito.mock(LocationSource::class.java)
     private val wikiSource = Mockito.mock(WikiSource::class.java)
@@ -47,7 +47,7 @@ class MapViewModelTest {
 
     @Before
     fun setupViewModel() {
-        viewModel = Mockito.spy(MapFlowViewModel(locationSource, wikiSource, preferencesSource))
+        viewModel = Mockito.spy(MapViewModel(locationSource, wikiSource, preferencesSource))
     }
 
     private fun getSampleLocation(): Location {

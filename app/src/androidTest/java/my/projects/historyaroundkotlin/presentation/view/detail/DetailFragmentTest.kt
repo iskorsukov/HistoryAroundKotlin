@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.DrawerMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -17,9 +16,10 @@ import my.projects.historyaroundkotlin.model.detail.ArticleDetails
 import my.projects.historyaroundkotlin.presentation.view.base.BaseViewModelFragmentTest
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
+import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailViewState
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
-import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailViewModel
 import my.projects.historyaroundkotlin.utils.DrawableMatcherUtils
 import my.projects.historyaroundkotlin.utils.MockitoUtil
 import org.junit.Before
@@ -29,7 +29,7 @@ import org.mockito.Mockito
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailFlowViewModel>() {
+class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewModel>() {
 
     private val viewStateLiveData = MutableLiveData<DetailViewState>()
     private val viewActionLiveData = LiveEvent<ViewAction<*>>()
@@ -38,8 +38,8 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailFlowVi
         it.putString("pageid", "1")
     }
 
-    override fun getViewModelClass(): Class<out DetailFlowViewModel> {
-        return DetailFlowViewModel::class.java
+    override fun getViewModelClass(): Class<out DetailViewModel> {
+        return DetailViewModel::class.java
     }
 
     override fun getViewModelBindings(): TestViewModelBindings {
@@ -77,7 +77,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailFlowVi
     }
 
     private fun pushLoadingState() {
-        viewStateLiveData.postValue(DetailViewState(LCEState.LOADING, null, null))
+        viewStateLiveData.postValue(DetailViewState(LCEState.LOADING, DetailLoadingItem.LOADING_DETAILS, null, null))
     }
 
     private fun checkShowsLoadingState() {
@@ -95,7 +95,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailFlowVi
 
     private fun pushSampleData(item: ArticleDetails, isFavorite: Boolean) {
         val articleDetailsViewData = DetailViewData(item, isFavorite)
-        viewStateLiveData.postValue(DetailViewState(LCEState.CONTENT, articleDetailsViewData, null))
+        viewStateLiveData.postValue(DetailViewState(LCEState.CONTENT, null, articleDetailsViewData, null))
     }
 
     private fun checkShowsDetails(item: ArticleDetails, isFavorite: Boolean) {

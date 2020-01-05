@@ -14,6 +14,7 @@ import my.projects.historyaroundkotlin.presentation.view.base.BaseViewModelFragm
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewaction.NavigateToDetailsAction
+import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesViewState
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
 import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
@@ -81,7 +82,7 @@ class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, Favour
     }
 
     private fun pushLoadingState() {
-        viewStateLiveData.postValue(FavoritesViewState(LCEState.LOADING, null, null))
+        viewStateLiveData.postValue(FavoritesViewState(LCEState.LOADING, FavoritesLoadingItem.LOADING_FAVORITES, null, null))
     }
 
     private fun checkShowsLoadingState() {
@@ -97,7 +98,7 @@ class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, Favour
     }
 
     private fun pushSampleData() {
-        viewStateLiveData.postValue(FavoritesViewState(LCEState.CONTENT, FavoritesViewData(getSampleData()), null))
+        viewStateLiveData.postValue(FavoritesViewState(LCEState.CONTENT, null, FavoritesViewData(getSampleData()), null))
     }
 
     private fun checkShowsItems() {

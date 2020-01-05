@@ -4,5 +4,5 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCESta
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.ViewState
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
 
-class FavoritesViewState(lceState: LCEState, content: FavoritesViewData?, error: FavoritesErrorItem?): ViewState<FavoritesViewData, FavoritesErrorItem>(lceState, content, error) {
-}
+class FavoritesViewState(lceState: LCEState, loading: FavoritesLoadingItem?, content: FavoritesViewData?, error: FavoritesErrorItem?):
+    ViewState<FavoritesLoadingItem, FavoritesViewData, FavoritesErrorItem>(lceState, loading, content, error)

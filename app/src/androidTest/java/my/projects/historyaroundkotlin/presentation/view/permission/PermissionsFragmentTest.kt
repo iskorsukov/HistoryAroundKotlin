@@ -16,6 +16,7 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCESta
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.NavigateToMapAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
+import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionViewState
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionRationale
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionsViewData
@@ -68,6 +69,7 @@ class PermissionsFragmentTest: BaseViewModelFragmentTest<PermissionFragment, Per
         viewStateLiveData.postValue(
             PermissionViewState(
                 LCEState.CONTENT,
+                null,
                 PermissionsViewData(notGrantedPermissions),
                 null
             )
@@ -75,7 +77,7 @@ class PermissionsFragmentTest: BaseViewModelFragmentTest<PermissionFragment, Per
     }
 
     private fun pushLoadingState() {
-        viewStateLiveData.postValue(PermissionViewState(LCEState.LOADING, null, null))
+        viewStateLiveData.postValue(PermissionViewState(LCEState.LOADING, PermissionLoadingItem.PERMISSION_LOADING, null, null))
     }
 
     private fun pushNavigateToMapAction() {

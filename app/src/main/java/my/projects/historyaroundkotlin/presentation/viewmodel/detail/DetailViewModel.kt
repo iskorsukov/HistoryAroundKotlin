@@ -17,6 +17,7 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewac
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.OpenInMapAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.ViewInBrowserAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailErrorItem
+import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailViewState
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
 import my.projects.historyaroundkotlin.service.api.WikiSource
@@ -24,7 +25,7 @@ import my.projects.historyaroundkotlin.service.favorites.FavoritesSource
 import javax.inject.Inject
 
 @Mockable
-class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource, private val favoritesSource: FavoritesSource) : ViewModel() {
+class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, private val favoritesSource: FavoritesSource) : ViewModel() {
 
     private var detailsDisposable: Disposable? = null
 
@@ -34,7 +35,7 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
     fun loadArticleDetails(id: String) {
         detailsDisposable?.dispose()
 
-        (viewStateLiveData as MutableLiveData).value = DetailViewState(LCEState.LOADING, null, null)
+        (viewStateLiveData as MutableLiveData).value = DetailViewState(LCEState.LOADING, DetailLoadingItem.LOADING_DETAILS, null, null)
         detailsDisposable = wikiSource.loadArticleDetails(id)
             .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
                 DetailViewData(
@@ -48,6 +49,7 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
                 (viewStateLiveData as MutableLiveData).value =
                     DetailViewState(
                         LCEState.CONTENT,
+                        null,
                         viewData,
                         null
                     )
@@ -56,6 +58,7 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
                 (viewStateLiveData as MutableLiveData).value =
                     DetailViewState(
                         LCEState.ERROR,
+                        null,
                         null,
                         DetailErrorItem.ERROR
                     )
@@ -72,6 +75,7 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
                 (viewStateLiveData as MutableLiveData).value =
                     DetailViewState(
                         LCEState.CONTENT,
+                        null,
                         DetailViewData(
                             details,
                             true
@@ -93,6 +97,7 @@ class DetailFlowViewModel @Inject constructor(private val wikiSource: WikiSource
                 (viewStateLiveData as MutableLiveData).value =
                     DetailViewState(
                         LCEState.CONTENT,
+                        null,
                         DetailViewData(
                             details,
                             false

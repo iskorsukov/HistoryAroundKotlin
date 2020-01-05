@@ -7,17 +7,19 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import my.projects.historyaroundkotlin.R
+import my.projects.historyaroundkotlin.databinding.FragmentFavoritesBinding
 import my.projects.historyaroundkotlin.model.article.ArticleItem
 import my.projects.historyaroundkotlin.presentation.view.common.fragment.BaseLCEViewStateActionFragment
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.favorites.adapter.FavoritesAdapter
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewaction.NavigateToDetailsAction
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesErrorItem
+import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
 import my.projects.historyaroundkotlin.presentation.view.util.viewModelFactory
 import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
 
-class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesViewData, FavoritesErrorItem, FavouritesViewModel>() {
+class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, FavoritesViewData, FavoritesErrorItem, FavouritesViewModel, FragmentFavoritesBinding>() {
 
     override fun viewModelClass(): Class<FavouritesViewModel> {
         return FavouritesViewModel::class.java

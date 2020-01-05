@@ -12,7 +12,7 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCESta
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.OpenInMapAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.ViewInBrowserAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
-import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailViewModel
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.favorites.FavoritesSource
 import my.projects.historyaroundkotlin.utils.MockitoUtil
@@ -33,13 +33,13 @@ class DetailsViewModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: DetailFlowViewModel
+    private lateinit var viewModel: DetailViewModel
     private val wikiSource = Mockito.mock(WikiSource::class.java)
     private val favoritesSource = Mockito.mock(FavoritesSource::class.java)
 
     @Before
     fun initViewModel() {
-        viewModel = DetailFlowViewModel(wikiSource, favoritesSource)
+        viewModel = DetailViewModel(wikiSource, favoritesSource)
     }
 
     private fun getSampleData(): DetailViewData {
