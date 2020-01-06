@@ -11,9 +11,10 @@ data class ArticleDetails(val pageid: Long,
                           val extract: String,
                           val thumbnail: ArticleThumbnail?,
                           val coordinates: Pair<Double, Double>,
-                          val url: String
+                          val url: String,
+                          val languageCode: String
 ): Serializable
 
 fun ArticleDetails.toArticleItem(): ArticleItem {
-    return ArticleItem(pageid.toString(), title, extract, coordinates, thumbnail)
+    return ArticleItem(pageid.toString(), title, extract, coordinates, thumbnail, languageCode)
 }

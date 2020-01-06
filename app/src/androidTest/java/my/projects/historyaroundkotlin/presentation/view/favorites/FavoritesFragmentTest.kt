@@ -47,14 +47,16 @@ class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, Favour
             "First",
             "First description",
             1.0 to 1.0,
-            null
+            null,
+            "en"
         )
         val secondItem = ArticleItem(
             "2",
             "Second",
             "Second description",
             1.0 to 1.0,
-            null
+            null,
+            "en"
         )
         return listOf(firstItem, secondItem)
     }

@@ -52,7 +52,7 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
     }
 
     private fun loadDetails() {
-        viewModel.loadArticleDetails(args.pageid)
+        viewModel.loadArticleDetails(args.pageid, args.languageCode)
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {

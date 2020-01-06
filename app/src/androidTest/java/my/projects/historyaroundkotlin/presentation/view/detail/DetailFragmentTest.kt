@@ -36,6 +36,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
 
     private val args: Bundle = Bundle().also {
         it.putString("pageid", "1")
+        it.putString("languageCode", "en")
     }
 
     override fun getViewModelClass(): Class<out DetailViewModel> {
@@ -50,7 +51,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
     fun setupMockViewModel() {
         Mockito.`when`(mockViewModel.viewStateLiveData).thenReturn(viewStateLiveData)
         Mockito.`when`(mockViewModel.viewActionLiveData).thenReturn(viewActionLiveData)
-        Mockito.doNothing().`when`(mockViewModel).loadArticleDetails(MockitoUtil.any())
+        Mockito.doNothing().`when`(mockViewModel).loadArticleDetails(MockitoUtil.any(), MockitoUtil.any())
     }
 
     @Test
@@ -65,7 +66,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
     fun callsViewModelToLoadDetails() {
         launchFragment(DetailFragment::class.java, args)
 
-        Mockito.verify(mockViewModel).loadArticleDetails(args.getString("pageid")!!)
+        Mockito.verify(mockViewModel).loadArticleDetails(args.getString("pageid")!!, args.getString("languageCode")!!)
     }
 
     @Test
@@ -86,7 +87,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
 
     @Test
     fun showsDetails() {
-        val item = ArticleDetails(1L, "Sample", "Sample extract", null, 1.0 to 1.0, "https://url.com")
+        val item = ArticleDetails(1L, "Sample", "Sample extract", null, 1.0 to 1.0, "https://url.com", "en")
         pushSampleData(item, false)
         launchFragment(DetailFragment::class.java, args)
 
@@ -118,7 +119,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
 
     @Test
     fun clickOnFavoritesButtonCallsViewModel_favorite() {
-        val item = ArticleDetails(1L, "Sample", "Sample extract", null, 1.0 to 1.0, "https://url.com")
+        val item = ArticleDetails(1L, "Sample", "Sample extract", null, 1.0 to 1.0, "https://url.com", "en")
         pushSampleData(item, true)
         launchFragment(DetailFragment::class.java, args)
 
@@ -129,7 +130,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
 
     @Test
     fun clickOnFavoritesButtonCallsViewModel_notFavorite() {
-        val item = ArticleDetails(1L, "Sample", "Sample extract", null, 1.0 to 1.0, "https://url.com")
+        val item = ArticleDetails(1L, "Sample", "Sample extract", null, 1.0 to 1.0, "https://url.com", "en")
         pushSampleData(item, false)
         launchFragment(DetailFragment::class.java, args)
 

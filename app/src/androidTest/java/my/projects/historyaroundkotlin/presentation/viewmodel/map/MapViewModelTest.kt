@@ -10,6 +10,7 @@ import io.reactivex.Single
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import my.projects.historyaroundkotlin.model.article.ArticleItem
+import my.projects.historyaroundkotlin.model.preferences.PreferencesBundle
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.CenterOnLocationAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.NavigateToDetailsAction
@@ -57,8 +58,8 @@ class MapViewModelTest {
         }
     }
 
-    private fun getSampleRadius(): Int {
-        return 500
+    private fun getSamplePreferences(): PreferencesBundle {
+        return PreferencesBundle(500, "en")
     }
 
     private fun getSampleArticles(): List<ArticleItem> {
@@ -67,14 +68,16 @@ class MapViewModelTest {
             "First",
             "First description",
             1.0 to 1.0,
-            null
+            null,
+            "en"
         )
         val second = ArticleItem(
             "1",
             "Second",
             "Second description",
             100.0 to 100.0,
-            null
+            null,
+            "en"
         )
         return listOf(first, second)
     }
@@ -85,11 +88,11 @@ class MapViewModelTest {
 
     @Before
     fun setupMocks() {
-        Mockito.`when`(preferencesSource.getRadiusPreference()).thenReturn(Observable.just(getSampleRadius()))
+        Mockito.`when`(preferencesSource.getPreferences()).thenReturn(Observable.just(getSamplePreferences()))
         Mockito.`when`(locationSource.checkLocationServicesAvailability()).thenReturn(Completable.complete())
         Mockito.`when`(locationSource.getLocationUpdatesObservable()).thenReturn(Observable.never())
         Mockito.`when`(locationSource.getLastKnownLocation()).thenReturn(Maybe.just(getSampleLocation()))
-        Mockito.`when`(wikiSource.loadArticleItems(MockitoUtil.any(), ArgumentMatchers.anyInt())).thenReturn(Single.just(getSampleArticles()))
+        Mockito.`when`(wikiSource.loadArticleItems(MockitoUtil.any(), MockitoUtil.any(), ArgumentMatchers.anyInt())).thenReturn(Single.just(getSampleArticles()))
     }
 
     private fun pushDelayData() {
@@ -105,7 +108,7 @@ class MapViewModelTest {
     }
 
     private fun pushArticlesErrorData() {
-        Mockito.`when`(wikiSource.loadArticleItems(MockitoUtil.any(), ArgumentMatchers.anyInt())).thenReturn(Single.error(IOException()))
+        Mockito.`when`(wikiSource.loadArticleItems(MockitoUtil.any(), MockitoUtil.any(), ArgumentMatchers.anyInt())).thenReturn(Single.error(IOException()))
     }
 
     @Test
@@ -122,7 +125,7 @@ class MapViewModelTest {
         val liveData = viewModel.mapDataLiveData
         TimeUnit.SECONDS.sleep(2)
 
-        Mockito.verify(wikiSource).loadArticleItems(MockitoUtil.any(), ArgumentMatchers.anyInt())
+        Mockito.verify(wikiSource).loadArticleItems(MockitoUtil.any(), MockitoUtil.any(), ArgumentMatchers.anyInt())
     }
 
     @Test
@@ -178,8 +181,8 @@ class MapViewModelTest {
 
         Mockito.verify(locationSource).checkLocationServicesAvailability()
         Mockito.verify(locationSource).getLastKnownLocation()
-        Mockito.verify(preferencesSource).getRadiusPreference()
-        Mockito.verify(wikiSource).loadArticleItems(MockitoUtil.any(), ArgumentMatchers.anyInt())
+        Mockito.verify(preferencesSource).getPreferences()
+        Mockito.verify(wikiSource).loadArticleItems(MockitoUtil.any(), MockitoUtil.any(), ArgumentMatchers.anyInt())
     }
 
     @Test

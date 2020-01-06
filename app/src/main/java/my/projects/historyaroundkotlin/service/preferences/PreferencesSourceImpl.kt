@@ -1,14 +1,10 @@
 package my.projects.historyaroundkotlin.service.preferences
 
 import android.content.Context
-import android.util.Log
 import androidx.preference.PreferenceManager
-import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.rxkotlin.withLatestFrom
-import io.reactivex.rxkotlin.zipWith
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.MaybeSubject
 import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.model.preferences.PreferencesBundle
 import javax.inject.Inject
@@ -36,9 +32,9 @@ class PreferencesSourceImpl @Inject constructor(private val context: Context): P
     }
 
     override fun getPreferences(): Observable<PreferencesBundle> {
-        return radiusSubject.withLatestFrom(languageCodeSubject) { radius: Int, languageCode: String ->
+        return Observable.combineLatest(radiusSubject, languageCodeSubject, BiFunction {radius: Int, languageCode: String ->
             PreferencesBundle(radius, if (languageCode.isEmpty()) null else languageCode)
-        }
+        })
     }
 
     override fun pushRadiusValueChanged(radius: Int) {

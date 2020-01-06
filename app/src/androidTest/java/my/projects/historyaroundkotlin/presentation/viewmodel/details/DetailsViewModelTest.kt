@@ -3,11 +3,13 @@ package my.projects.historyaroundkotlin.presentation.viewmodel.details
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import my.projects.historyaroundkotlin.model.detail.ArticleDetails
 import my.projects.historyaroundkotlin.model.detail.toArticleItem
+import my.projects.historyaroundkotlin.model.preferences.PreferencesBundle
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.OpenInMapAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.ViewInBrowserAction
@@ -15,6 +17,7 @@ import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewda
 import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailViewModel
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.favorites.FavoritesSource
+import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
 import my.projects.historyaroundkotlin.utils.MockitoUtil
 import my.projects.historyaroundkotlin.utils.waitForValue
 import org.junit.Before
@@ -36,10 +39,17 @@ class DetailsViewModelTest {
     private lateinit var viewModel: DetailViewModel
     private val wikiSource = Mockito.mock(WikiSource::class.java)
     private val favoritesSource = Mockito.mock(FavoritesSource::class.java)
+    private val preferencesSource = Mockito.mock(PreferencesSource::class.java).also {
+        Mockito.`when`(it.getPreferences()).thenReturn(Observable.just(getSamplePrefs()))
+    }
 
     @Before
     fun initViewModel() {
-        viewModel = DetailViewModel(wikiSource, favoritesSource)
+        viewModel = DetailViewModel(wikiSource, favoritesSource, preferencesSource)
+    }
+
+    private fun getSamplePrefs(): PreferencesBundle {
+        return PreferencesBundle(500, "en")
     }
 
     private fun getSampleData(): DetailViewData {
@@ -49,13 +59,14 @@ class DetailsViewModelTest {
             "Sample extract",
             null,
             1.0 to 1.0,
-            "https://url.com"
+            "https://url.com",
+            "en"
         )
         return DetailViewData(item, false)
     }
 
     private fun pushSampleData() {
-        Mockito.`when`(wikiSource.loadArticleDetails(ArgumentMatchers.anyString())).thenReturn(Single.just(getSampleData().item))
+        Mockito.`when`(wikiSource.loadArticleDetails(MockitoUtil.any(), ArgumentMatchers.anyString())).thenReturn(Single.just(getSampleData().item))
         Mockito.`when`(favoritesSource.isFavorite(ArgumentMatchers.anyString())).thenReturn(Single.just(getSampleData().isFavorite))
     }
 
@@ -63,14 +74,14 @@ class DetailsViewModelTest {
     fun callsSourceWhenLoadingDetails() {
         pushSampleData()
 
-        viewModel.loadArticleDetails("1")
+        viewModel.loadArticleDetails("1", "en")
 
-        Mockito.verify(wikiSource).loadArticleDetails("1")
+        Mockito.verify(wikiSource).loadArticleDetails("en", "1")
         Mockito.verify(favoritesSource).isFavorite("1")
     }
 
     private fun pushDelayData() {
-        Mockito.`when`(wikiSource.loadArticleDetails(ArgumentMatchers.anyString())).thenReturn(Single.never())
+        Mockito.`when`(wikiSource.loadArticleDetails(MockitoUtil.any(), ArgumentMatchers.anyString())).thenReturn(Single.never())
         Mockito.`when`(favoritesSource.isFavorite(ArgumentMatchers.anyString())).thenReturn(Single.just(false))
     }
 
@@ -79,7 +90,7 @@ class DetailsViewModelTest {
         pushDelayData()
 
         val liveData = viewModel.viewStateLiveData
-        viewModel.loadArticleDetails("1")
+        viewModel.loadArticleDetails("1", "en")
 
         assertEquals(LCEState.LOADING, waitForValue(liveData).lceState)
     }
@@ -89,7 +100,7 @@ class DetailsViewModelTest {
         pushSampleData()
 
         val liveData = viewModel.viewStateLiveData
-        viewModel.loadArticleDetails("1")
+        viewModel.loadArticleDetails("1", "en")
         TimeUnit.SECONDS.sleep(2)
 
         val viewState = liveData.value!!
@@ -98,7 +109,7 @@ class DetailsViewModelTest {
     }
 
     private fun pushErrorData() {
-        Mockito.`when`(wikiSource.loadArticleDetails(ArgumentMatchers.anyString())).thenReturn(Single.error(IOException()))
+        Mockito.`when`(wikiSource.loadArticleDetails(MockitoUtil.any(), ArgumentMatchers.anyString())).thenReturn(Single.error(IOException()))
         Mockito.`when`(favoritesSource.isFavorite(ArgumentMatchers.anyString())).thenReturn(Single.just(false))
     }
 
@@ -107,7 +118,7 @@ class DetailsViewModelTest {
         pushErrorData()
 
         val liveData = viewModel.viewStateLiveData
-        viewModel.loadArticleDetails("1")
+        viewModel.loadArticleDetails("1", "en")
         TimeUnit.SECONDS.sleep(2)
 
         val viewState = liveData.value!!

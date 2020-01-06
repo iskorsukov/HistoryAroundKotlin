@@ -7,5 +7,6 @@ data class ArticleItem(val pageid: String,
                        val title: String,
                        val description: String,
                        val latlng: Pair<Double, Double>,
-                       val thumbnail: ArticleThumbnail?
+                       val thumbnail: ArticleThumbnail?,
+                       val languageCode: String
 ): Serializable

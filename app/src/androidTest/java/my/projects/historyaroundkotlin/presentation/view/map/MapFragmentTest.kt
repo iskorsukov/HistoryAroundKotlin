@@ -59,7 +59,8 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapViewModel>() {
             "First",
             "First description",
             55.790897 to 37.681685,
-            null
+            null,
+            "en"
         )
         val firstViewData = ArticleItemViewData(firstArticle, false)
 
@@ -68,7 +69,8 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapViewModel>() {
             "Second",
             "Second description",
             55.788912 to 37.681103,
-            null
+            null,
+            "en"
         )
         val secondViewData = ArticleItemViewData(secondArticle, false)
 

@@ -60,7 +60,8 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
     private fun navigateToDetails(articleItem: ArticleItem) {
         navController().navigate(
             FavoritesFragmentDirections.actionFavoritesFragmentToDetailFragment(
-                articleItem.pageid
+                articleItem.pageid,
+                articleItem.languageCode
             )
         )
     }

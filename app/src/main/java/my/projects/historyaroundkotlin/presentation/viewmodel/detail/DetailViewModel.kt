@@ -33,20 +33,17 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
     val viewStateLiveData: LiveData<DetailViewState> = MutableLiveData<DetailViewState>()
     val viewActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
-    fun loadArticleDetails(id: String) {
+    fun loadArticleDetails(id: String, languageCode: String) {
         detailsDisposable?.dispose()
 
         (viewStateLiveData as MutableLiveData).value = DetailViewState(LCEState.LOADING, DetailLoadingItem.LOADING_DETAILS, null, null)
         detailsDisposable =
-            preferencesSource.getPreferences()
-                .flatMapSingle {
-                    wikiSource.loadArticleDetails(it.languageCode, id)
-                        .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
-                            DetailViewData(
-                                details,
-                                isFavorite
-                            )
-                        }
+            wikiSource.loadArticleDetails(languageCode, id)
+                .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
+                    DetailViewData(
+                        details,
+                        isFavorite
+                    )
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

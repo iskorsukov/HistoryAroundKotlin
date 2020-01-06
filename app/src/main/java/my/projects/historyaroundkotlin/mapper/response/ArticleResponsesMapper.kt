@@ -16,7 +16,7 @@ class ArticleResponsesMapper @Inject constructor() {
         return GeoItem(geoItemResponse.pageid)
     }
 
-    fun mapArticleResponse(articleResponse: ArticleItemResponse): ArticleItem {
+    fun mapArticleResponse(articleResponse: ArticleItemResponse, languageCode: String): ArticleItem {
         return ArticleItem(
             articleResponse.pageid.toString(),
             articleResponse.title,
@@ -24,11 +24,12 @@ class ArticleResponsesMapper @Inject constructor() {
             articleResponse.coordinates!![0].lat to articleResponse.coordinates!![0].lon,
             articleResponse.thumbnail?.run {
                 mapThumbnailResponse(this)
-            }
+            },
+            languageCode
         )
     }
 
-    fun mapArticleDetailsResponse(articleDetailsResponse: DetailItemResponse): ArticleDetails {
+    fun mapArticleDetailsResponse(articleDetailsResponse: DetailItemResponse, languageCode: String): ArticleDetails {
         return ArticleDetails(
             articleDetailsResponse.pageid,
             articleDetailsResponse.title,
@@ -37,7 +38,8 @@ class ArticleResponsesMapper @Inject constructor() {
                 mapThumbnailResponse(this)
             },
             articleDetailsResponse.coordinates!![0].lat to articleDetailsResponse.coordinates!![0].lon,
-            articleDetailsResponse.fullurl
+            articleDetailsResponse.fullurl,
+            languageCode
         )
     }
 

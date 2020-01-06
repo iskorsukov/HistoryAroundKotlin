@@ -123,7 +123,8 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     private fun navigateToItemDetails(articleItem: ArticleItem) {
         navController().navigate(
             MapFragmentDirections.actionMapFragmentToDetailFragment(
-                articleItem.pageid
+                articleItem.pageid,
+                articleItem.languageCode
             )
         )
     }

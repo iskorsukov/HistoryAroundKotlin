@@ -13,6 +13,7 @@ class WikiSourceImpl @Inject constructor (
     private val api: WikiApi,
     private val mapper: ArticleResponsesMapper
 ): WikiSource {
+
     override fun loadArticleItems(languageCode: String?, latlng: Pair<Double, Double>, radius: Int): Single<List<ArticleItem>> {
         return api.loadGeoData(languageCode, radius, latlng.first.toString() + "|" + latlng.second.toString())
             .flatMap { geoResponse ->
@@ -21,7 +22,7 @@ class WikiSourceImpl @Inject constructor (
                     api.loadArticlesData(languageCode, pageIdsString)
             }
             .map {
-                it.query.pages.filter { responseEntry -> responseEntry.value.coordinates != null }.map { responseEntry -> mapper.mapArticleResponse(responseEntry.value) }
+                it.query?.pages?.filter { responseEntry -> responseEntry.value.coordinates != null }?.map { responseEntry -> mapper.mapArticleResponse(responseEntry.value, languageCode ?: "") } ?: emptyList()
             }
             .retry(3)
     }
@@ -29,7 +30,7 @@ class WikiSourceImpl @Inject constructor (
     override fun loadArticleDetails(languageCode: String?, pageid: String): Single<ArticleDetails> {
         return api.loadDetailsData(languageCode, pageid)
             .flatMap {
-                Single.just(it.query.pages.map { responseEntry -> mapper.mapArticleDetailsResponse(responseEntry.value) }.first())
+                Single.just(it.query.pages.map { responseEntry -> mapper.mapArticleDetailsResponse(responseEntry.value, languageCode ?: "") }.first())
             }
             .retry(3)
     }

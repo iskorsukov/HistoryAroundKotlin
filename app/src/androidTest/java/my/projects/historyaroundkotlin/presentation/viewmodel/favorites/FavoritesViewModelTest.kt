@@ -40,14 +40,16 @@ class FavoritesViewModelTest {
             "First",
             "First description",
             1.0 to 1.0,
-            null
+            null,
+            "en"
         )
         val second = ArticleItem(
             "1",
             "Second",
             "Second description",
             1.0 to 1.0,
-            null
+            null,
+            "en"
         )
         return listOf(first, second)
     }
