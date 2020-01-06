@@ -5,6 +5,6 @@ import my.projects.historyaroundkotlin.model.article.ArticleItem
 import my.projects.historyaroundkotlin.model.detail.ArticleDetails
 
 interface WikiSource {
-    fun loadArticleItems(latlng: Pair<Double, Double>, radius: Int): Single<List<ArticleItem>>
-    fun loadArticleDetails(pageid: String): Single<ArticleDetails>
+    fun loadArticleItems(languageCode: String?, latlng: Pair<Double, Double>, radius: Int): Single<List<ArticleItem>>
+    fun loadArticleDetails(languageCode: String?, pageid: String): Single<ArticleDetails>
 }

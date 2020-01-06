@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState" />
+        <import type="android.view.View" />
+        <variable
+            name="lceState"
+            type="my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState" />
+    </data>
     <FrameLayout
-        android:id="@+id/content"
-
-        android:visibility="gone"
-
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/loading"
+        <FrameLayout
+            android:id="@+id/content"
+            android:visibility="@{lceState == LCEState.CONTENT ? View.VISIBLE : View.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        android:visibility="gone"
+        <FrameLayout
+            android:id="@+id/loading"
+            android:visibility="@{lceState == LCEState.LOADING ? View.VISIBLE : View.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <FrameLayout
+            android:id="@+id/error"
+            android:visibility="@{lceState == LCEState.ERROR ? View.VISIBLE : View.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:id="@+id/error"
-
-        android:visibility="gone"
-
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</FrameLayout>
+    </FrameLayout>
+</layout>

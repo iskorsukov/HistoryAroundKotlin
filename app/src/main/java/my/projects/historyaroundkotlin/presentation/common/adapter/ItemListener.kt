@@ -1,3 +1,0 @@
-package my.projects.historyaroundkotlin.presentation.common.adapter
-
-interface ItemListener

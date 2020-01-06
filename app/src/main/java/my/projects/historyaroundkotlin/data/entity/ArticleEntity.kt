@@ -11,5 +11,6 @@ data class ArticleEntity(
     val description: String,
     val lat: Double,
     val lon: Double,
-    @Embedded val thumbnail: ArticleThumbnailEntity?
+    @Embedded val thumbnail: ArticleThumbnailEntity?,
+    val languageCode: String
 )

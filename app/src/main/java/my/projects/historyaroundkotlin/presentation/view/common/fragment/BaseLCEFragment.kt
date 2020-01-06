@@ -5,16 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import kotlinx.android.synthetic.main.fragment_base_lce.view.*
 import my.projects.historyaroundkotlin.HistoryAroundApp
 import my.projects.historyaroundkotlin.R
+import my.projects.historyaroundkotlin.databinding.FragmentBaseLceBinding
 import my.projects.historyaroundkotlin.service.navigation.NavControllerSource
 
-abstract class BaseLCEFragment: Fragment() {
+abstract class BaseLCEFragment<LB: ViewDataBinding, CB: ViewDataBinding, EB: ViewDataBinding>: Fragment() {
 
     private lateinit var navControllerSource: NavControllerSource
+
+    protected lateinit var baseBinding: FragmentBaseLceBinding
+    protected lateinit var loadingBinding: LB
+    protected lateinit var contentBinding: CB
+    protected lateinit var errorBinding: EB
 
     protected fun navController(): NavController {
         return navControllerSource.navController(this)
@@ -34,16 +42,19 @@ abstract class BaseLCEFragment: Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val baseView = inflater.inflate(R.layout.fragment_base_lce, container, false)
-        inflateLCEParts(baseView, inflater)
-        return baseView
+        baseBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_base_lce, container, false)
+        inflateLCEParts(baseBinding.root, inflater)
+        return baseBinding.root
     }
 
     private fun inflateLCEParts(baseView: View, inflater: LayoutInflater) {
         baseView.apply {
-            content.addView(inflater.inflate(contentLayout(), content, false))
-            error.addView(inflater.inflate(errorLayout(), error, false))
-            loading.addView(inflater.inflate(loadingLayout(), loading, false))
+            contentBinding = DataBindingUtil.inflate(inflater, contentLayout(), content, false)
+            content.addView(contentBinding.root)
+            errorBinding = DataBindingUtil.inflate(inflater, errorLayout(), error, false)
+            error.addView(errorBinding.root)
+            loadingBinding = DataBindingUtil.inflate(inflater, loadingLayout(), loading, false)
+            loading.addView(loadingBinding.root)
         }
     }
 

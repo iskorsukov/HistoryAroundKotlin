@@ -4,11 +4,10 @@ import androidx.lifecycle.ViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailViewModel
 import my.projects.historyaroundkotlin.presentation.viewmodel.favourites.FavouritesViewModel
-import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapViewModel
 import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
-import javax.inject.Singleton
 
 @Module
 abstract class ViewModelBindings {
@@ -20,13 +19,13 @@ abstract class ViewModelBindings {
 
     @Binds
     @IntoMap
-    @ViewModelKey(MapFlowViewModel::class)
-    abstract fun bindMapViewModel(myViewModel: MapFlowViewModel): ViewModel
+    @ViewModelKey(MapViewModel::class)
+    abstract fun bindMapViewModel(myViewModel: MapViewModel): ViewModel
 
     @Binds
     @IntoMap
-    @ViewModelKey(DetailFlowViewModel::class)
-    abstract fun bindDetailsViewModel(myViewModel: DetailFlowViewModel): ViewModel
+    @ViewModelKey(DetailViewModel::class)
+    abstract fun bindDetailsViewModel(myViewModel: DetailViewModel): ViewModel
 
     @Binds
     @IntoMap

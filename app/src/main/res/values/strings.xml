@@ -68,9 +68,15 @@
     <string name="menu_favorites">Favorites</string>
 
     <!-- Preferences -->
+    <!-- Radius -->
     <string name="prefs_radius_title">Radius in meters</string>
     <string name="prefs_radius_key">pref_radius</string>
     <string name="prefs_radius_default_value">250</string>
+    <!-- Language -->
+    <string name="prefs_lang_code_title">Articles language</string>
+    <string name="prefs_lang_code_key">pref_lang_code</string>
+    <string name="prefs_lang_code_default_value"></string>
+    <string name="prefs_lang_code_default_summary">Default</string>
 
     <!-- Loading favorites -->
     <string name="loading_favorites_label">Loading your favorite items</string>

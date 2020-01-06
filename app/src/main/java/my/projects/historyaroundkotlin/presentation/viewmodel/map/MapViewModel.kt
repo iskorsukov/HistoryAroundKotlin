@@ -13,6 +13,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import my.projects.historyaroundkotlin.mock.Mockable
 import my.projects.historyaroundkotlin.model.article.ArticleItem
+import my.projects.historyaroundkotlin.model.preferences.PreferencesBundle
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.map.adapter.ArticleListItemListener
@@ -21,6 +22,7 @@ import my.projects.historyaroundkotlin.presentation.view.map.viewaction.CenterOn
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.NavigateToDetailsAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.ShowArticleSelectorAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapErrorItem
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapViewState
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticlesClusterItem
@@ -32,12 +34,11 @@ import my.projects.historyaroundkotlin.presentation.viewmodel.map.throwable.Loca
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.location.LocationSource
 import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Mockable
-class MapFlowViewModel @Inject constructor(
+class MapViewModel @Inject constructor(
     private val locationSource: LocationSource,
     private val wikiSource: WikiSource,
     private val preferencesSource: PreferencesSource
@@ -53,7 +54,7 @@ class MapFlowViewModel @Inject constructor(
 
     val mapDataLiveData: LiveData<MapViewState> by lazy {
         MutableLiveData<MapViewState>().also {
-            it.value = MapViewState(LCEState.LOADING, null, null)
+            it.value = MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null)
             loadArticles()
         }
     }
@@ -106,15 +107,16 @@ class MapFlowViewModel @Inject constructor(
     }
 
     private fun loadArticles(location: Location): Observable<List<ArticleItem>> {
-        return preferencesSource.getRadiusPreference().flatMapSingle {
+        return preferencesSource.getPreferences().flatMapSingle {
             loadArticleItems(location, it)
         }.onErrorResumeNext { throwable: Throwable ->
+            throwable.printStackTrace()
             Observable.error<List<ArticleItem>>(ArticlesErrorThrowable())
         }
     }
 
-    private fun loadArticleItems(location: Location, radius: Int): Single<List<ArticleItem>> {
-        return wikiSource.loadArticleItems(Pair(location.latitude, location.longitude), radius)
+    private fun loadArticleItems(location: Location, preferences: PreferencesBundle): Single<List<ArticleItem>> {
+        return wikiSource.loadArticleItems(preferences.languageCode, Pair(location.latitude, location.longitude), preferences.radius)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -128,6 +130,7 @@ class MapFlowViewModel @Inject constructor(
                     MapViewState(
                         LCEState.ERROR,
                         null,
+                        null,
                         MapErrorItem.LOCATION_SERVICES_ERROR
                     )
             is LocationErrorThrowable ->
@@ -135,12 +138,14 @@ class MapFlowViewModel @Inject constructor(
                     MapViewState(
                         LCEState.ERROR,
                         null,
+                        null,
                         MapErrorItem.LOCATION_ERROR
                     )
             else ->
                 (mapDataLiveData as MutableLiveData).value =
                     MapViewState(
                         LCEState.ERROR,
+                        null,
                         null,
                         MapErrorItem.ARTICLES_ERROR
                     )
@@ -152,6 +157,7 @@ class MapFlowViewModel @Inject constructor(
         (mapDataLiveData as MutableLiveData).value =
             MapViewState(
                 LCEState.CONTENT,
+                null,
                 MapViewData(
                     location.latitude to location.longitude,
                     groupItemsIntoMarkers(
@@ -200,6 +206,7 @@ class MapFlowViewModel @Inject constructor(
             (mapDataLiveData as MutableLiveData).value =
                 MapViewState(
                     LCEState.CONTENT,
+                    null,
                     MapViewData(
                         location,
                         groupItemsIntoMarkers(
@@ -214,7 +221,7 @@ class MapFlowViewModel @Inject constructor(
     }
 
     fun onRefresh() {
-        (mapDataLiveData as MutableLiveData).value = MapViewState(LCEState.LOADING, null, null)
+        (mapDataLiveData as MutableLiveData).value = MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null)
         loadArticles()
     }
 

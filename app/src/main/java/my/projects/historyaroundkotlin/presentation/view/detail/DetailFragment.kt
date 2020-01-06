@@ -11,20 +11,22 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
 import my.projects.historyaroundkotlin.R
+import my.projects.historyaroundkotlin.databinding.FragmentDetailBinding
 import my.projects.historyaroundkotlin.presentation.view.common.fragment.BaseLCEViewStateActionFragment
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.OpenInMapAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewaction.ViewInBrowserAction
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailErrorItem
+import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.DetailLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
-import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.detail.DetailViewModel
 
-class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErrorItem, DetailFlowViewModel>() {
+class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailViewData, DetailErrorItem, DetailViewModel, FragmentDetailBinding>() {
 
     private val args: DetailFragmentArgs by navArgs()
 
-    override fun viewModelClass(): Class<DetailFlowViewModel> {
-        return DetailFlowViewModel::class.java
+    override fun viewModelClass(): Class<DetailViewModel> {
+        return DetailViewModel::class.java
     }
 
     override fun contentLayout(): Int {
@@ -50,7 +52,7 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
     }
 
     private fun loadDetails() {
-        viewModel.loadArticleDetails(args.pageid)
+        viewModel.loadArticleDetails(args.pageid, args.languageCode)
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
@@ -76,10 +78,8 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
     }
 
     override fun showContent(content: DetailViewData) {
+        contentBinding.viewData = content
         content.apply {
-            articleDetailsTitle.text = item.title
-            articleDetailsExtract.text = item.extract
-            Glide.with(this@DetailFragment).load(item.thumbnail?.url).into(articleDetailsImage)
             openInWikiButton.setOnClickListener {
                 viewModel.onViewInBrowserButtonClicked(item.url)
             }
@@ -98,6 +98,6 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailViewData, DetailErro
     }
 
     private fun getDrawable(id: Int): Drawable {
-        return context!!.resources.getDrawable(id)
+        return context!!.resources.getDrawable(id, context!!.theme)
     }
 }

@@ -8,4 +8,11 @@
         android:entries="@array/radius_string_values"
         android:defaultValue="@string/prefs_radius_default_value"  />
 
+    <ListPreference
+        android:title="@string/prefs_lang_code_title"
+        android:key="@string/prefs_lang_code_key"
+        android:entryValues="@array/language_codes"
+        android:entries="@array/language_names"
+        android:defaultValue="@string/prefs_lang_code_default_value" />
+
 </PreferenceScreen>

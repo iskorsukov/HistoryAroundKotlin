@@ -1,11 +1,12 @@
 package my.projects.historyaroundkotlin.presentation.view.map.adapter
 
-import android.view.View
 import my.projects.historyaroundkotlin.R
-import my.projects.historyaroundkotlin.presentation.common.adapter.BindRecyclerViewAdapter
+import my.projects.historyaroundkotlin.databinding.HolderArticleListItemBinding
+import my.projects.historyaroundkotlin.presentation.view.common.adapter.BindRecyclerViewAdapter
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 
-class ArticleListAdapter(items: List<ArticleItemViewData>, listener: ArticleListItemListener): BindRecyclerViewAdapter<ArticleItemViewData, ArticleListItemListener, ArticleListItemHolder>(items, listener) {
+class ArticleListAdapter(items: List<ArticleItemViewData>, listener: ArticleListItemListener):
+    BindRecyclerViewAdapter<ArticleItemViewData, HolderArticleListItemBinding, ArticleListItemListener, ArticleListItemHolder>(items, listener) {
 
     init {
         setHasStableIds(true)
@@ -15,8 +16,8 @@ class ArticleListAdapter(items: List<ArticleItemViewData>, listener: ArticleList
         return R.layout.holder_article_list_item
     }
 
-    override fun getViewHolder(view: View): ArticleListItemHolder {
-        return ArticleListItemHolder(view, listener)
+    override fun getViewHolder(dataBinding: HolderArticleListItemBinding): ArticleListItemHolder {
+        return ArticleListItemHolder(dataBinding, listener)
     }
 
     override fun getItemId(position: Int): Long {

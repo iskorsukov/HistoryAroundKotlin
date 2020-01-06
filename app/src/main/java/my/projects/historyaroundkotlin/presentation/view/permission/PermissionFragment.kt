@@ -6,22 +6,23 @@ import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_permission.*
 import my.projects.historyaroundkotlin.R
+import my.projects.historyaroundkotlin.databinding.FragmentPermissionBinding
 import my.projects.historyaroundkotlin.mock.Mockable
-import my.projects.historyaroundkotlin.presentation.common.adapter.ItemListener
+import my.projects.historyaroundkotlin.presentation.view.common.adapter.ItemListener
 import my.projects.historyaroundkotlin.presentation.view.common.fragment.BaseLCEViewStateActionFragment
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.permission.adapter.PermissionsAdapter
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.NavigateToMapAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionErrorItem
+import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionsViewData
 import my.projects.historyaroundkotlin.presentation.viewmodel.permission.PermissionViewModel
 
 @Mockable
-class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, PermissionErrorItem, PermissionViewModel>(), ItemListener {
+class PermissionFragment : BaseLCEViewStateActionFragment<PermissionLoadingItem, PermissionsViewData, PermissionErrorItem, PermissionViewModel, FragmentPermissionBinding>(), ItemListener {
 
     override fun viewModelClass(): Class<PermissionViewModel> {
         return PermissionViewModel::class.java
@@ -29,19 +30,8 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configureRecyclerView()
-        initGrantPermissionsButton()
-
         initViewModel()
         observeViewState()
-    }
-
-    private fun configureRecyclerView() {
-        permissionsRecyclerView.layoutManager = LinearLayoutManager(context)
-    }
-
-    private fun initGrantPermissionsButton() {
-        grantPermissionsButton.setOnClickListener { requestMissingPermissions() }
     }
 
     private fun observeViewState() {
@@ -53,7 +43,7 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, P
         })
     }
 
-    private fun requestMissingPermissions() {
+    fun requestMissingPermissions() {
         viewModel.requestPermissions(this)
     }
 
@@ -83,6 +73,7 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionsViewData, P
     }
 
     override fun showContent(content: PermissionsViewData) {
+        contentBinding.fragment = this
         permissionsRecyclerView.adapter =
             PermissionsAdapter(
                 content.rationaleList,

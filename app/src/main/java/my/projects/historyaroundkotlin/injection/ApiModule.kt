@@ -3,6 +3,7 @@ package my.projects.historyaroundkotlin.injection
 import dagger.Module
 import dagger.Provides
 import my.projects.historyaroundkotlin.service.api.WikiApi
+import my.projects.historyaroundkotlin.service.api.interceptors.LanguageCodeInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,16 +16,12 @@ class ApiModule {
 
     @Provides
     @BaseWikiUrlFormatString
-    fun providesBaseWikiUrlFormatString(): String = "https://%s.wikipedia.org/w/"
+    fun providesBaseWikiUrlFormatString(): String = "https://wikipedia.org/w/"
 
     @Provides
-    @LanguageString
-    fun providesLanguageString(): String = "ru"
-
-    @Provides
-    fun providesWikiApi(@BaseWikiUrlFormatString baseWikiUrlFormatString: String, @LanguageString language: String, client: OkHttpClient): WikiApi {
+    fun providesWikiApi(@BaseWikiUrlFormatString baseWikiUrlFormatString: String, client: OkHttpClient): WikiApi {
         val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(baseWikiUrlFormatString.format(language))
+            .baseUrl(baseWikiUrlFormatString)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client)
@@ -34,10 +31,13 @@ class ApiModule {
     }
 
     @Provides
-    fun providesLoggingHttpClient(): OkHttpClient {
+    fun providesLoggingHttpClient(languageCodeInterceptor: LanguageCodeInterceptor): OkHttpClient {
         val logger = HttpLoggingInterceptor()
         logger.level = HttpLoggingInterceptor.Level.BODY
-        return OkHttpClient.Builder().addInterceptor(logger).build()
+        return OkHttpClient.Builder()
+            .addInterceptor(languageCodeInterceptor)
+            .addInterceptor(logger)
+            .build()
     }
 
 }

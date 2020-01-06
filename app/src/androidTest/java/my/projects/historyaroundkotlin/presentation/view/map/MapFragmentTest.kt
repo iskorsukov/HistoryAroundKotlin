@@ -15,11 +15,12 @@ import my.projects.historyaroundkotlin.presentation.view.base.BaseViewModelFragm
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.ShowArticleSelectorAction
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapViewState
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticlesClusterItem
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.MapViewData
-import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapViewModel
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,9 +29,9 @@ import org.mockito.Mockito
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapFlowViewModel>() {
-    override fun getViewModelClass(): Class<out MapFlowViewModel> {
-        return MapFlowViewModel::class.java
+class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapViewModel>() {
+    override fun getViewModelClass(): Class<out MapViewModel> {
+        return MapViewModel::class.java
     }
 
     override fun getViewModelBindings(): TestViewModelBindings = MapMockViewModelBindings(mockViewModel)
@@ -45,7 +46,7 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapFlowViewModel>(
     }
 
     private fun pushLoadingState() {
-        viewStateLiveData.postValue(MapViewState(LCEState.LOADING, null, null))
+        viewStateLiveData.postValue(MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null))
     }
 
     private fun getSampleLocation(): Pair<Double, Double> {
@@ -58,7 +59,8 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapFlowViewModel>(
             "First",
             "First description",
             55.790897 to 37.681685,
-            null
+            null,
+            "en"
         )
         val firstViewData = ArticleItemViewData(firstArticle, false)
 
@@ -67,7 +69,8 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapFlowViewModel>(
             "Second",
             "Second description",
             55.788912 to 37.681103,
-            null
+            null,
+            "en"
         )
         val secondViewData = ArticleItemViewData(secondArticle, false)
 
@@ -79,7 +82,7 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapFlowViewModel>(
     }
 
     private fun pushSampleData() {
-        viewStateLiveData.postValue(MapViewState(LCEState.CONTENT, MapViewData(getSampleLocation(), getSampleClusters()), null))
+        viewStateLiveData.postValue(MapViewState(LCEState.CONTENT, null, MapViewData(getSampleLocation(), getSampleClusters()), null))
     }
 
     @Test

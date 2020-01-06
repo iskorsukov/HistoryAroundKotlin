@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureNavigationDrawerVisibility() {
-        navController.addOnDestinationChangedListener { nc: NavController, nd: NavDestination, args: Bundle? ->
+        navController.addOnDestinationChangedListener { _, nd: NavDestination, _ ->
             if (nd.id == R.id.mapFragment) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {

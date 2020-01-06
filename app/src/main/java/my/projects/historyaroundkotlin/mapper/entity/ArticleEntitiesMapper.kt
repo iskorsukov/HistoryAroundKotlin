@@ -16,7 +16,8 @@ class ArticleEntitiesMapper @Inject constructor() {
             articleEntity.lat to articleEntity.lon,
             articleEntity.thumbnail?.run {
                 mapThumbnailEntity(this)
-            }
+            },
+            articleEntity.languageCode
         )
     }
 
@@ -35,7 +36,8 @@ class ArticleEntitiesMapper @Inject constructor() {
             articleItem.description,
             articleItem.latlng.first,
             articleItem.latlng.second,
-            articleItem.thumbnail?.run { mapThumbnailToEntity(this) }
+            articleItem.thumbnail?.run { mapThumbnailToEntity(this) },
+            articleItem.languageCode
         )
     }
 

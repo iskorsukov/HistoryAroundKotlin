@@ -14,6 +14,7 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewac
 import my.projects.historyaroundkotlin.presentation.view.favorites.adapter.FavoritesListener
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewaction.NavigateToDetailsAction
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesErrorItem
+import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.FavoritesViewState
 import my.projects.historyaroundkotlin.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
 import my.projects.historyaroundkotlin.service.favorites.FavoritesSource
@@ -27,7 +28,7 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
 
     val viewStateLiveData: LiveData<FavoritesViewState> by lazy {
         MutableLiveData<FavoritesViewState>().also {
-            it.value = FavoritesViewState(LCEState.LOADING, null, null)
+            it.value = FavoritesViewState(LCEState.LOADING, FavoritesLoadingItem.LOADING_FAVORITES, null, null)
             loadFavoriteItems()
         }
     }
@@ -44,6 +45,7 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
                     (viewStateLiveData as MutableLiveData).value =
                         FavoritesViewState(
                             LCEState.CONTENT,
+                            null,
                             FavoritesViewData(
                                 favoriteItems
                             ),
@@ -55,6 +57,7 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
                     (viewStateLiveData as MutableLiveData).value =
                         FavoritesViewState(
                             LCEState.ERROR,
+                            null,
                             null,
                             FavoritesErrorItem.ERROR
                         )

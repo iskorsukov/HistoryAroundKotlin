@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_map.*
 import my.projects.historyaroundkotlin.R
+import my.projects.historyaroundkotlin.databinding.FragmentMapBinding
 import my.projects.historyaroundkotlin.model.article.ArticleItem
 import my.projects.historyaroundkotlin.presentation.view.common.fragment.BaseLCEViewStateActionFragment
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
@@ -21,8 +22,12 @@ import my.projects.historyaroundkotlin.presentation.view.map.viewaction.CenterOn
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.NavigateToDetailsAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewaction.ShowArticleSelectorAction
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapErrorItem
-import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.*
-import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapFlowViewModel
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.MapLoadingItem
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticleItemViewData
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticlesOverlayItem
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.MapViewData
+import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.toOverlayItem
+import my.projects.historyaroundkotlin.presentation.viewmodel.map.MapViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -34,12 +39,12 @@ import org.osmdroid.views.overlay.IconOverlay
 import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
 
-class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, MapFlowViewModel>() {
+class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, MapErrorItem, MapViewModel, FragmentMapBinding>() {
 
     private val zoomLevelListener = ZoomLevelListener(zoomStep = 0.1)
 
-    override fun viewModelClass(): Class<MapFlowViewModel> {
-        return MapFlowViewModel::class.java
+    override fun viewModelClass(): Class<MapViewModel> {
+        return MapViewModel::class.java
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,13 +59,8 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initViewModel()
-
         initMapView()
-        configureRecyclerView()
-        configureMyLocationFAB()
-
         observeViewState()
     }
 
@@ -76,10 +76,6 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
         mapView.addMapListener(zoomLevelListener)
     }
 
-    private fun configureRecyclerView() {
-        articlesRecycler.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-    }
-
     private fun observeViewState() {
         viewModel.mapDataLiveData.observe(viewLifecycleOwner, Observer {
             applyViewState(it)
@@ -90,20 +86,16 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
         viewModel.onCenterOnUserLocationClicked() // to reposition map to user location when view is recreated
     }
 
-    private fun configureMyLocationFAB() {
-        myLocationFAB.setOnClickListener {
-            viewModel.onCenterOnUserLocationClicked()
-        }
-    }
-
     override fun showContent(content: MapViewData) {
+        contentBinding.fragment = this
+
         mapView.overlays.clear()
 
         val context = requireContext()
         val markersOverlay: ItemizedOverlayWithFocus<ArticlesOverlayItem> = ItemizedOverlayWithFocus(
             content.articlesOverlayData.map { it.toOverlayItem() },
-            context.resources.getDrawable(R.drawable.ic_location_marker),
-            context.resources.getDrawable(R.drawable.ic_location_marker_focused),
+            context.getDrawable(R.drawable.ic_location_marker),
+            context.getDrawable(R.drawable.ic_location_marker_focused),
             context.resources.getColor(R.color.colorPrimary),
             ArticlesOverlayListener(),
             context
@@ -111,7 +103,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
         mapView.overlays.add(markersOverlay)
 
         val userLocation = content.location
-        val userLocationOverlay = IconOverlay(userLocation.toGeoPoint(), resources.getDrawable(R.drawable.ic_my_location))
+        val userLocationOverlay = IconOverlay(userLocation.toGeoPoint(), context.getDrawable(R.drawable.ic_my_location))
         mapView.overlays.add(userLocationOverlay)
 
         val copyrightOverlay = CopyrightOverlay(context)
@@ -131,7 +123,8 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
     private fun navigateToItemDetails(articleItem: ArticleItem) {
         navController().navigate(
             MapFragmentDirections.actionMapFragmentToDetailFragment(
-                articleItem.pageid
+                articleItem.pageid,
+                articleItem.languageCode
             )
         )
     }
@@ -172,6 +165,10 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
         }
     }
 
+    fun onUserLocationFABClicked() {
+        viewModel.onCenterOnUserLocationClicked()
+    }
+
     private inner class ZoomLevelListener(private val zoomStep: Double): MapListener {
 
         private var lastZoomLevel: Double = .0
@@ -202,11 +199,11 @@ class MapFragment : BaseLCEViewStateActionFragment<MapViewData, MapErrorItem, Ma
 
         override fun onItemSingleTapUp(index: Int, item: ArticlesOverlayItem?): Boolean {
             selectedItem?.apply {
-                setMarker(requireContext().resources.getDrawable(R.drawable.ic_location_marker))
+                setMarker(context!!.getDrawable(R.drawable.ic_location_marker))
             }
             item?.apply {
                 selectedItem = this
-                setMarker(requireContext().resources.getDrawable(R.drawable.ic_location_marker_focused))
+                setMarker(context!!.getDrawable(R.drawable.ic_location_marker_focused))
                 viewModel.onMarkerSelected(this)
             }
             mapView.invalidate()

@@ -4,4 +4,4 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCESta
 import my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.MapViewData
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.ViewState
 
-class MapViewState(lceState: LCEState, content: MapViewData?, error: MapErrorItem?): ViewState<MapViewData, MapErrorItem>(lceState, content, error)
+class MapViewState(lceState: LCEState, loading: MapLoadingItem?, content: MapViewData?, error: MapErrorItem?): ViewState<MapLoadingItem, MapViewData, MapErrorItem>(lceState, loading, content, error)

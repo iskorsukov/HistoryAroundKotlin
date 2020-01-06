@@ -15,6 +15,7 @@ import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewac
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.NavigateToMapAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionErrorItem
+import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionLoadingItem
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.PermissionViewState
 import my.projects.historyaroundkotlin.presentation.view.permission.viewstate.viewdata.PermissionsViewData
 import my.projects.historyaroundkotlin.service.permission.PermissionSource
@@ -31,7 +32,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
 
     val viewStateLiveData: LiveData<PermissionViewState> by lazy {
         MutableLiveData<PermissionViewState>().also {
-            it.value = PermissionViewState(LCEState.LOADING, null, null)
+            it.value = PermissionViewState(LCEState.LOADING, PermissionLoadingItem.PERMISSION_LOADING, null, null)
             checkPermissions()
         }
     }
@@ -53,6 +54,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
                     (viewStateLiveData as MutableLiveData).value =
                         PermissionViewState(
                             LCEState.CONTENT,
+                            null,
                             PermissionsViewData(
                                 rationaleList
                             ), null
@@ -63,6 +65,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
                 (viewStateLiveData as MutableLiveData).value =
                     PermissionViewState(
                         LCEState.ERROR,
+                        null,
                         null,
                         PermissionErrorItem.PERMISSIONS_ERROR
                     )
@@ -79,6 +82,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             (viewStateLiveData as MutableLiveData).value =
                 PermissionViewState(
                     LCEState.ERROR,
+                    null,
                     null,
                     PermissionErrorItem.PERMISSIONS_ERROR
                 )
