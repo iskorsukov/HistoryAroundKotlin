@@ -13,6 +13,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import my.projects.historyaroundkotlin.mock.Mockable
 import my.projects.historyaroundkotlin.model.article.ArticleItem
+import my.projects.historyaroundkotlin.model.preferences.PreferencesBundle
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.LCEState
 import my.projects.historyaroundkotlin.presentation.view.common.viewstate.viewaction.ViewAction
 import my.projects.historyaroundkotlin.presentation.view.map.adapter.ArticleListItemListener
@@ -106,15 +107,16 @@ class MapViewModel @Inject constructor(
     }
 
     private fun loadArticles(location: Location): Observable<List<ArticleItem>> {
-        return preferencesSource.getRadiusPreference().flatMapSingle {
+        return preferencesSource.getPreferences().flatMapSingle {
             loadArticleItems(location, it)
         }.onErrorResumeNext { throwable: Throwable ->
+            throwable.printStackTrace()
             Observable.error<List<ArticleItem>>(ArticlesErrorThrowable())
         }
     }
 
-    private fun loadArticleItems(location: Location, radius: Int): Single<List<ArticleItem>> {
-        return wikiSource.loadArticleItems(Pair(location.latitude, location.longitude), radius)
+    private fun loadArticleItems(location: Location, preferences: PreferencesBundle): Single<List<ArticleItem>> {
+        return wikiSource.loadArticleItems(preferences.languageCode, Pair(location.latitude, location.longitude), preferences.radius)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

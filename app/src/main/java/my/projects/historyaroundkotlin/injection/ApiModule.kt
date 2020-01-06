@@ -3,6 +3,7 @@ package my.projects.historyaroundkotlin.injection
 import dagger.Module
 import dagger.Provides
 import my.projects.historyaroundkotlin.service.api.WikiApi
+import my.projects.historyaroundkotlin.service.api.interceptors.LanguageCodeInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -30,10 +31,13 @@ class ApiModule {
     }
 
     @Provides
-    fun providesLoggingHttpClient(): OkHttpClient {
+    fun providesLoggingHttpClient(languageCodeInterceptor: LanguageCodeInterceptor): OkHttpClient {
         val logger = HttpLoggingInterceptor()
         logger.level = HttpLoggingInterceptor.Level.BODY
-        return OkHttpClient.Builder().addInterceptor(logger).build()
+        return OkHttpClient.Builder()
+            .addInterceptor(languageCodeInterceptor)
+            .addInterceptor(logger)
+            .build()
     }
 
 }

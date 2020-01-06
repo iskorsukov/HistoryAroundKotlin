@@ -20,12 +20,17 @@ class PreferencesFragment: PreferenceFragmentCompat() {
                 sharedPreferences.getString(key, null)?.apply {
                     preferencesSource.pushRadiusValueChanged(this.toInt())
                 }
+            } else if (key == getString(R.string.prefs_lang_code_key)) {
+                sharedPreferences.getString(key, null)?.apply {
+                    preferencesSource.pushLanguageCodeChanged(this)
+                }
             }
         }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
         configureRadiusSummary()
+        configureLanguageSummary()
     }
 
     private fun configureRadiusSummary() {
@@ -33,6 +38,21 @@ class PreferencesFragment: PreferenceFragmentCompat() {
         radiusPreference?.apply {
             summaryProvider = Preference.SummaryProvider<ListPreference> { preference ->
                 "${preference.value} meters"
+            }
+        }
+    }
+
+    private fun configureLanguageSummary() {
+        val languagePreference: ListPreference? = findPreference(getString(R.string.prefs_lang_code_key))
+        languagePreference?.apply {
+            summaryProvider = Preference.SummaryProvider<ListPreference> { preference ->
+                if (preference.value.isEmpty()) {
+                    getString(R.string.prefs_lang_code_default_summary)
+                } else {
+                    val codesArray = context.resources.getStringArray(R.array.language_codes)
+                    val languagesArray = context.resources.getStringArray(R.array.language_names)
+                    languagesArray[codesArray.indexOf(preference.value)]
+                }
             }
         }
     }

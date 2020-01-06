@@ -98,6 +98,6 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
     }
 
     private fun getDrawable(id: Int): Drawable {
-        return context!!.resources.getDrawable(id)
+        return context!!.resources.getDrawable(id, context!!.theme)
     }
 }

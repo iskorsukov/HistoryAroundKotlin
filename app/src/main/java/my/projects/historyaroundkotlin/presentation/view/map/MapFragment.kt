@@ -198,11 +198,11 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
         override fun onItemSingleTapUp(index: Int, item: ArticlesOverlayItem?): Boolean {
             selectedItem?.apply {
-                setMarker(requireContext().getDrawable(R.drawable.ic_location_marker))
+                setMarker(context!!.getDrawable(R.drawable.ic_location_marker))
             }
             item?.apply {
                 selectedItem = this
-                setMarker(requireContext().getDrawable(R.drawable.ic_location_marker_focused))
+                setMarker(context!!.getDrawable(R.drawable.ic_location_marker_focused))
                 viewModel.onMarkerSelected(this)
             }
             mapView.invalidate()

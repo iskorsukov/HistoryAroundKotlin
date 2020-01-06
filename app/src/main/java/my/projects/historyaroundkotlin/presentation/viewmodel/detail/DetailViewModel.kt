@@ -22,10 +22,11 @@ import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.Detail
 import my.projects.historyaroundkotlin.presentation.view.detail.viewstate.viewdata.DetailViewData
 import my.projects.historyaroundkotlin.service.api.WikiSource
 import my.projects.historyaroundkotlin.service.favorites.FavoritesSource
+import my.projects.historyaroundkotlin.service.preferences.PreferencesSource
 import javax.inject.Inject
 
 @Mockable
-class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, private val favoritesSource: FavoritesSource) : ViewModel() {
+class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, private val favoritesSource: FavoritesSource, private val preferencesSource: PreferencesSource) : ViewModel() {
 
     private var detailsDisposable: Disposable? = null
 
@@ -36,33 +37,37 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
         detailsDisposable?.dispose()
 
         (viewStateLiveData as MutableLiveData).value = DetailViewState(LCEState.LOADING, DetailLoadingItem.LOADING_DETAILS, null, null)
-        detailsDisposable = wikiSource.loadArticleDetails(id)
-            .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
-                DetailViewData(
-                    details,
-                    isFavorite
-                )
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ viewData ->
-                (viewStateLiveData as MutableLiveData).value =
-                    DetailViewState(
-                        LCEState.CONTENT,
-                        null,
-                        viewData,
-                        null
-                    )
-            }, { throwable ->
-                throwable.printStackTrace()
-                (viewStateLiveData as MutableLiveData).value =
-                    DetailViewState(
-                        LCEState.ERROR,
-                        null,
-                        null,
-                        DetailErrorItem.ERROR
-                    )
-            })
+        detailsDisposable =
+            preferencesSource.getPreferences()
+                .flatMapSingle {
+                    wikiSource.loadArticleDetails(it.languageCode, id)
+                        .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
+                            DetailViewData(
+                                details,
+                                isFavorite
+                            )
+                        }
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ viewData ->
+                    (viewStateLiveData as MutableLiveData).value =
+                        DetailViewState(
+                            LCEState.CONTENT,
+                            null,
+                            viewData,
+                            null
+                        )
+                }, { throwable ->
+                    throwable.printStackTrace()
+                    (viewStateLiveData as MutableLiveData).value =
+                        DetailViewState(
+                            LCEState.ERROR,
+                            null,
+                            null,
+                            DetailErrorItem.ERROR
+                        )
+                })
     }
 
     fun addToFavorites(details: ArticleDetails) {
