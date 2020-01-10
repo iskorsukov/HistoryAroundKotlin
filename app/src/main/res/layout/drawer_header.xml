@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="@dimen/drawer_header_height"
     android:gravity="center"
     android:background="@color/colorPrimary">
 
     <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="@dimen/drawer_icon_size"
+        android:layout_height="@dimen/drawer_icon_size"
         android:src="@mipmap/ic_launcher_foreground"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/textWhite"
+        style="@style/Drawer.Text.Header"
         android:text="@string/app_name"/>
 
 </LinearLayout>

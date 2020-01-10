@@ -25,7 +25,7 @@
                 <ImageView
                     android:id="@+id/articleDetailsImage"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
+                    android:layout_height="@dimen/details_image_height"
                     android:scaleType="centerCrop"
                     android:src="@{viewData.item.thumbnail.url}"
                     app:layout_constraintTop_toTopOf="parent"/>
@@ -42,13 +42,8 @@
 
                 <ImageButton
                     android:id="@+id/favoriteButton"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
                     android:src="@drawable/ic_star_border"
-                    android:scaleType="centerCrop"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/white_circle_ripple_background"
-                    android:elevation="4dp"
+                    style="@style/Details.Image.OverlayButton"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:ignore="ContentDescription" />
@@ -56,13 +51,8 @@
 
                 <ImageButton
                     android:id="@+id/openInMapButton"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
                     android:src="@drawable/ic_map"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/white_circle_ripple_background"
-                    android:elevation="4dp"
-                    android:layout_margin="8dp"
+                    style="@style/Details.Image.OverlayButton"
                     app:layout_constraintTop_toBottomOf="@id/favoriteButton"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:ignore="ContentDescription" />
@@ -71,11 +61,8 @@
                     android:id="@+id/articleDetailsTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textWhite"
-                    android:textSize="20sp"
-                    android:padding="16dp"
                     android:text="@{viewData.item.title}"
-                    android:fontFamily="sans-serif-medium"
+                    style="@style/Details.Text.Title"
                     tools:text="Article title"
                     app:layout_constraintBottom_toBottomOf="@id/articleDetailsImage"
                     app:layout_constraintStart_toStartOf="parent"
@@ -86,8 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewData.item.extract}"
-                    android:textColor="@color/textBlack"
-                    android:textSize="14sp"
+                    style="@style/Text.Regular.Black"
                     android:layout_margin="8dp"
                     app:layout_constraintTop_toBottomOf="@id/articleDetailsImage"
                     app:layout_constraintStart_toStartOf="parent"
@@ -103,10 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/wiki_w"
-            app:fabSize="normal"
-            android:backgroundTint="#FFFFFF"
-            app:borderWidth="0dp"
-            android:layout_margin="16dp"
+            style="@style/Common.FAB"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 

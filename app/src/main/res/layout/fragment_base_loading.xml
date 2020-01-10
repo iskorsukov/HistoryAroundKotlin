@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="@dimen/loading_padding">
+    android:padding="@dimen/fragment_base_padding">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="@dimen/loading_label_text_size"
+        style="@style/Text.Large.Black"
         android:layout_marginTop="16dp"
         android:text="@{loadingItem.messageRes}"/>
 

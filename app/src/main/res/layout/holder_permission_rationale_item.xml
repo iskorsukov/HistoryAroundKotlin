@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/rationaleIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/rationale_icon_size"
+            android:layout_height="@dimen/rationale_icon_size"
             android:src="@{item.iconRes}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -27,8 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@{item.titleRes}"
-            android:textSize="18sp"
-            android:textColor="@color/textBlack"
+            style="@style/Text.Large.Black"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/rationaleIcon"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -40,6 +39,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:text="@{item.messageRes}"
+            style="@style/Text.Regular"
             app:layout_constraintTop_toBottomOf="@id/rationaleTitle"
             app:layout_constraintStart_toEndOf="@id/rationaleIcon"
             app:layout_constraintEnd_toEndOf="parent"/>

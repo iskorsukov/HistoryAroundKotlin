@@ -24,9 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/grant_permissions"
-            android:padding="16dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/textBlack"
+            style="@style/Button.Primary"
             app:layout_constraintBottom_toBottomOf="parent"
             android:onClick="@{(view) -> fragment.requestMissingPermissions()}"/>
 
