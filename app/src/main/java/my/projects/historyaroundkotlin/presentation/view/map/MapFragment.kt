@@ -44,6 +44,12 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     private var lastUserLocation: Pair<Double, Double>? = null
     private var lastZoomValue: Double? = null
 
+    companion object {
+        private const val LAT_KEY = "lat"
+        private const val LON_KEY = "lon"
+        private const val ZOOM_KEY = "zoom"
+    }
+
     override fun viewModelClass(): Class<MapViewModel> {
         return MapViewModel::class.java
     }
@@ -66,6 +72,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
         initMapView()
+        tryRestoreInstanceState(savedInstanceState)
         restoreMapLocation()
         observeViewState()
     }
@@ -89,6 +96,28 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         viewModel.mapActionLiveData.observe(viewLifecycleOwner, Observer {
             applyViewAction(it)
         })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (lastUserLocation != null) {
+            outState.putDouble(LAT_KEY, lastUserLocation!!.first)
+            outState.putDouble(LON_KEY, lastUserLocation!!.second)
+        }
+        if (lastZoomValue != null) {
+            outState.putDouble(ZOOM_KEY, lastZoomValue!!)
+        }
+    }
+
+    private fun tryRestoreInstanceState(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(LAT_KEY) && savedInstanceState.containsKey(LON_KEY)) {
+                lastUserLocation = savedInstanceState.getDouble(LAT_KEY) to savedInstanceState.getDouble(LON_KEY)
+            }
+            if (savedInstanceState.containsKey(ZOOM_KEY)) {
+                lastZoomValue = savedInstanceState.getDouble(ZOOM_KEY)
+            }
+        }
     }
 
     private fun restoreMapLocation() {

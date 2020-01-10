@@ -22,21 +22,21 @@
             android:layout_height="wrap_content"
             style="@style/Common.FAB"
             android:src="@drawable/ic_my_location"
-            app:layout_constraintBottom_toTopOf="@id/articlesRecycler"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/articlesRecycler"
             android:onClick="@{(view) -> fragment.onUserLocationFABClicked()}"
             />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/articlesRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:background="@color/articlesSelectorBg"
             android:visibility="gone"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.4"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
