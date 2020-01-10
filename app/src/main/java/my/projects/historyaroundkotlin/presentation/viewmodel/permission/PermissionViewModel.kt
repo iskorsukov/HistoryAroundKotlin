@@ -101,6 +101,11 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
         checkPermissions()
     }
 
+    fun onRetry() {
+        (viewStateLiveData as MutableLiveData).value = PermissionViewState(LCEState.LOADING, PermissionLoadingItem.PERMISSION_LOADING, null, null)
+        checkPermissions()
+    }
+
     override fun onCleared() {
         permissionsCheckDisposable?.dispose()
         super.onCleared()

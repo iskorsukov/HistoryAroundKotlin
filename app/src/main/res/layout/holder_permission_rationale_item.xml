@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/rationaleIcon"
@@ -27,6 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@{item.titleRes}"
+            android:textSize="18sp"
+            android:textColor="@color/textBlack"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/rationaleIcon"
             app:layout_constraintEnd_toEndOf="parent"/>

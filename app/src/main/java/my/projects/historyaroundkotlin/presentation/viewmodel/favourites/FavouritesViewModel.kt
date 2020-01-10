@@ -25,6 +25,7 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
     FavoritesListener {
 
     private var disposable: Disposable? = null
+    private var removeDisposable: Disposable? = null
 
     val viewStateLiveData: LiveData<FavoritesViewState> by lazy {
         MutableLiveData<FavoritesViewState>().also {
@@ -70,7 +71,13 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
             NavigateToDetailsAction(item)
     }
 
+    fun onRetry() {
+        (viewStateLiveData as MutableLiveData).value = FavoritesViewState(LCEState.LOADING, FavoritesLoadingItem.LOADING_FAVORITES, null, null)
+        loadFavoriteItems()
+    }
+
     override fun onCleared() {
+        removeDisposable?.dispose()
         disposable?.dispose()
         super.onCleared()
     }

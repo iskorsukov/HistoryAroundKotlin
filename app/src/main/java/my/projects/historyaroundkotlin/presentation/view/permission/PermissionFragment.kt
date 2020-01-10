@@ -6,6 +6,8 @@ import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_permission.*
 import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.databinding.FragmentPermissionBinding
@@ -26,6 +28,10 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionLoadingItem,
 
     override fun viewModelClass(): Class<PermissionViewModel> {
         return PermissionViewModel::class.java
+    }
+
+    override fun titleRes(): Int {
+        return R.string.permissions_fragment_title
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,6 +80,7 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionLoadingItem,
 
     override fun showContent(content: PermissionsViewData) {
         contentBinding.fragment = this
+        permissionsRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
         permissionsRecyclerView.adapter =
             PermissionsAdapter(
                 content.rationaleList,
@@ -91,5 +98,9 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionLoadingItem,
         } else {
             viewModel.onRequestPermissionsResult(permissions, grantResults, this)
         }
+    }
+
+    override fun onErrorRetry() {
+        viewModel.onRetry()
     }
 }

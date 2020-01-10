@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.databinding.FragmentFavoritesBinding
@@ -29,17 +31,19 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
         return R.layout.fragment_favorites
     }
 
+    override fun titleRes(): Int {
+        return R.string.favorites_fragment_title
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         configureRecyclerView()
-
         initViewModel()
         observeViewState()
     }
 
     private fun configureRecyclerView() {
-        favoritesRecycler.layoutManager = LinearLayoutManager(context!!)
+        favoritesRecycler.addItemDecoration(DividerItemDecoration(context!!, RecyclerView.VERTICAL))
     }
 
     private fun observeViewState() {
@@ -72,6 +76,10 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
                 content.items,
                 viewModel
             )
+    }
+
+    override fun onErrorRetry() {
+        viewModel.onRetry()
     }
 
 }

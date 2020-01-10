@@ -8,8 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_map.*
 import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.databinding.FragmentMapBinding
@@ -43,6 +41,9 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
     private val zoomLevelListener = ZoomLevelListener(zoomStep = 0.1)
 
+    private var lastUserLocation: Pair<Double, Double>? = null
+    private var lastZoomValue: Double? = null
+
     override fun viewModelClass(): Class<MapViewModel> {
         return MapViewModel::class.java
     }
@@ -57,10 +58,15 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         return R.layout.fragment_map
     }
 
+    override fun titleRes(): Int {
+        return R.string.map_fragment_title
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
         initMapView()
+        restoreMapLocation()
         observeViewState()
     }
 
@@ -70,8 +76,8 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         mapView.setTileSource(TileSourceFactory.MAPNIK)
 
         mapView.setMultiTouchControls(true)
-        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.controller.setZoom(16.0)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
         mapView.addMapListener(zoomLevelListener)
     }
@@ -83,7 +89,13 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         viewModel.mapActionLiveData.observe(viewLifecycleOwner, Observer {
             applyViewAction(it)
         })
-        viewModel.onCenterOnUserLocationClicked() // to reposition map to user location when view is recreated
+    }
+
+    private fun restoreMapLocation() {
+        if (lastUserLocation != null && lastZoomValue != null) {
+            mapView.controller.setZoom(lastZoomValue!!)
+            mapView.setExpectedCenter(lastUserLocation!!.toGeoPoint())
+        }
     }
 
     override fun showContent(content: MapViewData) {
@@ -148,6 +160,8 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     }
 
     override fun onPause() {
+        lastUserLocation = mapView.mapCenter.latitude to mapView.mapCenter.longitude
+        lastZoomValue = mapView.zoomLevelDouble
         mapView.onPause()
         super.onPause()
     }
@@ -167,6 +181,10 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
     fun onUserLocationFABClicked() {
         viewModel.onCenterOnUserLocationClicked()
+    }
+
+    override fun onErrorRetry() {
+        viewModel.onRetry()
     }
 
     private inner class ZoomLevelListener(private val zoomStep: Double): MapListener {

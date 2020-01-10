@@ -105,9 +105,9 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
 
         val expectedDrawable = InstrumentationRegistry.getInstrumentation().targetContext.resources.getDrawable(
             if (isFavorite) {
-                R.drawable.ic_star_black
+                R.drawable.ic_star
             } else {
-                R.drawable.ic_star_border_black
+                R.drawable.ic_star_border
             }
         )
         onView(withId(R.id.favoriteButton)).check(matches(DrawableMatcherUtils.withDrawable(expectedDrawable)))

@@ -13,74 +13,88 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/articleDetailsImage"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            android:src="@{viewData.item.thumbnail.url}"
-            app:layout_constraintHeight_percent="0.4"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:background="@drawable/article_list_item_title_background"
-            app:layout_constraintBottom_toBottomOf="@id/articleDetailsImage">
-
-            <TextView
-                android:id="@+id/articleDetailsTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:layout_marginEnd="8dp"
-                android:text="@{viewData.item.title}"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/openInMapButton"/>
-
-            <ImageButton
-                android:id="@+id/openInMapButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_map_black"
-                android:scaleType="centerCrop"
-                android:background="@drawable/white_circle_background"
-                android:padding="4dp"
-                app:layout_constraintTop_toTopOf="@id/articleDetailsTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:ignore="ContentDescription" />
-
-            <ImageButton
-                android:id="@+id/favoriteButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_star_border_black"
-                android:scaleType="centerCrop"
-                android:background="@drawable/white_circle_background"
-                android:padding="4dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintTop_toBottomOf="@id/openInMapButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:ignore="ContentDescription" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@id/articleDetailsImage"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/articleDetailsExtract"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{viewData.item.extract}"
-                android:textSize="14sp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/articleDetailsImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:scaleType="centerCrop"
+                    android:src="@{viewData.item.thumbnail.url}"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/image_scrim"
+                    app:layout_constraintStart_toStartOf="@id/articleDetailsImage"
+                    app:layout_constraintEnd_toEndOf="@id/articleDetailsImage"
+                    app:layout_constraintTop_toTopOf="@id/articleDetailsImage"
+                    app:layout_constraintBottom_toBottomOf="@id/articleDetailsImage" />
+
+
+                <ImageButton
+                    android:id="@+id/favoriteButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_star_border"
+                    android:scaleType="centerCrop"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/white_circle_ripple_background"
+                    android:elevation="4dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ignore="ContentDescription" />
+
+
+                <ImageButton
+                    android:id="@+id/openInMapButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_map"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/white_circle_ripple_background"
+                    android:elevation="4dp"
+                    android:layout_margin="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/favoriteButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/articleDetailsTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textWhite"
+                    android:textSize="20sp"
+                    android:padding="16dp"
+                    android:text="@{viewData.item.title}"
+                    android:fontFamily="sans-serif-medium"
+                    tools:text="Article title"
+                    app:layout_constraintBottom_toBottomOf="@id/articleDetailsImage"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/articleDetailsExtract"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewData.item.extract}"
+                    android:textColor="@color/textBlack"
+                    android:textSize="14sp"
+                    android:layout_margin="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/articleDetailsImage"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </ScrollView>
 

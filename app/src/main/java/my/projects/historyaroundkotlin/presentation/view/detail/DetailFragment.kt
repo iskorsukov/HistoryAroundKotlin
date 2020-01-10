@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
 import my.projects.historyaroundkotlin.R
 import my.projects.historyaroundkotlin.databinding.FragmentDetailBinding
@@ -31,6 +30,10 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
 
     override fun contentLayout(): Int {
         return R.layout.fragment_detail
+    }
+
+    override fun titleRes(): Int {
+        return R.string.details_fragment_title
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,7 +66,7 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
     }
 
     private fun openInMap(latlon: Pair<Double, Double>) {
-        val geoIntentString = "geo:${latlon.first},${latlon.second}"
+        val geoIntentString = "geo:${latlon.first},${latlon.second}?q=${latlon.first},${latlon.second}"
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoIntentString))
         if (intent.resolveActivity(context!!.packageManager) != null) {
             startActivity(intent)
@@ -86,7 +89,7 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
             openInMapButton.setOnClickListener {
                 viewModel.onOpenInMapButtonClicked(item.coordinates)
             }
-            favoriteButton.setImageDrawable(if (isFavorite) getDrawable(R.drawable.ic_star_black) else getDrawable(R.drawable.ic_star_border_black))
+            favoriteButton.setImageDrawable(if (isFavorite) getDrawable(R.drawable.ic_star) else getDrawable(R.drawable.ic_star_border))
             favoriteButton.setOnClickListener {
                 if (isFavorite) {
                     viewModel.removeFromFavorites(item)
@@ -95,6 +98,10 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
                 }
             }
         }
+    }
+
+    override fun onErrorRetry() {
+        loadDetails()
     }
 
     private fun getDrawable(id: Int): Drawable {

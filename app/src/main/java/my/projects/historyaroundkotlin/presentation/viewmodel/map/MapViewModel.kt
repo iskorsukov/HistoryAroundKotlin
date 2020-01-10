@@ -232,6 +232,11 @@ class MapViewModel @Inject constructor(
         }).toList()
     }
 
+    fun onRetry() {
+        (mapDataLiveData as MutableLiveData).value = MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null)
+        loadArticles()
+    }
+
     override fun onCleared() {
         loadArticlesDisposable?.dispose()
         super.onCleared()
