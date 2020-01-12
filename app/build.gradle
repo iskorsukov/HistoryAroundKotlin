@@ -10,6 +10,19 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlin-allopen"
 
 android {
+    signingConfigs {
+        config {
+            def propsFile = rootProject.file('keystore.properties')
+            if (propsFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                storeFile = file(props['storeFile'])
+                storePassword = props['storePassword']
+                keyAlias = props['keyAlias']
+                keyPassword = props['keyPassword']
+            }
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "my.projects.historyaroundkotlin"
@@ -23,6 +36,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     dataBinding {
