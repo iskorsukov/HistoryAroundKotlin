@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="my.projects.historyaroundkotlin.model.article.ArticleItem" />
+            type="com.iskorsukov.historyaround.model.article.ArticleItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

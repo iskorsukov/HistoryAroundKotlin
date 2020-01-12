@@ -4,7 +4,7 @@
     <data>
         <variable
             name="item"
-            type="my.projects.historyaroundkotlin.presentation.view.map.viewstate.viewdata.ArticleItemViewData" />
+            type="com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData" />
     </data>
 
     <androidx.cardview.widget.CardView

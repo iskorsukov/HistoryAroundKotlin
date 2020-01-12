@@ -4,7 +4,7 @@
     <data>
         <variable
             name="fragment"
-            type="my.projects.historyaroundkotlin.presentation.view.map.MapFragment" />
+            type="com.iskorsukov.historyaround.presentation.view.map.MapFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

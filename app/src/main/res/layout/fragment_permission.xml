@@ -4,7 +4,7 @@
     <data>
         <variable
             name="fragment"
-            type="my.projects.historyaroundkotlin.presentation.view.permission.PermissionFragment" />
+            type="com.iskorsukov.historyaround.presentation.view.permission.PermissionFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

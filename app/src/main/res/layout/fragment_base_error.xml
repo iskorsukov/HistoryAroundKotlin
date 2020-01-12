@@ -3,7 +3,7 @@
     <data>
         <variable
             name="errorItem"
-            type="my.projects.historyaroundkotlin.presentation.view.common.viewstate.ErrorItem" />
+            type="com.iskorsukov.historyaround.presentation.view.common.viewstate.ErrorItem" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"
