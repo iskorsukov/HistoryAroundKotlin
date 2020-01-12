@@ -54,6 +54,7 @@ abstract class BaseLCEFragment<LB: ViewDataBinding, CB: ViewDataBinding, EB: Vie
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         baseBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_base_lce, container, false)
         inflateLCEParts(baseBinding.root, inflater)
+        setTitle()
         return baseBinding.root
     }
 
@@ -71,7 +72,6 @@ abstract class BaseLCEFragment<LB: ViewDataBinding, CB: ViewDataBinding, EB: Vie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initNavControllerSource()
-        setTitle()
         configureRetryButton()
     }
 

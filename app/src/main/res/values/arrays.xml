@@ -8,6 +8,7 @@
     </string-array>
 
     <string-array name="language_codes">
+        <item></item>
         <item>aa</item>
         <item>ab</item>
         <item>abs</item>
@@ -455,6 +456,7 @@
     </string-array>
 
     <string-array name="language_names">
+        <item>@string/prefs_lang_code_default_summary</item>
         <item>Qafár af</item>
         <item>Аҧсшәа</item>
         <item>bahasa ambon</item>
