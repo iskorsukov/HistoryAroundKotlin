@@ -36,7 +36,7 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_percent="0.4"
+            app:layout_constraintWidth_percent="0.35"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

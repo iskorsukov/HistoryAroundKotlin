@@ -26,7 +26,6 @@
                     android:id="@+id/articleDetailsImage"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/details_image_height"
-                    android:scaleType="centerCrop"
                     android:src="@{viewData.item.thumbnail.url}"
                     app:layout_constraintTop_toTopOf="parent"/>
 
