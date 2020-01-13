@@ -29,7 +29,7 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
 
     val viewStateLiveData: LiveData<FavoritesViewState> by lazy {
         MutableLiveData<FavoritesViewState>().also {
-            it.value = FavoritesViewState(LCEState.LOADING, FavoritesLoadingItem.LOADING_FAVORITES, null, null)
+            it.value = FavoritesViewState(FavoritesLoadingItem.LOADING_FAVORITES)
             loadFavoriteItems()
         }
     }
@@ -43,25 +43,11 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { favoriteItems ->
-                    (viewStateLiveData as MutableLiveData).value =
-                        FavoritesViewState(
-                            LCEState.CONTENT,
-                            null,
-                            FavoritesViewData(
-                                favoriteItems
-                            ),
-                            null
-                        )
+                    (viewStateLiveData as MutableLiveData).value = FavoritesViewState(FavoritesViewData(favoriteItems))
                 },
                 { throwable ->
                     throwable.printStackTrace()
-                    (viewStateLiveData as MutableLiveData).value =
-                        FavoritesViewState(
-                            LCEState.ERROR,
-                            null,
-                            null,
-                            FavoritesErrorItem.ERROR
-                        )
+                    (viewStateLiveData as MutableLiveData).value = FavoritesViewState(FavoritesErrorItem.ERROR)
                 }
             )
     }
@@ -72,7 +58,7 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
     }
 
     fun onRetry() {
-        (viewStateLiveData as MutableLiveData).value = FavoritesViewState(LCEState.LOADING, FavoritesLoadingItem.LOADING_FAVORITES, null, null)
+        (viewStateLiveData as MutableLiveData).value = FavoritesViewState(FavoritesLoadingItem.LOADING_FAVORITES)
         loadFavoriteItems()
     }
 

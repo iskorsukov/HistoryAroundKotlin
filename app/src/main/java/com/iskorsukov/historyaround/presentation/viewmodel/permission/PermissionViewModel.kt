@@ -32,7 +32,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
 
     val viewStateLiveData: LiveData<PermissionViewState> by lazy {
         MutableLiveData<PermissionViewState>().also {
-            it.value = PermissionViewState(LCEState.LOADING, PermissionLoadingItem.PERMISSION_LOADING, null, null)
+            it.value = PermissionViewState(PermissionLoadingItem.PERMISSION_LOADING)
             checkPermissions()
         }
     }
@@ -48,27 +48,13 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             .subscribe({ permissions: List<String> ->
                 val rationaleList = permissions.mapNotNull { permissionSource.mapPermissionToRationale(it) }
                 if (rationaleList.isEmpty()) {
-                    viewActionLiveEvent.value =
-                        NavigateToMapAction()
+                    viewActionLiveEvent.value = NavigateToMapAction()
                 } else {
-                    (viewStateLiveData as MutableLiveData).value =
-                        PermissionViewState(
-                            LCEState.CONTENT,
-                            null,
-                            PermissionsViewData(
-                                rationaleList
-                            ), null
-                        )
+                    (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionsViewData(rationaleList))
                 }
             }, { throwable ->
                 throwable.printStackTrace()
-                (viewStateLiveData as MutableLiveData).value =
-                    PermissionViewState(
-                        LCEState.ERROR,
-                        null,
-                        null,
-                        PermissionErrorItem.PERMISSIONS_ERROR
-                    )
+                (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionErrorItem.PERMISSIONS_ERROR)
             })
     }
 
@@ -79,13 +65,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             permissionSource.requestPermissions(permissions, fragment, PERMISSIONS_REQUEST_CODE)
         }, { throwable ->
             throwable.printStackTrace()
-            (viewStateLiveData as MutableLiveData).value =
-                PermissionViewState(
-                    LCEState.ERROR,
-                    null,
-                    null,
-                    PermissionErrorItem.PERMISSIONS_ERROR
-                )
+            (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionErrorItem.PERMISSIONS_ERROR)
         })
     }
 
@@ -102,7 +82,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
     }
 
     fun onRetry() {
-        (viewStateLiveData as MutableLiveData).value = PermissionViewState(LCEState.LOADING, PermissionLoadingItem.PERMISSION_LOADING, null, null)
+        (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionLoadingItem.PERMISSION_LOADING)
         checkPermissions()
     }
 

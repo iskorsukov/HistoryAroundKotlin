@@ -13,6 +13,7 @@ import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.detail.ArticleDetails
 import com.iskorsukov.historyaround.model.detail.toArticleItem
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
+import com.iskorsukov.historyaround.presentation.view.common.viewstate.ViewState
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.OpenInMapAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.ViewInBrowserAction
@@ -48,22 +49,10 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ viewData ->
-                    (viewStateLiveData as MutableLiveData).value =
-                        DetailViewState(
-                            LCEState.CONTENT,
-                            null,
-                            viewData,
-                            null
-                        )
+                    viewStateLiveData.value = DetailViewState(viewData)
                 }, { throwable ->
                     throwable.printStackTrace()
-                    (viewStateLiveData as MutableLiveData).value =
-                        DetailViewState(
-                            LCEState.ERROR,
-                            null,
-                            null,
-                            DetailErrorItem.ERROR
-                        )
+                    viewStateLiveData.value = DetailViewState(DetailErrorItem.ERROR)
                 })
     }
 
@@ -74,16 +63,7 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                (viewStateLiveData as MutableLiveData).value =
-                    DetailViewState(
-                        LCEState.CONTENT,
-                        null,
-                        DetailViewData(
-                            details,
-                            true
-                        ),
-                        null
-                    )
+                (viewStateLiveData as MutableLiveData).value = DetailViewState(DetailViewData(details, true))
             }, {
                 it.printStackTrace()
             })
@@ -96,16 +76,7 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                (viewStateLiveData as MutableLiveData).value =
-                    DetailViewState(
-                        LCEState.CONTENT,
-                        null,
-                        DetailViewData(
-                            details,
-                            false
-                        ),
-                        null
-                    )
+                (viewStateLiveData as MutableLiveData).value = DetailViewState(DetailViewData(details, false))
             }, {
                 it.printStackTrace()
             })

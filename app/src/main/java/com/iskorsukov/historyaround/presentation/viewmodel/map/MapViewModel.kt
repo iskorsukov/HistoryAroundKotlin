@@ -54,14 +54,14 @@ class MapViewModel @Inject constructor(
 
     val mapDataLiveData: LiveData<MapViewState> by lazy {
         MutableLiveData<MapViewState>().also {
-            it.value = MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null)
+            it.value = MapViewState(MapLoadingItem.LOADING_ARTICLES)
             loadArticles()
         }
     }
 
     val mapActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
-    fun loadArticles() {
+    private fun loadArticles() {
         loadArticlesDisposable?.dispose()
 
         var lastLoadedLocation: Location? = null
@@ -76,7 +76,7 @@ class MapViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ articleItems ->
                 if (lastLoadedLocation == null) {
-                    handleError(IllegalArgumentException("No location found"))
+                    handleError(LocationErrorThrowable())
                 } else {
                     handleResult(lastLoadedLocation!!, articleItems)
                 }
@@ -121,34 +121,15 @@ class MapViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    // TODO define descriptive exception classes
     private fun handleError(throwable: Throwable) {
         throwable.printStackTrace()
         when (throwable) {
             is LocationServicesErrorThrowable ->
-                (mapDataLiveData as MutableLiveData).value =
-                    MapViewState(
-                        LCEState.ERROR,
-                        null,
-                        null,
-                        MapErrorItem.LOCATION_SERVICES_ERROR
-                    )
+                (mapDataLiveData as MutableLiveData).value = MapViewState(MapErrorItem.LOCATION_SERVICES_ERROR)
             is LocationErrorThrowable ->
-                (mapDataLiveData as MutableLiveData).value =
-                    MapViewState(
-                        LCEState.ERROR,
-                        null,
-                        null,
-                        MapErrorItem.LOCATION_ERROR
-                    )
+                (mapDataLiveData as MutableLiveData).value = MapViewState(MapErrorItem.LOCATION_ERROR)
             else ->
-                (mapDataLiveData as MutableLiveData).value =
-                    MapViewState(
-                        LCEState.ERROR,
-                        null,
-                        null,
-                        MapErrorItem.ARTICLES_ERROR
-                    )
+                (mapDataLiveData as MutableLiveData).value = MapViewState(MapErrorItem.ARTICLES_ERROR)
         }
     }
 
@@ -156,16 +137,13 @@ class MapViewModel @Inject constructor(
         mapActionLiveData.value = CenterOnLocationAction(location.latitude to location.longitude)
         (mapDataLiveData as MutableLiveData).value =
             MapViewState(
-                LCEState.CONTENT,
-                null,
                 MapViewData(
                     location.latitude to location.longitude,
                     groupItemsIntoMarkers(
                         lastZoomValue,
                         articleItems.map { ArticleItemViewData(it, false) }
                     )
-                ),
-                null
+                )
             )
     }
 
@@ -178,25 +156,16 @@ class MapViewModel @Inject constructor(
     }
 
     fun onMarkerSelected(marker: ArticlesOverlayItem) {
-        mapActionLiveData.value =
-            ShowArticleSelectorAction(
-                marker.articleItems
-            )
+        mapActionLiveData.value = ShowArticleSelectorAction(marker.articleItems)
     }
 
     override fun onItemSelected(articleItem: ArticleItem) {
-        mapActionLiveData.value =
-            NavigateToDetailsAction(
-                articleItem
-            )
+        mapActionLiveData.value = NavigateToDetailsAction(articleItem)
     }
 
     fun onCenterOnUserLocationClicked() {
         mapDataLiveData.value?.content?.apply {
-            mapActionLiveData.value =
-                CenterOnLocationAction(
-                    this.location
-                )
+            mapActionLiveData.value = CenterOnLocationAction(this.location)
         }
     }
 
@@ -205,23 +174,19 @@ class MapViewModel @Inject constructor(
         mapDataLiveData.value?.content?.apply {
             (mapDataLiveData as MutableLiveData).value =
                 MapViewState(
-                    LCEState.CONTENT,
-                    null,
                     MapViewData(
                         location,
                         groupItemsIntoMarkers(
                             lastZoomValue,
                             articlesOverlayData.toViewData()
                         )
-
-                    ),
-                    null
+                    )
                 )
         }
     }
 
     fun onRefresh() {
-        (mapDataLiveData as MutableLiveData).value = MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null)
+        (mapDataLiveData as MutableLiveData).value = MapViewState(MapLoadingItem.LOADING_ARTICLES)
         loadArticles()
     }
 
@@ -233,8 +198,7 @@ class MapViewModel @Inject constructor(
     }
 
     fun onRetry() {
-        (mapDataLiveData as MutableLiveData).value = MapViewState(LCEState.LOADING, MapLoadingItem.LOADING_ARTICLES, null, null)
-        loadArticles()
+        onRefresh()
     }
 
     override fun onCleared() {
