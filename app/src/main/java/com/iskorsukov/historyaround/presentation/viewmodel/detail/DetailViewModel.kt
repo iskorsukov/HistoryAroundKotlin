@@ -49,10 +49,10 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ viewData ->
-                    viewStateLiveData.value = DetailViewState(viewData)
+                    (viewStateLiveData as MutableLiveData).value = DetailViewState(viewData)
                 }, { throwable ->
                     throwable.printStackTrace()
-                    viewStateLiveData.value = DetailViewState(DetailErrorItem.ERROR)
+                    (viewStateLiveData as MutableLiveData).value = DetailViewState(DetailErrorItem.ERROR)
                 })
     }
 

@@ -53,7 +53,7 @@ android {
     }
 
     allOpen {
-        annotation("my.projects.historyaroundkotlin.mock.Mockable")
+        annotation("com.iskorsukov.historyaround.mock.Mockable")
     }
 }
 
