@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:title="@string/prefs_radius_title"
+        android:key="@string/prefs_radius_key"
+        android:icon="@drawable/ic_radius"
+        android:entryValues="@array/radius_string_values"
+        android:entries="@array/radius_string_values"
+        android:defaultValue="@string/prefs_radius_default_value"  />
+
+    <ListPreference
+        android:title="@string/prefs_lang_code_title"
+        android:key="@string/prefs_lang_code_key"
+        android:icon="@drawable/ic_language"
+        android:entryValues="@array/language_codes"
+        android:entries="@array/language_names"
+        android:defaultValue="@string/prefs_lang_code_default_value" />
+
+</PreferenceScreen>

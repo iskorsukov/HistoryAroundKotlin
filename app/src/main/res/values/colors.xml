@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFCD43</color>
+    <color name="colorPrimaryDark">#B98A07</color>
+    <color name="colorAccent">#8158C2</color>
+
+    <color name="articlesSelectorBg">#B3FFCD43</color>
+
+    <color name="textBlack">#000000</color>
+    <color name="textWhite">#FFFFFF</color>
+
+    <color name="colorRed">#D32F2F</color>
+</resources>

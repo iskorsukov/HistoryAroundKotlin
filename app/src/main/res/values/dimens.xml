@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Common -->
+    <dimen name="fragment_base_padding">16dp</dimen>
+
+    <!-- Article list item -->
+    <dimen name="article_item_width">200dp</dimen>
+    <dimen name="article_item_height">150dp</dimen>
+
+    <!-- Navigation drawer -->
+    <dimen name="drawer_header_height">200dp</dimen>
+    <dimen name="drawer_icon_size">120dp</dimen>
+
+    <!-- Loading screen -->
+    <dimen name="loading_icon_size">96dp</dimen>
+    <dimen name="loading_label_text_size">@dimen/text_size_large</dimen>
+    <dimen name="loading_message_text_size">@dimen/text_size_medium</dimen>
+    <dimen name="loading_padding">16dp</dimen>
+
+    <!-- Error screen -->
+    <dimen name="error_icon_size">96dp</dimen>
+    <dimen name="error_label_text_size">@dimen/text_size_large</dimen>
+    <dimen name="error_message_text_size">@dimen/text_size_medium</dimen>
+    <dimen name="error_padding">16dp</dimen>
+
+    <!-- Favorite items -->
+    <dimen name="favorite_item_thumbnail_height">100dp</dimen>
+
+    <!-- Details -->
+    <dimen name="details_image_height">250dp</dimen>
+    <dimen name="details_image_overlay_button_size">44dp</dimen>
+
+    <!-- Permissions -->
+    <dimen name="rationale_icon_size">48dp</dimen>
+
+    <!-- Text -->
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_regular">14sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_large">20sp</dimen>
+</resources>

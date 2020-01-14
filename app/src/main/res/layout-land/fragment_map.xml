@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="fragment"
+            type="com.iskorsukov.historyaround.presentation.view.map.MapFragment" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/myLocationFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Common.FAB"
+            android:src="@drawable/ic_my_location"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/articlesRecycler"
+            android:onClick="@{(view) -> fragment.onUserLocationFABClicked()}"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/articlesRecycler"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/articlesSelectorBg"
+            android:visibility="gone"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.35"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
