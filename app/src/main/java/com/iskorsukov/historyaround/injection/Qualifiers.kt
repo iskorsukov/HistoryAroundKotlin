@@ -11,10 +11,6 @@ annotation class BaseWikiUrlFormatString
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class LanguageString
-
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
 annotation class PermissionsList
 
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)

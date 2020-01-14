@@ -1,5 +1,6 @@
-package com.iskorsukov.historyaround.injection
+package com.iskorsukov.historyaround.injection.service
 
+import com.iskorsukov.historyaround.injection.BaseWikiUrlFormatString
 import dagger.Module
 import dagger.Provides
 import com.iskorsukov.historyaround.service.api.WikiApi

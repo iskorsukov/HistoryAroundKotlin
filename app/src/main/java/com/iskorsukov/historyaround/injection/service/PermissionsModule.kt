@@ -1,6 +1,7 @@
-package com.iskorsukov.historyaround.injection
+package com.iskorsukov.historyaround.injection.service
 
 import android.Manifest
+import com.iskorsukov.historyaround.injection.PermissionsList
 import dagger.Module
 import dagger.Provides
 

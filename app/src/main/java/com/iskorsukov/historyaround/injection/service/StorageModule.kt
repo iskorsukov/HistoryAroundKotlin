@@ -1,4 +1,4 @@
-package com.iskorsukov.historyaround.injection
+package com.iskorsukov.historyaround.injection.service
 
 import android.content.Context
 import androidx.room.Room

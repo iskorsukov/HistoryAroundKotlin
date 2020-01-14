@@ -1,6 +1,7 @@
-package com.iskorsukov.historyaround.injection
+package com.iskorsukov.historyaround.injection.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.iskorsukov.historyaround.injection.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

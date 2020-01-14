@@ -1,4 +1,4 @@
-package com.iskorsukov.historyaround.injection
+package com.iskorsukov.historyaround.injection.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

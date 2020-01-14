@@ -1,6 +1,9 @@
 package com.iskorsukov.historyaround.injection
 
 import androidx.lifecycle.ViewModelProvider
+import com.iskorsukov.historyaround.injection.service.*
+import com.iskorsukov.historyaround.injection.viewmodel.ViewModelBindings
+import com.iskorsukov.historyaround.injection.viewmodel.ViewModelFactoryModule
 import dagger.Component
 import com.iskorsukov.historyaround.presentation.view.MainActivity
 import com.iskorsukov.historyaround.service.navigation.NavControllerSource
