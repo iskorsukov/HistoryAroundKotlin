@@ -1,5 +1,6 @@
 package com.iskorsukov.historyaround.service.api.interceptors
 
+import android.util.Log
 import com.iskorsukov.historyaround.service.api.WikiApi
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -20,20 +21,25 @@ class LanguageCodeInterceptor @Inject constructor(): Interceptor {
         return if (languageCode != null) {
             val url = request.url()
             val urlWithLanguage = addLanguage(url, languageCode)
-            request.newBuilder().url(urlWithLanguage).removeHeader(WikiApi.LANGUAGE_HEADER).build()
+            if (urlWithLanguage == null) {
+                request
+            } else {
+                request.newBuilder().url(urlWithLanguage).removeHeader(WikiApi.LANGUAGE_HEADER)
+                    .build()
+            }
         } else {
             request
         }
     }
 
-    private fun addLanguage(url: HttpUrl, languageCode: String): HttpUrl {
+    private fun addLanguage(url: HttpUrl, languageCode: String): HttpUrl? {
         val matcher = pattern.matcher(url.toString())
         matcher.find()
         return if (matcher.groupCount() == 1) {
             // no schema group
-            HttpUrl.parse("$languageCode.$url")!!
+            HttpUrl.parse("$languageCode.$url")
         } else {
-            HttpUrl.parse("${matcher.group(1)}$languageCode.${matcher.group(2)}")!!
+            HttpUrl.parse("${matcher.group(1)}$languageCode.${matcher.group(2)}")
         }
     }
 }

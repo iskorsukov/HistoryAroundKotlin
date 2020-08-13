@@ -189,10 +189,14 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     }
 
     override fun onPause() {
-        lastUserLocation = mapView.mapCenter.latitude to mapView.mapCenter.longitude
-        lastZoomValue = mapView.zoomLevelDouble
         mapView.onPause()
         super.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        lastUserLocation = mapView.mapCenter.latitude to mapView.mapCenter.longitude
+        lastZoomValue = mapView.zoomLevelDouble
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
