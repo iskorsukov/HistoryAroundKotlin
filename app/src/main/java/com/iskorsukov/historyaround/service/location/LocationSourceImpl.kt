@@ -1,15 +1,14 @@
 package com.iskorsukov.historyaround.service.location
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.location.Location
-import android.util.Log
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import java.lang.IllegalStateException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,7 +37,7 @@ class LocationSourceImpl @Inject constructor(
     private val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
             locationResult?.run {
-                this.locations.maxBy { location -> location.accuracy }?.run {
+                this.locations.maxByOrNull { location -> location.accuracy }?.run {
                     locationUpdatesSubject.onNext(this)
                 }
             }

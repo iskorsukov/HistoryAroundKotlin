@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.activity_main.*
 import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
@@ -62,7 +62,7 @@ class PreferencesFragment: PreferenceFragmentCompat() {
     }
 
     private fun setTitle() {
-        activity?.toolbar?.setTitle(R.string.preferences_fragment_title)
+        activity?.findViewById<Toolbar>(R.id.toolbar)?.setTitle(R.string.preferences_fragment_title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,7 +71,7 @@ class PreferencesFragment: PreferenceFragmentCompat() {
     }
 
     private fun initPreferencesSource() {
-        preferencesSource = (context!!.applicationContext as HistoryAroundApp).appComponent.preferencesSource()
+        preferencesSource = (requireContext().applicationContext as HistoryAroundApp).appComponent.preferencesSource()
     }
 
 

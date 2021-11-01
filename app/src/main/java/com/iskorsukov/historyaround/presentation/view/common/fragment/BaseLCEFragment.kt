@@ -4,15 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_base_error.*
-import kotlinx.android.synthetic.main.fragment_base_lce.view.*
 import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentBaseLceBinding
@@ -60,12 +59,12 @@ abstract class BaseLCEFragment<LB: ViewDataBinding, CB: ViewDataBinding, EB: Vie
 
     private fun inflateLCEParts(baseView: View, inflater: LayoutInflater) {
         baseView.apply {
-            contentBinding = DataBindingUtil.inflate(inflater, contentLayout(), content, false)
-            content.addView(contentBinding.root)
-            errorBinding = DataBindingUtil.inflate(inflater, errorLayout(), error, false)
-            error.addView(errorBinding.root)
-            loadingBinding = DataBindingUtil.inflate(inflater, loadingLayout(), loading, false)
-            loading.addView(loadingBinding.root)
+            contentBinding = DataBindingUtil.inflate(inflater, contentLayout(), baseBinding.content, false)
+            baseBinding.content.addView(contentBinding.root)
+            errorBinding = DataBindingUtil.inflate(inflater, errorLayout(), baseBinding.error, false)
+            baseBinding.error.addView(errorBinding.root)
+            loadingBinding = DataBindingUtil.inflate(inflater, loadingLayout(), baseBinding.loading, false)
+            baseBinding.loading.addView(loadingBinding.root)
         }
     }
 
@@ -76,16 +75,16 @@ abstract class BaseLCEFragment<LB: ViewDataBinding, CB: ViewDataBinding, EB: Vie
     }
 
     private fun initNavControllerSource() {
-        navControllerSource = (context!!.applicationContext as HistoryAroundApp).appComponent.navControllerSource()
+        navControllerSource = (requireContext().applicationContext as HistoryAroundApp).appComponent.navControllerSource()
     }
 
     private fun setTitle() {
         if (titleRes() != 0) {
-            activity?.toolbar?.setTitle(titleRes())
+            activity?.findViewById<Toolbar>(R.id.toolbar)?.setTitle(titleRes())
         }
     }
 
     private fun configureRetryButton() {
-        error_retry?.setOnClickListener { onErrorRetry() }
+        view?.findViewById<Button>(R.id.error_retry)?.setOnClickListener { onErrorRetry() }
     }
 }

@@ -8,26 +8,29 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import kotlinx.android.synthetic.main.activity_main.*
 import com.iskorsukov.historyaround.R
+import com.iskorsukov.historyaround.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         navController = findNavController(R.id.navHostFragment)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         configureStartDestinationSwitching()
     }
 
     private fun setupNavigationDrawer() {
-        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
-        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
-        NavigationUI.setupWithNavController(navigationView, navController)
+        appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
+        NavigationUI.setupActionBarWithNavController(this, navController, binding.drawerLayout)
+        NavigationUI.setupWithNavController(binding.navigationView, navController)
     }
 
     private fun configureStartDestinationSwitching() {
@@ -51,9 +54,9 @@ class MainActivity : AppCompatActivity() {
     private fun configureNavigationDrawerVisibility() {
         navController.addOnDestinationChangedListener { _, nd: NavDestination, _ ->
             if (nd.id == R.id.mapFragment) {
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {
-                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
     }

@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_permission.*
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentPermissionBinding
 import com.iskorsukov.historyaround.mock.Mockable
@@ -63,7 +62,7 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionLoadingItem,
     }
 
     private fun showGrantPermissionFromSettingsDialog() {
-        val builder = AlertDialog.Builder(context!!)
+        val builder = AlertDialog.Builder(requireContext())
         builder.apply {
             setTitle(R.string.permissions_denied_title)
             setMessage(R.string.permissions_denied_message)
@@ -80,8 +79,8 @@ class PermissionFragment : BaseLCEViewStateActionFragment<PermissionLoadingItem,
 
     override fun showContent(content: PermissionsViewData) {
         contentBinding.fragment = this
-        permissionsRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
-        permissionsRecyclerView.adapter =
+        contentBinding.permissionsRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
+        contentBinding.permissionsRecyclerView.adapter =
             PermissionsAdapter(
                 content.rationaleList,
                 this@PermissionFragment

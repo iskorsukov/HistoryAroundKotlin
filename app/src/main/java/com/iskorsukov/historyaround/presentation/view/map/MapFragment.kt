@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.ui.onNavDestinationSelected
-import kotlinx.android.synthetic.main.fragment_map.*
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentMapBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
@@ -56,7 +55,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Configuration.getInstance().load(context!!.applicationContext, PreferenceManager.getDefaultSharedPreferences(context!!.applicationContext))
+        Configuration.getInstance().load(requireContext().applicationContext, PreferenceManager.getDefaultSharedPreferences(requireContext().applicationContext))
         setHasOptionsMenu(true)
     }
 
@@ -78,15 +77,15 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     }
 
     private fun initMapView() {
-        mapView.removeMapListener(zoomLevelListener)
+        contentBinding.mapView.removeMapListener(zoomLevelListener)
 
-        mapView.setTileSource(TileSourceFactory.MAPNIK)
+        contentBinding.mapView.setTileSource(TileSourceFactory.MAPNIK)
 
-        mapView.setMultiTouchControls(true)
-        mapView.controller.setZoom(16.0)
-        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        contentBinding.mapView.setMultiTouchControls(true)
+        contentBinding.mapView.controller.setZoom(16.0)
+        contentBinding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
-        mapView.addMapListener(zoomLevelListener)
+        contentBinding.mapView.addMapListener(zoomLevelListener)
     }
 
     private fun observeViewState() {
@@ -122,15 +121,15 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
     private fun restoreMapLocation() {
         if (lastUserLocation != null && lastZoomValue != null) {
-            mapView.controller.setZoom(lastZoomValue!!)
-            mapView.setExpectedCenter(lastUserLocation!!.toGeoPoint())
+            contentBinding.mapView.controller.setZoom(lastZoomValue!!)
+            contentBinding.mapView.setExpectedCenter(lastUserLocation!!.toGeoPoint())
         }
     }
 
     override fun showContent(content: MapViewData) {
         contentBinding.fragment = this
 
-        mapView.overlays.clear()
+        contentBinding.mapView.overlays.clear()
 
         val context = requireContext()
         val markersOverlay: ItemizedOverlayWithFocus<ArticlesOverlayItem> = ItemizedOverlayWithFocus(
@@ -141,16 +140,16 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
             ArticlesOverlayListener(),
             context
         )
-        mapView.overlays.add(markersOverlay)
+        contentBinding.mapView.overlays.add(markersOverlay)
 
         val userLocation = content.location
         val userLocationOverlay = IconOverlay(userLocation.toGeoPoint(), context.getDrawable(R.drawable.ic_my_location))
-        mapView.overlays.add(userLocationOverlay)
+        contentBinding.mapView.overlays.add(userLocationOverlay)
 
         val copyrightOverlay = CopyrightOverlay(context)
-        mapView.overlays.add(copyrightOverlay)
+        contentBinding.mapView.overlays.add(copyrightOverlay)
 
-        mapView.invalidate()
+        contentBinding.mapView.invalidate()
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
@@ -171,8 +170,8 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     }
 
     private fun showArticlesSelector(articleItems: List<ArticleItemViewData>) {
-        articlesRecycler.visibility = View.VISIBLE
-        articlesRecycler.adapter =
+        contentBinding.articlesRecycler.visibility = View.VISIBLE
+        contentBinding.articlesRecycler.adapter =
             ArticleListAdapter(
                 articleItems,
                 viewModel
@@ -180,23 +179,23 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     }
 
     private fun centerOnLocation(location: Pair<Double, Double>) {
-        mapView.controller.animateTo(location.toGeoPoint())
+        contentBinding.mapView.controller.animateTo(location.toGeoPoint())
     }
 
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
+        contentBinding.mapView.onResume()
     }
 
     override fun onPause() {
-        mapView.onPause()
+        contentBinding.mapView.onPause()
         super.onPause()
     }
 
     override fun onStop() {
         super.onStop()
-        lastUserLocation = mapView.mapCenter.latitude to mapView.mapCenter.longitude
-        lastZoomValue = mapView.zoomLevelDouble
+        lastUserLocation = contentBinding.mapView.mapCenter.latitude to contentBinding.mapView.mapCenter.longitude
+        lastZoomValue = contentBinding.mapView.zoomLevelDouble
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -257,7 +256,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
                 setMarker(context!!.getDrawable(R.drawable.ic_location_marker_focused))
                 viewModel.onMarkerSelected(this)
             }
-            mapView.invalidate()
+            contentBinding.mapView.invalidate()
             return true
         }
     }

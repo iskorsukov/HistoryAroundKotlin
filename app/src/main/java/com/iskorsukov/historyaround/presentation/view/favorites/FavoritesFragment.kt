@@ -5,7 +5,6 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_favorites.*
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentFavoritesBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
@@ -40,7 +39,7 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
     }
 
     private fun configureRecyclerView() {
-        favoritesRecycler.addItemDecoration(DividerItemDecoration(context!!, RecyclerView.VERTICAL))
+        contentBinding.favoritesRecycler.addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
     }
 
     private fun observeViewState() {
@@ -68,7 +67,7 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
     }
 
     override fun showContent(content: FavoritesViewData) {
-        favoritesRecycler.adapter =
+        contentBinding.favoritesRecycler.adapter =
             FavoritesAdapter(
                 content.items,
                 viewModel

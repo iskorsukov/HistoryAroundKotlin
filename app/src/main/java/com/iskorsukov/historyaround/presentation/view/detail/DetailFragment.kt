@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
-import kotlinx.android.synthetic.main.fragment_detail.*
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentDetailBinding
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseLCEViewStateActionFragment
@@ -68,7 +67,7 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
     private fun openInMap(latlon: Pair<Double, Double>) {
         val geoIntentString = "geo:${latlon.first},${latlon.second}?q=${latlon.first},${latlon.second}"
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoIntentString))
-        if (intent.resolveActivity(context!!.packageManager) != null) {
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
             startActivity(intent)
         } else {
             Toast.makeText(context, R.string.no_map_app_error, Toast.LENGTH_LONG).show()
@@ -83,14 +82,14 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
     override fun showContent(content: DetailViewData) {
         contentBinding.viewData = content
         content.apply {
-            openInWikiButton.setOnClickListener {
+            contentBinding.openInWikiButton.setOnClickListener {
                 viewModel.onViewInBrowserButtonClicked(item.url)
             }
-            openInMapButton.setOnClickListener {
+            contentBinding.openInMapButton.setOnClickListener {
                 viewModel.onOpenInMapButtonClicked(item.coordinates)
             }
-            favoriteButton.setImageDrawable(if (isFavorite) getDrawable(R.drawable.ic_star) else getDrawable(R.drawable.ic_star_border))
-            favoriteButton.setOnClickListener {
+            contentBinding.favoriteButton.setImageDrawable(if (isFavorite) getDrawable(R.drawable.ic_star) else getDrawable(R.drawable.ic_star_border))
+            contentBinding.favoriteButton.setOnClickListener {
                 if (isFavorite) {
                     viewModel.removeFromFavorites(item)
                 } else {
@@ -105,6 +104,6 @@ class DetailFragment : BaseLCEViewStateActionFragment<DetailLoadingItem, DetailV
     }
 
     private fun getDrawable(id: Int): Drawable {
-        return context!!.resources.getDrawable(id, context!!.theme)
+        return requireContext().resources.getDrawable(id, requireContext().theme)
     }
 }

@@ -2,10 +2,9 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 apply plugin: "kotlin-allopen"
 
@@ -23,15 +22,18 @@ android {
             }
         }
     }
-    compileSdkVersion 28
+
+    compileSdkVersion 31
+
     defaultConfig {
-        applicationId "my.projects.historyaroundkotlin"
+        applicationId "com.iskorsukov.historyaround"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -39,6 +41,11 @@ android {
             signingConfig signingConfigs.config
         }
     }
+
+    buildFeatures {
+        viewBinding true
+    }
+
     dataBinding {
         enabled = true
     }
@@ -61,40 +68,38 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Kotlin
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
 
     // AppCompat
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
 
     // Preferences
-    implementation "androidx.preference:preference:1.1.0"
+    implementation "androidx.preference:preference-ktx:1.1.1"
 
     // ConstraintLayout
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 
     // RecyclerView
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
 
     // Testing
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.ext:truth:1.2.0'
-    androidTestImplementation 'com.google.truth:truth:0.42'
-    androidTestImplementation 'androidx.test:core:1.2.0'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.ext:truth:1.4.0'
+    androidTestImplementation 'com.google.truth:truth:1.0'
+    androidTestImplementation 'androidx.test:core:1.4.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation "android.arch.core:core-testing:1.1.1"
     // Espresso
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
     // UIAutomator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
-
     // Fragment testing
-    def fragment_version = "1.1.0"
+    def fragment_version = "1.3.6"
     debugImplementation ("androidx.fragment:fragment-testing:$fragment_version") {
         exclude group: "androidx.test", module: "core"
     }
@@ -105,20 +110,24 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-android:$mockito_version"
 
     // Lifecycle
-    def lifecycle_version = "2.1.0"
-    // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    def lifecycle_version = "2.4.0"
+
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // Saved state module for ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+
+    // Annotation processor
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-    // Java8 Lifecycle support
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-    // ReactiveStreams support for LiveData
-    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
 
     // LiveEvent
     implementation "com.github.hadilq.liveevent:liveevent:1.2.0"
 
     // Navigation
-    def nav_version = "2.1.0"
+    def nav_version = "2.3.5"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
@@ -141,7 +150,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
 
     // Dagger
-    def dagger_version = "2.23.1"
+    def dagger_version = "2.35.1"
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     // Dagger Android support
@@ -150,7 +159,7 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     // Google Location
-    def location_version = "17.0.0"
+    def location_version = "18.0.0"
     implementation "com.google.android.gms:play-services-location:$location_version"
 
     // OsmDroid
@@ -158,7 +167,7 @@ dependencies {
     implementation "org.osmdroid:osmdroid-android:$osmdroid_version"
 
     // Room
-    def room_version = "2.2.2"
+    def room_version = "2.3.0"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     // Kotlin Extensions and Coroutines support for Room
@@ -169,5 +178,5 @@ dependencies {
     // Glide
     def glide_version = "4.10.0"
     implementation "com.github.bumptech.glide:glide:$glide_version"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
 }
