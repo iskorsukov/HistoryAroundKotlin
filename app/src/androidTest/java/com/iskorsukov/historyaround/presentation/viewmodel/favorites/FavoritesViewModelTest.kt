@@ -70,7 +70,7 @@ class FavoritesViewModelTest {
     fun pushesLoadingStateOnObserve() {
         pushDelayData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.favouritesDataLiveData
 
         assertEquals(LCEState.LOADING, waitForValue(liveData).lceState)
     }
@@ -79,7 +79,7 @@ class FavoritesViewModelTest {
     fun callsSourceOnObserveLoad() {
         pushSampleData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.favouritesDataLiveData
         TimeUnit.SECONDS.sleep(2) // wait for operations to execute
 
         Mockito.verify(favoritesSource).getFavoriteArticles()
@@ -89,7 +89,7 @@ class FavoritesViewModelTest {
     fun pushesContentWhenLoaded() {
         pushSampleData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.favouritesDataLiveData
         TimeUnit.SECONDS.sleep(2) // wait for value to change to content
 
         val viewState = waitForValue(liveData)
@@ -101,7 +101,7 @@ class FavoritesViewModelTest {
     fun pushesErrorOnError() {
         pushErrorData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.favouritesDataLiveData
         TimeUnit.SECONDS.sleep(2) // wait for value to change to content
 
         val viewState = waitForValue(liveData)
@@ -110,7 +110,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun pushesNavigateActionOnItemSelected() {
-        val liveData = viewModel.viewActionLiveData
+        val liveData = viewModel.favouritesActionLiveData
         viewModel.onItemSelected(getSampleData()[0])
 
         val action = waitForValue(liveData)

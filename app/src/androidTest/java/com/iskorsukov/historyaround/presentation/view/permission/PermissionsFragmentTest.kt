@@ -45,8 +45,8 @@ class PermissionsFragmentTest: BaseViewModelFragmentTest<PermissionFragment, Per
 
     @Before
     fun setupMockViewModel() {
-        Mockito.`when`(mockViewModel.viewStateLiveData).thenReturn(viewStateLiveData)
-        Mockito.`when`(mockViewModel.viewActionLiveEvent).thenReturn(viewActionLiveData)
+        Mockito.`when`(mockViewModel.permissionDataLiveData).thenReturn(viewStateLiveData)
+        Mockito.`when`(mockViewModel.permissionActionLiveEvent).thenReturn(viewActionLiveData)
         Mockito.doNothing().`when`(mockViewModel).requestPermissions(MockitoUtil.any())
     }
 
@@ -93,8 +93,8 @@ class PermissionsFragmentTest: BaseViewModelFragmentTest<PermissionFragment, Per
         pushLoadingState()
         launchFragment(PermissionFragment::class.java)
 
-        Mockito.verify(mockViewModel).viewStateLiveData
-        Mockito.verify(mockViewModel).viewActionLiveEvent
+        Mockito.verify(mockViewModel).permissionDataLiveData
+        Mockito.verify(mockViewModel).permissionActionLiveEvent
     }
 
     @Test

@@ -5,25 +5,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.zipWith
-import io.reactivex.schedulers.Schedulers
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.detail.ArticleDetails
 import com.iskorsukov.historyaround.model.detail.toArticleItem
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.ViewState
+import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.OpenInMapAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.ViewInBrowserAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErrorItem
-import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailLoadingItem
-import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailViewState
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.favorites.FavoritesSource
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.zipWith
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @Mockable
@@ -31,13 +28,20 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
 
     private var detailsDisposable: Disposable? = null
 
-    val viewStateLiveData: LiveData<DetailViewState> = MutableLiveData<DetailViewState>()
-    val viewActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
+    private val _detailDataLiveData = MutableLiveData<DetailViewData>()
+    val detailDataLiveData: LiveData<DetailViewData>
+        get() = _detailDataLiveData
+
+    private val _detailErrorLiveData = MutableLiveData<DetailErrorItem>()
+    val detailErrorLiveData: LiveData<DetailErrorItem>
+        get() = _detailErrorLiveData
+
+    val detailActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadArticleDetails(id: String, languageCode: String) {
         detailsDisposable?.dispose()
 
-        (viewStateLiveData as MutableLiveData).value = DetailViewState(LCEState.LOADING, DetailLoadingItem.LOADING_DETAILS, null, null)
+        detailActionLiveData.value = ShowLoadingAction()
         detailsDisposable =
             wikiSource.loadArticleDetails(languageCode, id)
                 .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
@@ -49,10 +53,10 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ viewData ->
-                    (viewStateLiveData as MutableLiveData).value = DetailViewState(viewData)
+                    _detailDataLiveData.value = viewData
                 }, { throwable ->
                     throwable.printStackTrace()
-                    (viewStateLiveData as MutableLiveData).value = DetailViewState(DetailErrorItem.ERROR)
+                    _detailErrorLiveData.value = DetailErrorItem.ERROR
                 })
     }
 
@@ -63,7 +67,7 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                (viewStateLiveData as MutableLiveData).value = DetailViewState(DetailViewData(details, true))
+
             }, {
                 it.printStackTrace()
             })
@@ -76,18 +80,18 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                (viewStateLiveData as MutableLiveData).value = DetailViewState(DetailViewData(details, false))
+                _detailDataLiveData.value = DetailViewData(details, false)
             }, {
                 it.printStackTrace()
             })
     }
 
     fun onOpenInMapButtonClicked(latlon: Pair<Double, Double>) {
-        viewActionLiveData.value = OpenInMapAction(latlon)
+        detailActionLiveData.value = OpenInMapAction(latlon)
     }
 
     fun onViewInBrowserButtonClicked(url: String) {
-        viewActionLiveData.value = ViewInBrowserAction(Uri.parse(url))
+        detailActionLiveData.value = ViewInBrowserAction(Uri.parse(url))
     }
 
     override fun onCleared() {

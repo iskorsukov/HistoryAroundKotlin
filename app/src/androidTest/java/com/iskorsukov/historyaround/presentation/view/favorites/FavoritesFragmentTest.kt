@@ -60,16 +60,16 @@ class FavoritesFragmentTest: BaseViewModelFragmentTest<FavoritesFragment, Favour
 
     @Before
     fun setupViewModel() {
-        Mockito.`when`(mockViewModel.viewStateLiveData).thenReturn(viewStateLiveData)
-        Mockito.`when`(mockViewModel.viewActionLiveData).thenReturn(viewActionLiveData)
+        Mockito.`when`(mockViewModel.favouritesDataLiveData).thenReturn(viewStateLiveData)
+        Mockito.`when`(mockViewModel.favouritesActionLiveData).thenReturn(viewActionLiveData)
     }
 
     @Test
     fun observesViewState() {
         launchFragment(FavoritesFragment::class.java)
 
-        Mockito.verify(mockViewModel).viewActionLiveData
-        Mockito.verify(mockViewModel).viewStateLiveData
+        Mockito.verify(mockViewModel).favouritesActionLiveData
+        Mockito.verify(mockViewModel).favouritesDataLiveData
     }
 
     @Test

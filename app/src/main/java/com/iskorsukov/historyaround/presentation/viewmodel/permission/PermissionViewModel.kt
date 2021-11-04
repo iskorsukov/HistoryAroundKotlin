@@ -6,19 +6,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import com.iskorsukov.historyaround.mock.Mockable
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
+import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
-import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionLoadingItem
-import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionViewState
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.viewdata.PermissionsViewData
 import com.iskorsukov.historyaround.service.permission.PermissionSource
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @Mockable
@@ -30,16 +28,19 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
 
     private var permissionsCheckDisposable: Disposable? = null
 
-    val viewStateLiveData: LiveData<PermissionViewState> by lazy {
-        MutableLiveData<PermissionViewState>().also {
-            it.value = PermissionViewState(PermissionLoadingItem.PERMISSION_LOADING)
-            checkPermissions()
-        }
-    }
+    private val _permissionDataLiveData = MutableLiveData<PermissionsViewData>()
+    val permissionDataLiveData: LiveData<PermissionsViewData>
+        get() = _permissionDataLiveData
 
-    val viewActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
+    private val _permissionErrorLiveData = MutableLiveData<PermissionErrorItem>()
+    val permissionErrorLiveData: LiveData<PermissionErrorItem>
+        get() = _permissionErrorLiveData
+
+    val permissionActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun checkPermissions() {
+        permissionActionLiveEvent.value = ShowLoadingAction()
+
         permissionsCheckDisposable?.dispose()
 
         permissionsCheckDisposable = permissionSource.getNotGrantedPermissions()
@@ -48,13 +49,13 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             .subscribe({ permissions: List<String> ->
                 val rationaleList = permissions.mapNotNull { permissionSource.mapPermissionToRationale(it) }
                 if (rationaleList.isEmpty()) {
-                    viewActionLiveEvent.value = NavigateToMapAction()
+                    permissionActionLiveEvent.value = NavigateToMapAction()
                 } else {
-                    (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionsViewData(rationaleList))
+                    _permissionDataLiveData.value = PermissionsViewData(rationaleList)
                 }
             }, { throwable ->
                 throwable.printStackTrace()
-                (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionErrorItem.PERMISSIONS_ERROR)
+                _permissionErrorLiveData.value = PermissionErrorItem.PERMISSIONS_ERROR
             })
     }
 
@@ -65,7 +66,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             permissionSource.requestPermissions(permissions, fragment, PERMISSIONS_REQUEST_CODE)
         }, { throwable ->
             throwable.printStackTrace()
-            (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionErrorItem.PERMISSIONS_ERROR)
+            _permissionErrorLiveData.value = PermissionErrorItem.PERMISSIONS_ERROR
         })
     }
 
@@ -76,13 +77,12 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             if (permissionDenied) break
         }
         if (permissionDenied) {
-            viewActionLiveEvent.value = ShowPermissionDeniedDialogAction()
+            permissionActionLiveEvent.value = ShowPermissionDeniedDialogAction()
         }
         checkPermissions()
     }
 
     fun onRetry() {
-        (viewStateLiveData as MutableLiveData).value = PermissionViewState(PermissionLoadingItem.PERMISSION_LOADING)
         checkPermissions()
     }
 

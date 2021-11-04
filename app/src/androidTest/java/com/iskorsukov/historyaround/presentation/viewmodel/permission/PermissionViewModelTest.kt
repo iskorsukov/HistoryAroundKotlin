@@ -66,7 +66,7 @@ class PermissionViewModelTest {
     fun pushesLoadingStateOnGetViewStateLiveData() {
         pushDelayNotGrantedPermissions()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.permissionDataLiveData
 
         val viewState = waitForValue(liveData)
         assertEquals(LCEState.LOADING, viewState.lceState)
@@ -85,7 +85,7 @@ class PermissionViewModelTest {
     fun mapsPermissionsToRationaleOnCheckPermissions() {
         pushSampleNotGrantedPermissions()
 
-        viewModel.viewStateLiveData
+        viewModel.permissionDataLiveData
         TimeUnit.SECONDS.sleep(2) // wait for value to change from loading to content
 
         Mockito.verify(mockPermissionSource, Mockito.times(2)).mapPermissionToRationale(ArgumentMatchers.anyString())
@@ -95,7 +95,7 @@ class PermissionViewModelTest {
     fun returnsViewStateWithNotGrantedPermissionRationale() {
         pushSampleNotGrantedPermissions()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.permissionDataLiveData
         TimeUnit.SECONDS.sleep(2) // wait for value to change from loading to content
 
         val viewState = waitForValue(liveData)
@@ -109,7 +109,7 @@ class PermissionViewModelTest {
     fun pushesNavigateActionOnAllPermissionsGranted() {
         pushAllPermissionsGranted()
 
-        val liveData = viewModel.viewActionLiveEvent
+        val liveData = viewModel.permissionActionLiveEvent
         viewModel.checkPermissions()
         TimeUnit.SECONDS.sleep(2)
 
@@ -125,7 +125,7 @@ class PermissionViewModelTest {
     fun pushesErrorStateOnError() {
         pushErrorOnGetNotGrantedPermissions()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.permissionDataLiveData
         TimeUnit.SECONDS.sleep(2) // wait for value to change from loading to error
 
         val viewState = liveData.value!!
@@ -161,7 +161,7 @@ class PermissionViewModelTest {
         val mockFragment = Mockito.mock(PermissionFragment::class.java)
         Mockito.`when`(mockPermissionSource.shouldShowRequestPermissionRationale(ArgumentMatchers.anyString(), MockitoUtil.any())).thenReturn(false)
 
-        val liveData = viewModel.viewActionLiveEvent
+        val liveData = viewModel.permissionActionLiveEvent
         viewModel.onRequestPermissionsResult(getSamplePermissions().toTypedArray(), intArrayOf(PackageManager.PERMISSION_DENIED, PackageManager.PERMISSION_GRANTED), mockFragment)
 
         val action = liveData.value

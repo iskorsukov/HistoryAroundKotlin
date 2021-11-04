@@ -89,7 +89,7 @@ class DetailsViewModelTest {
     fun pushesLoadingStateWhenLoadingDetails() {
         pushDelayData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.detailDataLiveData
         viewModel.loadArticleDetails("1", "en")
 
         assertEquals(LCEState.LOADING, waitForValue(liveData).lceState)
@@ -99,7 +99,7 @@ class DetailsViewModelTest {
     fun pushesContentStateWhenLoadedDetails() {
         pushSampleData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.detailDataLiveData
         viewModel.loadArticleDetails("1", "en")
         TimeUnit.SECONDS.sleep(2)
 
@@ -117,7 +117,7 @@ class DetailsViewModelTest {
     fun pushesErrorStateOnError() {
         pushErrorData()
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.detailDataLiveData
         viewModel.loadArticleDetails("1", "en")
         TimeUnit.SECONDS.sleep(2)
 
@@ -147,7 +147,7 @@ class DetailsViewModelTest {
     fun changesFavoriteStateAfterFavoritesAction() {
         Mockito.`when`(favoritesSource.addToFavorites(MockitoUtil.any())).thenReturn(Completable.complete())
 
-        val liveData = viewModel.viewStateLiveData
+        val liveData = viewModel.detailDataLiveData
         viewModel.addToFavorites(getSampleData().item)
 
         val viewState = waitForValue(liveData)
@@ -157,7 +157,7 @@ class DetailsViewModelTest {
 
     @Test
     fun pushesActionOnMapButtonClicked() {
-        val liveData = viewModel.viewActionLiveData
+        val liveData = viewModel.detailActionLiveData
 
         viewModel.onOpenInMapButtonClicked(1.0 to 1.0)
 
@@ -166,7 +166,7 @@ class DetailsViewModelTest {
 
     @Test
     fun pushesActionOnOpenInBrowserClicked() {
-        val liveData = viewModel.viewActionLiveData
+        val liveData = viewModel.detailActionLiveData
 
         viewModel.onViewInBrowserButtonClicked("")
 

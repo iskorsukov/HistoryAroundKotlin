@@ -5,16 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.article.ArticleItem
 import com.iskorsukov.historyaround.model.preferences.PreferencesBundle
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
+import com.iskorsukov.historyaround.presentation.view.common.viewstate.ErrorItem
+import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListItemListener
 import com.iskorsukov.historyaround.presentation.view.map.utils.groupItemsIntoMarkers
@@ -22,8 +17,6 @@ import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLoc
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToDetailsAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.ShowArticleSelectorAction
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapErrorItem
-import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapLoadingItem
-import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapViewState
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticlesClusterItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticlesOverlayItem
@@ -34,6 +27,12 @@ import com.iskorsukov.historyaround.presentation.viewmodel.map.throwable.Locatio
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.location.LocationSource
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -52,16 +51,19 @@ class MapViewModel @Inject constructor(
 
     private var loadArticlesDisposable: Disposable? = null
 
-    val mapDataLiveData: LiveData<MapViewState> by lazy {
-        MutableLiveData<MapViewState>().also {
-            it.value = MapViewState(MapLoadingItem.LOADING_ARTICLES)
-            loadArticles()
-        }
-    }
+    private val _mapDataLiveData = MutableLiveData<MapViewData>()
+    val mapDataLiveData: LiveData<MapViewData>
+        get() = _mapDataLiveData
+
+    private val _mapErrorLiveData = MutableLiveData<MapErrorItem>()
+    val mapErrorLiveData: LiveData<MapErrorItem>
+        get() = _mapErrorLiveData
 
     val mapActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
-    private fun loadArticles() {
+    fun loadArticles() {
+        mapActionLiveData.value = ShowLoadingAction()
+        
         loadArticlesDisposable?.dispose()
 
         var lastLoadedLocation: Location? = null
@@ -125,24 +127,22 @@ class MapViewModel @Inject constructor(
         throwable.printStackTrace()
         when (throwable) {
             is LocationServicesErrorThrowable ->
-                (mapDataLiveData as MutableLiveData).value = MapViewState(MapErrorItem.LOCATION_SERVICES_ERROR)
+                _mapErrorLiveData.value = MapErrorItem.LOCATION_SERVICES_ERROR
             is LocationErrorThrowable ->
-                (mapDataLiveData as MutableLiveData).value = MapViewState(MapErrorItem.LOCATION_ERROR)
+                _mapErrorLiveData.value = MapErrorItem.LOCATION_ERROR
             else ->
-                (mapDataLiveData as MutableLiveData).value = MapViewState(MapErrorItem.ARTICLES_ERROR)
+                _mapErrorLiveData.value = MapErrorItem.ARTICLES_ERROR
         }
     }
 
     private fun handleResult(location: Location, articleItems: List<ArticleItem>) {
         mapActionLiveData.value = CenterOnLocationAction(location.latitude to location.longitude)
-        (mapDataLiveData as MutableLiveData).value =
-            MapViewState(
-                MapViewData(
-                    location.latitude to location.longitude,
-                    groupItemsIntoMarkers(
-                        lastZoomValue,
-                        articleItems.map { ArticleItemViewData(it, false) }
-                    )
+        _mapDataLiveData.value =
+            MapViewData(
+                location.latitude to location.longitude,
+                groupItemsIntoMarkers(
+                    lastZoomValue,
+                    articleItems.map { ArticleItemViewData(it, false) }
                 )
             )
     }
@@ -164,29 +164,26 @@ class MapViewModel @Inject constructor(
     }
 
     fun onCenterOnUserLocationClicked() {
-        mapDataLiveData.value?.content?.apply {
+        mapDataLiveData.value?.apply {
             mapActionLiveData.value = CenterOnLocationAction(this.location)
         }
     }
 
     fun onZoomLevelChanged(zoomLevel: Double) {
         lastZoomValue = zoomLevel
-        mapDataLiveData.value?.content?.apply {
-            (mapDataLiveData as MutableLiveData).value =
-                MapViewState(
-                    MapViewData(
-                        location,
-                        groupItemsIntoMarkers(
-                            lastZoomValue,
-                            articlesOverlayData.toViewData()
-                        )
+        mapDataLiveData.value?.apply {
+            _mapDataLiveData.value =
+                MapViewData(
+                    location,
+                    groupItemsIntoMarkers(
+                        lastZoomValue,
+                        articlesOverlayData.toViewData()
                     )
                 )
         }
     }
 
     fun onRefresh() {
-        (mapDataLiveData as MutableLiveData).value = MapViewState(MapLoadingItem.LOADING_ARTICLES)
         loadArticles()
     }
 

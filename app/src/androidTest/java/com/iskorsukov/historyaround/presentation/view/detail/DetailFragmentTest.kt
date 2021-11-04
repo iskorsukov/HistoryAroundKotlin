@@ -17,7 +17,6 @@ import com.iskorsukov.historyaround.presentation.view.base.BaseViewModelFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailLoadingItem
-import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailViewState
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.presentation.viewmodel.detail.DetailViewModel
 import com.iskorsukov.historyaround.utils.DrawableMatcherUtils
@@ -49,8 +48,8 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
 
     @Before
     fun setupMockViewModel() {
-        Mockito.`when`(mockViewModel.viewStateLiveData).thenReturn(viewStateLiveData)
-        Mockito.`when`(mockViewModel.viewActionLiveData).thenReturn(viewActionLiveData)
+        Mockito.`when`(mockViewModel.detailDataLiveData).thenReturn(viewStateLiveData)
+        Mockito.`when`(mockViewModel.detailActionLiveData).thenReturn(viewActionLiveData)
         Mockito.doNothing().`when`(mockViewModel).loadArticleDetails(MockitoUtil.any(), MockitoUtil.any())
     }
 
@@ -58,8 +57,8 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
     fun observesViewState() {
         launchFragment(DetailFragment::class.java, args)
 
-        Mockito.verify(mockViewModel).viewStateLiveData
-        Mockito.verify(mockViewModel).viewActionLiveData
+        Mockito.verify(mockViewModel).detailDataLiveData
+        Mockito.verify(mockViewModel).detailActionLiveData
     }
 
     @Test

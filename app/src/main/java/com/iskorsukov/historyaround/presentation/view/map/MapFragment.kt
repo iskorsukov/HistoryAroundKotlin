@@ -1,17 +1,16 @@
 package com.iskorsukov.historyaround.presentation.view.map
 
+import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import androidx.lifecycle.Observer
+import android.view.*
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.onNavDestinationSelected
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentMapBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
-import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseLCEViewStateActionFragment
+import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListAdapter
 import com.iskorsukov.historyaround.presentation.view.map.utils.toGeoPoint
@@ -19,11 +18,11 @@ import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLoc
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToDetailsAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.ShowArticleSelectorAction
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapErrorItem
-import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapLoadingItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticlesOverlayItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.MapViewData
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.toOverlayItem
+import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.map.MapViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
@@ -36,7 +35,11 @@ import org.osmdroid.views.overlay.IconOverlay
 import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
 
-class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, MapErrorItem, MapViewModel, FragmentMapBinding>() {
+class MapFragment : BaseNavViewActionFragment() {
+
+    private lateinit var viewModel: MapViewModel
+
+    private lateinit var contentBinding: FragmentMapBinding
 
     private val zoomLevelListener = ZoomLevelListener(zoomStep = 0.1)
 
@@ -49,8 +52,9 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         private const val ZOOM_KEY = "zoom"
     }
 
-    override fun viewModelClass(): Class<MapViewModel> {
-        return MapViewModel::class.java
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel = ViewModelProvider(this, viewModelFactory())[MapViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,8 +63,13 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         setHasOptionsMenu(true)
     }
 
-    override fun contentLayout(): Int {
-        return R.layout.fragment_map
+    override fun inflateContent(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        contentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
+        return contentBinding.root
     }
 
     override fun titleRes(): Int {
@@ -69,11 +78,11 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViewModel()
         initMapView()
         tryRestoreInstanceState(savedInstanceState)
         restoreMapLocation()
         observeViewState()
+        if (savedInstanceState == null) viewModel.loadArticles()
     }
 
     private fun initMapView() {
@@ -89,12 +98,9 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
     }
 
     private fun observeViewState() {
-        viewModel.mapDataLiveData.observe(viewLifecycleOwner, Observer {
-            applyViewState(it)
-        })
-        viewModel.mapActionLiveData.observe(viewLifecycleOwner, Observer {
-            applyViewAction(it)
-        })
+        viewModel.mapDataLiveData.observe(viewLifecycleOwner, this::showContent)
+        viewModel.mapErrorLiveData.observe(viewLifecycleOwner, this::handleError)
+        viewModel.mapActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -126,7 +132,7 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         }
     }
 
-    override fun showContent(content: MapViewData) {
+    private fun showContent(content: MapViewData) {
         contentBinding.fragment = this
 
         contentBinding.mapView.overlays.clear()
@@ -150,6 +156,10 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
         contentBinding.mapView.overlays.add(copyrightOverlay)
 
         contentBinding.mapView.invalidate()
+    }
+
+    private fun handleError(error: MapErrorItem) {
+        TODO("Show error dialog")
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
@@ -213,10 +223,6 @@ class MapFragment : BaseLCEViewStateActionFragment<MapLoadingItem, MapViewData, 
 
     fun onUserLocationFABClicked() {
         viewModel.onCenterOnUserLocationClicked()
-    }
-
-    override fun onErrorRetry() {
-        viewModel.onRetry()
     }
 
     private inner class ZoomLevelListener(private val zoomStep: Double): MapListener {

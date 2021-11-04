@@ -1,40 +1,55 @@
 package com.iskorsukov.historyaround.presentation.view.favorites
 
+import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentFavoritesBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
-import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseLCEViewStateActionFragment
+import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.favorites.adapter.FavoritesAdapter
 import com.iskorsukov.historyaround.presentation.view.favorites.viewaction.NavigateToDetailsAction
 import com.iskorsukov.historyaround.presentation.view.favorites.viewstate.FavoritesErrorItem
-import com.iskorsukov.historyaround.presentation.view.favorites.viewstate.FavoritesLoadingItem
 import com.iskorsukov.historyaround.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
+import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
+import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.favourites.FavouritesViewModel
 
-class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, FavoritesViewData, FavoritesErrorItem, FavouritesViewModel, FragmentFavoritesBinding>() {
+class FavoritesFragment : BaseNavViewActionFragment() {
 
-    override fun viewModelClass(): Class<FavouritesViewModel> {
-        return FavouritesViewModel::class.java
-    }
+    private lateinit var viewModel: FavouritesViewModel
 
-    override fun contentLayout(): Int {
-        return R.layout.fragment_favorites
+    private lateinit var contentBinding: FragmentFavoritesBinding
+
+    override fun inflateContent(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        contentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_favorites, container, false)
+        return contentBinding.root
     }
 
     override fun titleRes(): Int {
         return R.string.favorites_fragment_title
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel = ViewModelProvider(this, viewModelFactory())[FavouritesViewModel::class.java]
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureRecyclerView()
-        initViewModel()
         observeViewState()
     }
 
@@ -43,12 +58,9 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
     }
 
     private fun observeViewState() {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner, Observer {
-            applyViewState(it)
-        })
-        viewModel.viewActionLiveData.observe(viewLifecycleOwner, Observer {
-            applyViewAction(it)
-        })
+        viewModel.favouritesDataLiveData.observe(viewLifecycleOwner, this::showContent)
+        viewModel.favouritesErrorLiveData.observe(viewLifecycleOwner, this::handleError)
+        viewModel.favouritesActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
@@ -66,7 +78,7 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
         )
     }
 
-    override fun showContent(content: FavoritesViewData) {
+    private fun showContent(content: FavoritesViewData) {
         contentBinding.favoritesRecycler.adapter =
             FavoritesAdapter(
                 content.items,
@@ -74,8 +86,7 @@ class FavoritesFragment : BaseLCEViewStateActionFragment<FavoritesLoadingItem, F
             )
     }
 
-    override fun onErrorRetry() {
-        viewModel.onRetry()
+    private fun handleError(error: FavoritesErrorItem) {
+        TODO("Show error dialog")
     }
-
 }
