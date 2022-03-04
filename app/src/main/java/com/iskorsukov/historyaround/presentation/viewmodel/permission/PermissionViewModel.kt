@@ -1,15 +1,14 @@
 package com.iskorsukov.historyaround.presentation.viewmodel.permission
 
-import android.content.pm.PackageManager
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
+import com.iskorsukov.historyaround.presentation.view.common.adapter.ItemListener
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
+import com.iskorsukov.historyaround.presentation.view.permission.viewaction.RequestPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.viewdata.PermissionsViewData
@@ -20,7 +19,9 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @Mockable
-class PermissionViewModel @Inject constructor(private val permissionSource: PermissionSource) : ViewModel() {
+class PermissionViewModel @Inject constructor(
+    private val permissionSource: PermissionSource
+    ) : ViewModel(), ItemListener {
 
     companion object {
         const val PERMISSIONS_REQUEST_CODE = 1007
@@ -32,6 +33,10 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
     val permissionDataLiveData: LiveData<PermissionsViewData>
         get() = _permissionDataLiveData
 
+    private val _permissionIsLoadingLiveData = MutableLiveData(true)
+    val permissionIsLoadingLiveData: LiveData<Boolean>
+        get() = _permissionIsLoadingLiveData
+
     private val _permissionErrorLiveData = MutableLiveData<PermissionErrorItem>()
     val permissionErrorLiveData: LiveData<PermissionErrorItem>
         get() = _permissionErrorLiveData
@@ -39,7 +44,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
     val permissionActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun checkPermissions() {
-        permissionActionLiveEvent.value = ShowLoadingAction()
+        _permissionIsLoadingLiveData.value = true
 
         permissionsCheckDisposable?.dispose()
 
@@ -52,6 +57,7 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
                     permissionActionLiveEvent.value = NavigateToMapAction()
                 } else {
                     _permissionDataLiveData.value = PermissionsViewData(rationaleList)
+                    _permissionIsLoadingLiveData.value = false
                 }
             }, { throwable ->
                 throwable.printStackTrace()
@@ -59,30 +65,26 @@ class PermissionViewModel @Inject constructor(private val permissionSource: Perm
             })
     }
 
-    fun requestPermissions(fragment: Fragment) {
+    fun requestPermissions() {
         permissionsCheckDisposable?.dispose()
 
         permissionsCheckDisposable = permissionSource.getNotGrantedPermissions().subscribe({ permissions: List<String> ->
-            permissionSource.requestPermissions(permissions, fragment, PERMISSIONS_REQUEST_CODE)
+            permissionActionLiveEvent.value = RequestPermissionsAction(permissions)
         }, { throwable ->
             throwable.printStackTrace()
             _permissionErrorLiveData.value = PermissionErrorItem.PERMISSIONS_ERROR
         })
     }
 
-    fun onRequestPermissionsResult(permissions: Array<out String>, grantResults: IntArray, fragment: Fragment) {
+    fun onRequestPermissionsResult(permissionsRequestResult: Map<String, Boolean>) {
         var permissionDenied = false
-        for (i in grantResults.indices) {
-            permissionDenied = grantResults[i] == PackageManager.PERMISSION_DENIED && !permissionSource.shouldShowRequestPermissionRationale(permissions[i], fragment)
+        for (permission in permissionsRequestResult.keys) {
+            permissionDenied = permissionsRequestResult[permission] == false
             if (permissionDenied) break
         }
         if (permissionDenied) {
             permissionActionLiveEvent.value = ShowPermissionDeniedDialogAction()
         }
-        checkPermissions()
-    }
-
-    fun onRetry() {
         checkPermissions()
     }
 

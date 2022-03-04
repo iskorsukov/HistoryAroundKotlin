@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="com.iskorsukov.historyaround.presentation.viewmodel.favourites.FavouritesViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            bind:isVisible="@{viewModel.favouritesIsLoadingLiveData}"
+            layout="@layout/fragment_favorites_shimmer" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favoritesRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:visibility="@{viewModel.favouritesIsLoadingLiveData == false}"
+            app:favoritesRecyclerItems="@{viewModel.favouritesDataLiveData}"
+            app:favoritesItemListener="@{viewModel}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

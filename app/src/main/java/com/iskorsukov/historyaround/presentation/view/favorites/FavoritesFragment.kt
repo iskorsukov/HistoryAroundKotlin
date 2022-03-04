@@ -35,6 +35,8 @@ class FavoritesFragment : BaseNavViewActionFragment() {
         savedInstanceState: Bundle?
     ): View {
         contentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_favorites, container, false)
+        contentBinding.lifecycleOwner = this
+        contentBinding.viewModel = viewModel
         return contentBinding.root
     }
 
@@ -45,6 +47,11 @@ class FavoritesFragment : BaseNavViewActionFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         viewModel = ViewModelProvider(this, viewModelFactory())[FavouritesViewModel::class.java]
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) viewModel.loadFavoriteItems()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +65,6 @@ class FavoritesFragment : BaseNavViewActionFragment() {
     }
 
     private fun observeViewState() {
-        viewModel.favouritesDataLiveData.observe(viewLifecycleOwner, this::showContent)
         viewModel.favouritesErrorLiveData.observe(viewLifecycleOwner, this::handleError)
         viewModel.favouritesActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
     }
@@ -76,14 +82,6 @@ class FavoritesFragment : BaseNavViewActionFragment() {
                 articleItem.languageCode
             )
         )
-    }
-
-    private fun showContent(content: FavoritesViewData) {
-        contentBinding.favoritesRecycler.adapter =
-            FavoritesAdapter(
-                content.items,
-                viewModel
-            )
     }
 
     private fun handleError(error: FavoritesErrorItem) {

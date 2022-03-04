@@ -33,10 +33,14 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
     val favouritesErrorLiveData: LiveData<FavoritesErrorItem>
         get() = _favouritesErrorLiveData
 
+    private val _favouritesIsLoadingLiveData = MutableLiveData(true)
+    val favouritesIsLoadingLiveData: LiveData<Boolean>
+        get() = _favouritesIsLoadingLiveData
+
     val favouritesActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadFavoriteItems() {
-        favouritesActionLiveData.value = ShowLoadingAction()
+        _favouritesIsLoadingLiveData.value = true
 
         disposable?.dispose()
         disposable = favoritesSource.getFavoriteArticles()
@@ -45,20 +49,18 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
             .subscribe(
                 { favoriteItems ->
                     _favouritesDataLiveData.value = FavoritesViewData(favoriteItems)
+                    _favouritesIsLoadingLiveData.value = false
                 },
                 { throwable ->
                     throwable.printStackTrace()
                     _favouritesErrorLiveData.value = FavoritesErrorItem.ERROR
+                    _favouritesIsLoadingLiveData.value = false
                 }
             )
     }
 
     override fun onItemSelected(item: ArticleItem) {
         favouritesActionLiveData.value = NavigateToDetailsAction(item)
-    }
-
-    fun onRetry() {
-        loadFavoriteItems()
     }
 
     override fun onCleared() {

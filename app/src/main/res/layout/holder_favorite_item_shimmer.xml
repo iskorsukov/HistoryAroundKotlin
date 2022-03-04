@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.facebook.shimmer.ShimmerFrameLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-        <variable
-            name="item"
-            type="com.iskorsukov.historyaround.model.article.ArticleItem" />
-    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,7 +15,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/favorite_item_thumbnail_height"
             android:scaleType="centerCrop"
-            android:src="@{item.thumbnail.url}"
+            android:src="@drawable/ic_image_placeholder"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.4" />
@@ -29,7 +25,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{item.title}"
+            android:background="@drawable/text_shimmer_background"
             style="@style/Text.Medium.Black"
             app:layout_constraintBottom_toTopOf="@+id/favoriteItemDescription"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,14 +36,15 @@
         <TextView
             android:id="@+id/favoriteItemDescription"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_marginTop="8dp"
             style="@style/Favorites.ArticleItem.Extract"
-            android:text="@{item.description}"
+            android:background="@drawable/text_shimmer_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/favoriteItemTitle"
             app:layout_constraintTop_toBottomOf="@+id/favoriteItemTitle"
             tools:text="Article extract" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

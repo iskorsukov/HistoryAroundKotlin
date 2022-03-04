@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="fragment"
-            type="com.iskorsukov.historyaround.presentation.view.map.MapFragment" />
+            name="viewModel"
+            type="com.iskorsukov.historyaround.presentation.viewmodel.map.MapViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +14,12 @@
         <org.osmdroid.views.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:visibility="@{viewModel.mapIsLoadingLiveData == false}"
+            app:userLocation="@{viewModel.mapLocationLiveData}"
+            app:mapViewData="@{viewModel.mapDataLiveData}"
+            app:articleMarkerListener="@{viewModel}"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/myLocationFAB"
@@ -22,9 +27,10 @@
             android:layout_height="wrap_content"
             style="@style/Common.FAB"
             android:src="@drawable/ic_my_location"
+            app:visibility="@{viewModel.mapIsLoadingLiveData == false}"
             app:layout_constraintBottom_toTopOf="@id/articlesRecycler"
             app:layout_constraintEnd_toEndOf="parent"
-            android:onClick="@{(view) -> fragment.onUserLocationFABClicked()}"
+            android:onClick="@{(view) -> viewModel.onCenterOnUserLocationClicked()}"
             />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -38,6 +44,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHeight_percent="0.25"
             />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:visibility="@{viewModel.mapIsLoadingLiveData}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

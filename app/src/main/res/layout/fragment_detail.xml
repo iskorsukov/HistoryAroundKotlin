@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
-            name="viewData"
-            type="com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData" />
+            name="viewModel"
+            type="com.iskorsukov.historyaround.presentation.viewmodel.detail.DetailViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,9 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            bind:isVisible="@{viewModel.detailIsLoadingLiveData}"
+            layout="@layout/fragment_detail_shimmer" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:visibility="@{viewModel.detailIsLoadingLiveData == false}"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,7 +35,7 @@
                     android:id="@+id/articleDetailsImage"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/details_image_height"
-                    android:src="@{viewData.item.thumbnail.url}"
+                    android:src="@{viewModel.detailDataLiveData.item.thumbnail.url}"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <View
@@ -41,7 +50,8 @@
 
                 <ImageButton
                     android:id="@+id/favoriteButton"
-                    android:src="@drawable/ic_star_border"
+                    android:src="@{viewModel.detailDataLiveData.favorite ? @drawable/ic_star : @drawable/ic_star_border}"
+                    android:onClick="@{(view) -> viewModel.onFavoriteButtonClicked()}"
                     style="@style/Details.Image.OverlayButton"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -52,6 +62,7 @@
                     android:id="@+id/openInMapButton"
                     android:src="@drawable/ic_map"
                     style="@style/Details.Image.OverlayButton"
+                    android:onClick="@{(view) -> viewModel.onOpenInMapButtonClicked()}"
                     app:layout_constraintTop_toBottomOf="@id/favoriteButton"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:ignore="ContentDescription" />
@@ -60,7 +71,7 @@
                     android:id="@+id/articleDetailsTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{viewData.item.title}"
+                    android:text="@{viewModel.detailDataLiveData.item.title}"
                     style="@style/Details.Text.Title"
                     tools:text="Article title"
                     app:layout_constraintBottom_toBottomOf="@id/articleDetailsImage"
@@ -71,7 +82,7 @@
                     android:id="@+id/articleDetailsExtract"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{viewData.item.extract}"
+                    android:text="@{viewModel.detailDataLiveData.item.extract}"
                     style="@style/Text.Regular.Black"
                     android:layout_margin="8dp"
                     app:layout_constraintTop_toBottomOf="@id/articleDetailsImage"
@@ -80,7 +91,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         </ScrollView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -88,7 +98,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/wiki_w"
+            app:visibility="@{viewModel.detailIsLoadingLiveData == false}"
             style="@style/Common.FAB"
+            android:onClick="@{(view) -> viewModel.onViewInBrowserButtonClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 

@@ -2,6 +2,4 @@ package com.iskorsukov.historyaround.presentation.view.permission.viewstate.view
 
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewdata.ViewData
 
-class PermissionsViewData(val rationaleList: List<PermissionRationale>):
-    ViewData {
-}
+class PermissionsViewData(val rationaleList: List<PermissionRationale>): ViewData

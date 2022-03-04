@@ -1,5 +1,5 @@
 package com.iskorsukov.historyaround.presentation.view.permission.viewaction
 
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
+import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.NoDataAction
 
-class NavigateToMapAction: ViewAction<Unit>(null)
+class NavigateToMapAction: NoDataAction()

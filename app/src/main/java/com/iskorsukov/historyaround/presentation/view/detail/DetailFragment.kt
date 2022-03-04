@@ -2,7 +2,6 @@ package com.iskorsukov.historyaround.presentation.view.detail
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +18,6 @@ import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewactio
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.OpenInMapAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.ViewInBrowserAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErrorItem
-import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.detail.DetailViewModel
 
@@ -37,6 +35,8 @@ class DetailFragment : BaseNavViewActionFragment() {
         savedInstanceState: Bundle?
     ): View {
         contentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
+        contentBinding.lifecycleOwner = this
+        contentBinding.viewModel = viewModel
         return contentBinding.root
     }
 
@@ -49,14 +49,17 @@ class DetailFragment : BaseNavViewActionFragment() {
         viewModel = ViewModelProvider(this, viewModelFactory())[DetailViewModel::class.java]
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) loadDetails()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeViewState()
-        loadDetails()
     }
 
     private fun observeViewState() {
-        viewModel.detailDataLiveData.observe(viewLifecycleOwner, this::showContent)
         viewModel.detailErrorLiveData.observe(viewLifecycleOwner, this::handleError)
         viewModel.detailActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
     }
@@ -87,31 +90,7 @@ class DetailFragment : BaseNavViewActionFragment() {
         startActivity(intent)
     }
 
-    private fun showContent(content: DetailViewData) {
-        contentBinding.viewData = content
-        content.apply {
-            contentBinding.openInWikiButton.setOnClickListener {
-                viewModel.onViewInBrowserButtonClicked(item.url)
-            }
-            contentBinding.openInMapButton.setOnClickListener {
-                viewModel.onOpenInMapButtonClicked(item.coordinates)
-            }
-            contentBinding.favoriteButton.setImageDrawable(if (isFavorite) getDrawable(R.drawable.ic_star) else getDrawable(R.drawable.ic_star_border))
-            contentBinding.favoriteButton.setOnClickListener {
-                if (isFavorite) {
-                    viewModel.removeFromFavorites(item)
-                } else {
-                    viewModel.addToFavorites(item)
-                }
-            }
-        }
-    }
-
     private fun handleError(error: DetailErrorItem) {
         TODO("Show error dialog")
-    }
-
-    private fun getDrawable(id: Int): Drawable {
-        return requireContext().resources.getDrawable(id, requireContext().theme)
     }
 }

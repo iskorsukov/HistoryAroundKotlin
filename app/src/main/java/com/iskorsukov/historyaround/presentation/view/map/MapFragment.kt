@@ -41,8 +41,6 @@ class MapFragment : BaseNavViewActionFragment() {
 
     private lateinit var contentBinding: FragmentMapBinding
 
-    private val zoomLevelListener = ZoomLevelListener(zoomStep = 0.1)
-
     private var lastUserLocation: Pair<Double, Double>? = null
     private var lastZoomValue: Double? = null
 
@@ -61,6 +59,7 @@ class MapFragment : BaseNavViewActionFragment() {
         super.onCreate(savedInstanceState)
         Configuration.getInstance().load(requireContext().applicationContext, PreferenceManager.getDefaultSharedPreferences(requireContext().applicationContext))
         setHasOptionsMenu(true)
+        if (savedInstanceState == null) viewModel.loadArticles()
     }
 
     override fun inflateContent(
@@ -69,6 +68,8 @@ class MapFragment : BaseNavViewActionFragment() {
         savedInstanceState: Bundle?
     ): View {
         contentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
+        contentBinding.lifecycleOwner = this
+        contentBinding.viewModel = viewModel
         return contentBinding.root
     }
 
@@ -82,24 +83,17 @@ class MapFragment : BaseNavViewActionFragment() {
         tryRestoreInstanceState(savedInstanceState)
         restoreMapLocation()
         observeViewState()
-        if (savedInstanceState == null) viewModel.loadArticles()
     }
 
     private fun initMapView() {
-        contentBinding.mapView.removeMapListener(zoomLevelListener)
-
         contentBinding.mapView.setTileSource(TileSourceFactory.MAPNIK)
 
         contentBinding.mapView.setMultiTouchControls(true)
         contentBinding.mapView.controller.setZoom(16.0)
         contentBinding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-
-        contentBinding.mapView.addMapListener(zoomLevelListener)
     }
 
     private fun observeViewState() {
-        viewModel.mapDataLiveData.observe(viewLifecycleOwner, this::showContent)
-        viewModel.mapErrorLiveData.observe(viewLifecycleOwner, this::handleError)
         viewModel.mapActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
     }
 
@@ -132,36 +126,6 @@ class MapFragment : BaseNavViewActionFragment() {
         }
     }
 
-    private fun showContent(content: MapViewData) {
-        contentBinding.fragment = this
-
-        contentBinding.mapView.overlays.clear()
-
-        val context = requireContext()
-        val markersOverlay: ItemizedOverlayWithFocus<ArticlesOverlayItem> = ItemizedOverlayWithFocus(
-            content.articlesOverlayData.map { it.toOverlayItem() },
-            context.getDrawable(R.drawable.ic_location_marker),
-            context.getDrawable(R.drawable.ic_location_marker_focused),
-            context.resources.getColor(R.color.colorPrimary),
-            ArticlesOverlayListener(),
-            context
-        )
-        contentBinding.mapView.overlays.add(markersOverlay)
-
-        val userLocation = content.location
-        val userLocationOverlay = IconOverlay(userLocation.toGeoPoint(), context.getDrawable(R.drawable.ic_my_location))
-        contentBinding.mapView.overlays.add(userLocationOverlay)
-
-        val copyrightOverlay = CopyrightOverlay(context)
-        contentBinding.mapView.overlays.add(copyrightOverlay)
-
-        contentBinding.mapView.invalidate()
-    }
-
-    private fun handleError(error: MapErrorItem) {
-        TODO("Show error dialog")
-    }
-
     override fun applyViewAction(viewAction: ViewAction<*>) {
         when (viewAction) {
             is ShowArticleSelectorAction -> showArticlesSelector(viewAction.data!!)
@@ -189,7 +153,7 @@ class MapFragment : BaseNavViewActionFragment() {
     }
 
     private fun centerOnLocation(location: Pair<Double, Double>) {
-        contentBinding.mapView.controller.animateTo(location.toGeoPoint())
+        contentBinding.mapView.controller.setCenter(location.toGeoPoint())
     }
 
     override fun onResume() {
@@ -218,52 +182,6 @@ class MapFragment : BaseNavViewActionFragment() {
             true
         } else {
             item.onNavDestinationSelected(navController()) || super.onOptionsItemSelected(item)
-        }
-    }
-
-    fun onUserLocationFABClicked() {
-        viewModel.onCenterOnUserLocationClicked()
-    }
-
-    private inner class ZoomLevelListener(private val zoomStep: Double): MapListener {
-
-        private var lastZoomLevel: Double = .0
-
-        override fun onScroll(event: ScrollEvent?): Boolean {
-            return false
-        }
-
-        override fun onZoom(event: ZoomEvent?): Boolean {
-            event?.apply {
-                val currentZoomLevel: Double = event.zoomLevel
-                if (Math.abs(currentZoomLevel - lastZoomLevel) >= zoomStep) {
-                    lastZoomLevel = currentZoomLevel
-                    viewModel.onZoomLevelChanged(lastZoomLevel)
-                }
-            }
-            return true
-        }
-    }
-
-    private inner class ArticlesOverlayListener: ItemizedIconOverlay.OnItemGestureListener<ArticlesOverlayItem> {
-
-        private var selectedItem: ArticlesOverlayItem? = null
-
-        override fun onItemLongPress(index: Int, item: ArticlesOverlayItem?): Boolean {
-            return false
-        }
-
-        override fun onItemSingleTapUp(index: Int, item: ArticlesOverlayItem?): Boolean {
-            selectedItem?.apply {
-                setMarker(context!!.getDrawable(R.drawable.ic_location_marker))
-            }
-            item?.apply {
-                selectedItem = this
-                setMarker(context!!.getDrawable(R.drawable.ic_location_marker_focused))
-                viewModel.onMarkerSelected(this)
-            }
-            contentBinding.mapView.invalidate()
-            return true
         }
     }
 }

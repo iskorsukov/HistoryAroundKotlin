@@ -7,7 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class BindRecyclerViewAdapter<T, B: ViewDataBinding, L: ItemListener, VH: BindViewHolder<T, B, L>>(val items: List<T>, protected val listener: L): RecyclerView.Adapter<VH>() {
+abstract class BindRecyclerViewAdapter<T, B: ViewDataBinding, L: ItemListener, VH: BindViewHolder<T, B, L>>(val items: List<T>, protected val listener: L?): RecyclerView.Adapter<VH>() {
 
     @LayoutRes
     abstract fun layoutRes(): Int

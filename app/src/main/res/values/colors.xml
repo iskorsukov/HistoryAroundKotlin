@@ -10,4 +10,7 @@
     <color name="textWhite">#FFFFFF</color>
 
     <color name="colorRed">#D32F2F</color>
+
+    <color name="colorShimmer">#636363</color>
+    <color name="colorShimmerLight">#B3636363</color>
 </resources>

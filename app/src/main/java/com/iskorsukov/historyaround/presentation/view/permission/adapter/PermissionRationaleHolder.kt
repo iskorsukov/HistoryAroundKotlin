@@ -5,7 +5,7 @@ import com.iskorsukov.historyaround.presentation.view.common.adapter.BindViewHol
 import com.iskorsukov.historyaround.presentation.view.common.adapter.ItemListener
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.viewdata.PermissionRationale
 
-class PermissionRationaleHolder(dataBinding: HolderPermissionRationaleItemBinding, listener: ItemListener):
+class PermissionRationaleHolder(dataBinding: HolderPermissionRationaleItemBinding, listener: ItemListener?):
     BindViewHolder<PermissionRationale, HolderPermissionRationaleItemBinding, ItemListener>(dataBinding, listener)  {
     override fun bind(item: PermissionRationale) {
         dataBinding.item = item

@@ -24,13 +24,20 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @Mockable
-class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, private val favoritesSource: FavoritesSource, private val preferencesSource: PreferencesSource) : ViewModel() {
+class DetailViewModel @Inject constructor(
+    private val wikiSource: WikiSource,
+    private val favoritesSource: FavoritesSource
+    ) : ViewModel() {
 
     private var detailsDisposable: Disposable? = null
 
     private val _detailDataLiveData = MutableLiveData<DetailViewData>()
     val detailDataLiveData: LiveData<DetailViewData>
         get() = _detailDataLiveData
+
+    private val _detailIsLoadingLiveData = MutableLiveData(true)
+    val detailIsLoadingLiveData: LiveData<Boolean>
+        get() = _detailIsLoadingLiveData
 
     private val _detailErrorLiveData = MutableLiveData<DetailErrorItem>()
     val detailErrorLiveData: LiveData<DetailErrorItem>
@@ -41,7 +48,7 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
     fun loadArticleDetails(id: String, languageCode: String) {
         detailsDisposable?.dispose()
 
-        detailActionLiveData.value = ShowLoadingAction()
+        _detailIsLoadingLiveData.value = true
         detailsDisposable =
             wikiSource.loadArticleDetails(languageCode, id)
                 .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
@@ -53,27 +60,50 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ viewData ->
+                    _detailIsLoadingLiveData.value = false
                     _detailDataLiveData.value = viewData
                 }, { throwable ->
                     throwable.printStackTrace()
+                    _detailIsLoadingLiveData.value = false
                     _detailErrorLiveData.value = DetailErrorItem.ERROR
                 })
     }
 
-    fun addToFavorites(details: ArticleDetails) {
+    fun onOpenInMapButtonClicked() {
+        _detailDataLiveData.value?.let {
+            detailActionLiveData.value = OpenInMapAction(it.item.coordinates)
+        }
+    }
+
+    fun onViewInBrowserButtonClicked() {
+        _detailDataLiveData.value?.let {
+            detailActionLiveData.value = ViewInBrowserAction(Uri.parse(it.item.url))
+        }
+    }
+
+    fun onFavoriteButtonClicked() {
+        _detailDataLiveData.value?.let {
+            if (it.isFavorite)
+                removeFromFavorites(it.item)
+            else
+                addToFavorites(it.item)
+        }
+    }
+
+    private fun addToFavorites(details: ArticleDetails) {
         detailsDisposable?.dispose()
 
         detailsDisposable = favoritesSource.addToFavorites(details.toArticleItem())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                _detailDataLiveData.value = DetailViewData(details, true)
             }, {
                 it.printStackTrace()
             })
     }
 
-    fun removeFromFavorites(details: ArticleDetails) {
+    private fun removeFromFavorites(details: ArticleDetails) {
         detailsDisposable?.dispose()
 
         detailsDisposable = favoritesSource.removeFromFavorites(details.toArticleItem())
@@ -84,14 +114,6 @@ class DetailViewModel @Inject constructor(private val wikiSource: WikiSource, pr
             }, {
                 it.printStackTrace()
             })
-    }
-
-    fun onOpenInMapButtonClicked(latlon: Pair<Double, Double>) {
-        detailActionLiveData.value = OpenInMapAction(latlon)
-    }
-
-    fun onViewInBrowserButtonClicked(url: String) {
-        detailActionLiveData.value = ViewInBrowserAction(Uri.parse(url))
     }
 
     override fun onCleared() {

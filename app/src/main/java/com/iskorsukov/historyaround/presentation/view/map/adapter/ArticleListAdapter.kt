@@ -5,7 +5,7 @@ import com.iskorsukov.historyaround.databinding.HolderArticleListItemBinding
 import com.iskorsukov.historyaround.presentation.view.common.adapter.BindRecyclerViewAdapter
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 
-class ArticleListAdapter(items: List<ArticleItemViewData>, listener: ArticleListItemListener):
+class ArticleListAdapter(items: List<ArticleItemViewData>, listener: ArticleListItemListener?):
     BindRecyclerViewAdapter<ArticleItemViewData, HolderArticleListItemBinding, ArticleListItemListener, ArticleListItemHolder>(items, listener) {
 
     init {

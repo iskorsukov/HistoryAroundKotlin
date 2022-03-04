@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="fragment"
-            type="com.iskorsukov.historyaround.presentation.view.permission.PermissionFragment" />
+            name="viewModel"
+            type="com.iskorsukov.historyaround.presentation.viewmodel.permission.PermissionViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,6 +15,9 @@
             android:id="@+id/permissionsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:permissionsRecyclerItems="@{viewModel.permissionDataLiveData}"
+            app:recyclerItemListener="@{viewModel}"
+            app:visibility="@{viewModel.permissionIsLoadingLiveData == false}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/grantPermissionsButton"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
@@ -24,9 +27,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/grant_permissions"
+            app:visibility="@{viewModel.permissionIsLoadingLiveData == false}"
             style="@style/Button.Primary"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:onClick="@{(view) -> fragment.requestMissingPermissions()}"/>
+            android:onClick="@{(view) -> viewModel.requestPermissions()}"/>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:visibility="@{viewModel.permissionIsLoadingLiveData}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

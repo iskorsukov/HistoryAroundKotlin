@@ -8,10 +8,10 @@ import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.article.ArticleItem
 import com.iskorsukov.historyaround.model.preferences.PreferencesBundle
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.ErrorItem
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListItemListener
+import com.iskorsukov.historyaround.presentation.view.map.utils.ArticlesOverlayListener
+import com.iskorsukov.historyaround.presentation.view.map.utils.ZoomLevelListener
 import com.iskorsukov.historyaround.presentation.view.map.utils.groupItemsIntoMarkers
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLocationAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToDetailsAction
@@ -41,7 +41,7 @@ class MapViewModel @Inject constructor(
     private val locationSource: LocationSource,
     private val wikiSource: WikiSource,
     private val preferencesSource: PreferencesSource
-) : ViewModel(), ArticleListItemListener {
+) : ViewModel(), ArticleListItemListener, ArticlesOverlayListener.ArticleMarkerListener, ZoomLevelListener.OnZoomLevelChangedListener {
 
     companion object {
         const val DEFAULT_ZOOM_VALUE = 16.0
@@ -51,6 +51,10 @@ class MapViewModel @Inject constructor(
 
     private var loadArticlesDisposable: Disposable? = null
 
+    private val _mapLocationLiveData = MutableLiveData<Pair<Double, Double>>()
+    val mapLocationLiveData: LiveData<Pair<Double, Double>>
+        get() = _mapLocationLiveData
+
     private val _mapDataLiveData = MutableLiveData<MapViewData>()
     val mapDataLiveData: LiveData<MapViewData>
         get() = _mapDataLiveData
@@ -59,31 +63,35 @@ class MapViewModel @Inject constructor(
     val mapErrorLiveData: LiveData<MapErrorItem>
         get() = _mapErrorLiveData
 
+    private val _mapIsLoadingLiveData = MutableLiveData(true)
+    val mapIsLoadingLiveData: LiveData<Boolean>
+        get() = _mapIsLoadingLiveData
+
     val mapActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadArticles() {
-        mapActionLiveData.value = ShowLoadingAction()
+        _mapIsLoadingLiveData.value = true
         
         loadArticlesDisposable?.dispose()
-
-        var lastLoadedLocation: Location? = null
 
         loadArticlesDisposable = checkLocationServicesAvailable()
             .andThen(loadLocation())
             .flatMapObservable {
-                lastLoadedLocation = it
+                _mapLocationLiveData.value = it.latitude to it.longitude
                 loadArticles(it)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ articleItems ->
-                if (lastLoadedLocation == null) {
+                if (mapLocationLiveData.value == null) {
                     handleError(LocationErrorThrowable())
                 } else {
-                    handleResult(lastLoadedLocation!!, articleItems)
+                    handleResult(articleItems)
                 }
+                _mapIsLoadingLiveData.value = false
             }, { throwable ->
                 handleError(throwable)
+                _mapIsLoadingLiveData.value = false
             })
     }
 
@@ -113,7 +121,7 @@ class MapViewModel @Inject constructor(
             loadArticleItems(location, it)
         }.onErrorResumeNext { throwable: Throwable ->
             throwable.printStackTrace()
-            Observable.error<List<ArticleItem>>(ArticlesErrorThrowable())
+            Observable.error(ArticlesErrorThrowable())
         }
     }
 
@@ -135,11 +143,11 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun handleResult(location: Location, articleItems: List<ArticleItem>) {
-        mapActionLiveData.value = CenterOnLocationAction(location.latitude to location.longitude)
+    private fun handleResult(articleItems: List<ArticleItem>) {
+        if (mapLocationLiveData.value == null) return
+        mapActionLiveData.value = CenterOnLocationAction(mapLocationLiveData.value!!)
         _mapDataLiveData.value =
             MapViewData(
-                location.latitude to location.longitude,
                 groupItemsIntoMarkers(
                     lastZoomValue,
                     articleItems.map { ArticleItemViewData(it, false) }
@@ -155,8 +163,8 @@ class MapViewModel @Inject constructor(
         locationSource.stopLocationUpdates()
     }
 
-    fun onMarkerSelected(marker: ArticlesOverlayItem) {
-        mapActionLiveData.value = ShowArticleSelectorAction(marker.articleItems)
+    override fun onMarkerSelected(item: ArticlesOverlayItem) {
+        mapActionLiveData.value = ShowArticleSelectorAction(item.articleItems)
     }
 
     override fun onItemSelected(articleItem: ArticleItem) {
@@ -164,17 +172,16 @@ class MapViewModel @Inject constructor(
     }
 
     fun onCenterOnUserLocationClicked() {
-        mapDataLiveData.value?.apply {
-            mapActionLiveData.value = CenterOnLocationAction(this.location)
+        mapLocationLiveData.value?.apply {
+            mapActionLiveData.value = CenterOnLocationAction(this)
         }
     }
 
-    fun onZoomLevelChanged(zoomLevel: Double) {
+    override fun onZoomLevelChanged(zoomLevel: Double) {
         lastZoomValue = zoomLevel
         mapDataLiveData.value?.apply {
             _mapDataLiveData.value =
                 MapViewData(
-                    location,
                     groupItemsIntoMarkers(
                         lastZoomValue,
                         articlesOverlayData.toViewData()
@@ -192,10 +199,6 @@ class MapViewModel @Inject constructor(
             set.addAll(overlayItem.items)
             set
         }).toList()
-    }
-
-    fun onRetry() {
-        onRefresh()
     }
 
     override fun onCleared() {
