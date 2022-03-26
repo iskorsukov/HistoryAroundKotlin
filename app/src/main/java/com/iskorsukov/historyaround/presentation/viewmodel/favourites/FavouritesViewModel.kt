@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.article.ArticleItem
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.favorites.adapter.FavoritesListener
 import com.iskorsukov.historyaround.presentation.view.favorites.viewaction.NavigateToDetailsAction
@@ -29,15 +28,13 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
     val favouritesDataLiveData: LiveData<FavoritesViewData>
         get() = _favouritesDataLiveData
 
-    private val _favouritesErrorLiveData = MutableLiveData<FavoritesErrorItem>()
-    val favouritesErrorLiveData: LiveData<FavoritesErrorItem>
-        get() = _favouritesErrorLiveData
-
     private val _favouritesIsLoadingLiveData = MutableLiveData(true)
     val favouritesIsLoadingLiveData: LiveData<Boolean>
         get() = _favouritesIsLoadingLiveData
 
-    val favouritesActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
+    val favouritesErrorLiveEvent: LiveEvent<FavoritesErrorItem> = LiveEvent()
+
+    val favouritesActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadFavoriteItems() {
         _favouritesIsLoadingLiveData.value = true
@@ -53,14 +50,14 @@ class FavouritesViewModel @Inject constructor(private val favoritesSource: Favor
                 },
                 { throwable ->
                     throwable.printStackTrace()
-                    _favouritesErrorLiveData.value = FavoritesErrorItem.ERROR
+                    favouritesErrorLiveEvent.value = FavoritesErrorItem()
                     _favouritesIsLoadingLiveData.value = false
                 }
             )
     }
 
     override fun onItemSelected(item: ArticleItem) {
-        favouritesActionLiveData.value = NavigateToDetailsAction(item)
+        favouritesActionLiveEvent.value = NavigateToDetailsAction(item)
     }
 
     override fun onCleared() {

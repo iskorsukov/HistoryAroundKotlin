@@ -10,6 +10,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentMapBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
+import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListAdapter
@@ -19,21 +20,11 @@ import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToD
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.ShowArticleSelectorAction
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapErrorItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
-import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticlesOverlayItem
-import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.MapViewData
-import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.toOverlayItem
 import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.map.MapViewModel
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapListener
-import org.osmdroid.events.ScrollEvent
-import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
-import org.osmdroid.views.overlay.CopyrightOverlay
-import org.osmdroid.views.overlay.IconOverlay
-import org.osmdroid.views.overlay.ItemizedIconOverlay
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
 
 class MapFragment : BaseNavViewActionFragment() {
 
@@ -94,7 +85,8 @@ class MapFragment : BaseNavViewActionFragment() {
     }
 
     private fun observeViewState() {
-        viewModel.mapActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
+        viewModel.mapActionLiveEvent.observe(viewLifecycleOwner, this::applyViewAction)
+        viewModel.mapErrorLiveEvent.observe(viewLifecycleOwner, this::handleError)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -154,6 +146,22 @@ class MapFragment : BaseNavViewActionFragment() {
 
     private fun centerOnLocation(location: Pair<Double, Double>) {
         contentBinding.mapView.controller.setCenter(location.toGeoPoint())
+    }
+
+    private fun handleError(errorItem: MapErrorItem) {
+        val dialog = ErrorDialog.newInstance(errorItem)
+        val listener = object : ErrorDialog.ErrorDialogListener {
+            override fun onActionClick() {
+                dialog.dismiss()
+                viewModel.onRefresh()
+            }
+
+            override fun onCancelClick() {
+                dialog.dismiss()
+            }
+        }
+        dialog.listener = listener
+        dialog.show(childFragmentManager, ErrorDialog.TAG)
     }
 
     override fun onResume() {

@@ -37,9 +37,7 @@ class PermissionViewModel @Inject constructor(
     val permissionIsLoadingLiveData: LiveData<Boolean>
         get() = _permissionIsLoadingLiveData
 
-    private val _permissionErrorLiveData = MutableLiveData<PermissionErrorItem>()
-    val permissionErrorLiveData: LiveData<PermissionErrorItem>
-        get() = _permissionErrorLiveData
+    val permissionErrorLiveEvent: LiveEvent<PermissionErrorItem> = LiveEvent()
 
     val permissionActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
@@ -61,7 +59,7 @@ class PermissionViewModel @Inject constructor(
                 }
             }, { throwable ->
                 throwable.printStackTrace()
-                _permissionErrorLiveData.value = PermissionErrorItem.PERMISSIONS_ERROR
+                permissionErrorLiveEvent.value = PermissionErrorItem()
             })
     }
 
@@ -72,7 +70,7 @@ class PermissionViewModel @Inject constructor(
             permissionActionLiveEvent.value = RequestPermissionsAction(permissions)
         }, { throwable ->
             throwable.printStackTrace()
-            _permissionErrorLiveData.value = PermissionErrorItem.PERMISSIONS_ERROR
+            permissionErrorLiveEvent.value = PermissionErrorItem()
         })
     }
 

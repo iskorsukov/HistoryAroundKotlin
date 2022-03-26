@@ -8,7 +8,6 @@ import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.detail.ArticleDetails
 import com.iskorsukov.historyaround.model.detail.toArticleItem
-import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ShowLoadingAction
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.OpenInMapAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.ViewInBrowserAction
@@ -16,7 +15,6 @@ import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErr
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.favorites.FavoritesSource
-import com.iskorsukov.historyaround.service.preferences.PreferencesSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.zipWith
@@ -39,11 +37,9 @@ class DetailViewModel @Inject constructor(
     val detailIsLoadingLiveData: LiveData<Boolean>
         get() = _detailIsLoadingLiveData
 
-    private val _detailErrorLiveData = MutableLiveData<DetailErrorItem>()
-    val detailErrorLiveData: LiveData<DetailErrorItem>
-        get() = _detailErrorLiveData
+    val detailErrorLiveEvent: LiveEvent<DetailErrorItem> = LiveEvent()
 
-    val detailActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
+    val detailActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadArticleDetails(id: String, languageCode: String) {
         detailsDisposable?.dispose()
@@ -65,19 +61,19 @@ class DetailViewModel @Inject constructor(
                 }, { throwable ->
                     throwable.printStackTrace()
                     _detailIsLoadingLiveData.value = false
-                    _detailErrorLiveData.value = DetailErrorItem.ERROR
+                    detailErrorLiveEvent.value = DetailErrorItem()
                 })
     }
 
     fun onOpenInMapButtonClicked() {
         _detailDataLiveData.value?.let {
-            detailActionLiveData.value = OpenInMapAction(it.item.coordinates)
+            detailActionLiveEvent.value = OpenInMapAction(it.item.coordinates)
         }
     }
 
     fun onViewInBrowserButtonClicked() {
         _detailDataLiveData.value?.let {
-            detailActionLiveData.value = ViewInBrowserAction(Uri.parse(it.item.url))
+            detailActionLiveEvent.value = ViewInBrowserAction(Uri.parse(it.item.url))
         }
     }
 

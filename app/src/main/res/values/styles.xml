@@ -18,6 +18,10 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
+    <style name="Text.Header" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">@dimen/text_size_header</item>
+    </style>
+
     <style name="Text.Large" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
@@ -28,6 +32,14 @@
 
     <style name="Text.Regular" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/text_size_regular</item>
+    </style>
+
+    <style name="Text.Header.Black" parent="Text.Header">
+        <item name="android:textColor">@color/textBlack</item>
+    </style>
+
+    <style name="Text.Header.White" parent="Text.Header">
+        <item name="android:textColor">@color/textWhite</item>
     </style>
 
     <style name="Text.Large.Black" parent="Text.Large">

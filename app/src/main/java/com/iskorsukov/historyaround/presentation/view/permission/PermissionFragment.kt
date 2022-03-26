@@ -15,11 +15,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentPermissionBinding
 import com.iskorsukov.historyaround.mock.Mockable
+import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.RequestPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
+import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
 import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.permission.PermissionViewModel
 
@@ -69,6 +71,7 @@ class PermissionFragment : BaseNavViewActionFragment() {
 
     private fun observeViewState() {
         viewModel.permissionActionLiveEvent.observe(viewLifecycleOwner, this::applyViewAction)
+        viewModel.permissionErrorLiveEvent.observe(viewLifecycleOwner, this::handleError)
     }
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
@@ -100,5 +103,22 @@ class PermissionFragment : BaseNavViewActionFragment() {
             }
         }
         builder.create().show()
+    }
+
+    fun handleError(errorItem: PermissionErrorItem) {
+        val dialog = ErrorDialog.newInstance(errorItem)
+        val listener = object : ErrorDialog.ErrorDialogListener {
+            override fun onActionClick() {
+                dialog.dismiss()
+                viewModel.checkPermissions()
+            }
+
+            override fun onCancelClick() {
+                dialog.dismiss()
+                navController().popBackStack()
+            }
+        }
+        dialog.listener = listener
+        dialog.show(childFragmentManager, ErrorDialog.TAG)
     }
 }

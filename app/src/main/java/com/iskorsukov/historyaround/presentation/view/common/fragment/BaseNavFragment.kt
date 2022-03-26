@@ -12,7 +12,7 @@ import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.service.navigation.NavControllerSource
 
-open abstract class BaseNavFragment: Fragment() {
+abstract class BaseNavFragment: Fragment() {
 
     private lateinit var navControllerSource: NavControllerSource
 

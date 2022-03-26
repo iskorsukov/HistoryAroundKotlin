@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentDetailBinding
+import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.detail.viewaction.OpenInMapAction
@@ -60,8 +61,8 @@ class DetailFragment : BaseNavViewActionFragment() {
     }
 
     private fun observeViewState() {
-        viewModel.detailErrorLiveData.observe(viewLifecycleOwner, this::handleError)
-        viewModel.detailActionLiveData.observe(viewLifecycleOwner, this::applyViewAction)
+        viewModel.detailErrorLiveEvent.observe(viewLifecycleOwner, this::handleError)
+        viewModel.detailActionLiveEvent.observe(viewLifecycleOwner, this::applyViewAction)
     }
 
     private fun loadDetails() {
@@ -91,6 +92,19 @@ class DetailFragment : BaseNavViewActionFragment() {
     }
 
     private fun handleError(error: DetailErrorItem) {
-        TODO("Show error dialog")
+        val dialog = ErrorDialog.newInstance(error)
+        val listener = object : ErrorDialog.ErrorDialogListener {
+            override fun onActionClick() {
+                dialog.dismiss()
+                loadDetails()
+            }
+
+            override fun onCancelClick() {
+                dialog.dismiss()
+                navController().popBackStack()
+            }
+        }
+        dialog.listener = listener
+        dialog.show(childFragmentManager, ErrorDialog.TAG)
     }
 }

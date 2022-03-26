@@ -49,7 +49,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
     @Before
     fun setupMockViewModel() {
         Mockito.`when`(mockViewModel.detailDataLiveData).thenReturn(viewStateLiveData)
-        Mockito.`when`(mockViewModel.detailActionLiveData).thenReturn(viewActionLiveData)
+        Mockito.`when`(mockViewModel.detailActionLiveEvent).thenReturn(viewActionLiveData)
         Mockito.doNothing().`when`(mockViewModel).loadArticleDetails(MockitoUtil.any(), MockitoUtil.any())
     }
 
@@ -58,7 +58,7 @@ class DetailFragmentTest: BaseViewModelFragmentTest<DetailFragment, DetailViewMo
         launchFragment(DetailFragment::class.java, args)
 
         Mockito.verify(mockViewModel).detailDataLiveData
-        Mockito.verify(mockViewModel).detailActionLiveData
+        Mockito.verify(mockViewModel).detailActionLiveEvent
     }
 
     @Test

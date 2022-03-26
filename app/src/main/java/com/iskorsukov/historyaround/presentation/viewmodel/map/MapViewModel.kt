@@ -59,15 +59,13 @@ class MapViewModel @Inject constructor(
     val mapDataLiveData: LiveData<MapViewData>
         get() = _mapDataLiveData
 
-    private val _mapErrorLiveData = MutableLiveData<MapErrorItem>()
-    val mapErrorLiveData: LiveData<MapErrorItem>
-        get() = _mapErrorLiveData
-
     private val _mapIsLoadingLiveData = MutableLiveData(true)
     val mapIsLoadingLiveData: LiveData<Boolean>
         get() = _mapIsLoadingLiveData
 
-    val mapActionLiveData: LiveEvent<ViewAction<*>> = LiveEvent()
+    val mapErrorLiveEvent: LiveEvent<MapErrorItem> = LiveEvent()
+
+    val mapActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
     fun loadArticles() {
         _mapIsLoadingLiveData.value = true
@@ -135,17 +133,17 @@ class MapViewModel @Inject constructor(
         throwable.printStackTrace()
         when (throwable) {
             is LocationServicesErrorThrowable ->
-                _mapErrorLiveData.value = MapErrorItem.LOCATION_SERVICES_ERROR
+                mapErrorLiveEvent.value = MapErrorItem.LOCATION_SERVICES_ERROR
             is LocationErrorThrowable ->
-                _mapErrorLiveData.value = MapErrorItem.LOCATION_ERROR
+                mapErrorLiveEvent.value = MapErrorItem.LOCATION_ERROR
             else ->
-                _mapErrorLiveData.value = MapErrorItem.ARTICLES_ERROR
+                mapErrorLiveEvent.value = MapErrorItem.ARTICLES_ERROR
         }
     }
 
     private fun handleResult(articleItems: List<ArticleItem>) {
         if (mapLocationLiveData.value == null) return
-        mapActionLiveData.value = CenterOnLocationAction(mapLocationLiveData.value!!)
+        mapActionLiveEvent.value = CenterOnLocationAction(mapLocationLiveData.value!!)
         _mapDataLiveData.value =
             MapViewData(
                 groupItemsIntoMarkers(
@@ -164,16 +162,16 @@ class MapViewModel @Inject constructor(
     }
 
     override fun onMarkerSelected(item: ArticlesOverlayItem) {
-        mapActionLiveData.value = ShowArticleSelectorAction(item.articleItems)
+        mapActionLiveEvent.value = ShowArticleSelectorAction(item.articleItems)
     }
 
     override fun onItemSelected(articleItem: ArticleItem) {
-        mapActionLiveData.value = NavigateToDetailsAction(articleItem)
+        mapActionLiveEvent.value = NavigateToDetailsAction(articleItem)
     }
 
     fun onCenterOnUserLocationClicked() {
         mapLocationLiveData.value?.apply {
-            mapActionLiveData.value = CenterOnLocationAction(this)
+            mapActionLiveEvent.value = CenterOnLocationAction(this)
         }
     }
 

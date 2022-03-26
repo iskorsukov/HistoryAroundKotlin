@@ -43,6 +43,8 @@
     <string name="prefs_radius_title">Радиус поиска в метрах</string>
     <string name="remove">Удалить</string>
     <string name="retry">Попробовать снова</string>
+    <string name="cancel">Отменить</string>
+    <string name="close">Закрыть</string>
     <string name="settings">Настройки</string>
     <string name="storage_permission_label">Разрешение на доступ к хранилищу</string>
     <string name="storage_rationale">Приложению необходимо разрешение на доступ к хранилищу, чтобы оно могло сохранять часто просматриваемые тайлы карт локально, а не загружать их через Интернет каждый раз</string>

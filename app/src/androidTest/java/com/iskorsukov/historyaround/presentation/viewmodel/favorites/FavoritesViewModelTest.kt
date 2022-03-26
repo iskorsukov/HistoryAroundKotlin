@@ -110,7 +110,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun pushesNavigateActionOnItemSelected() {
-        val liveData = viewModel.favouritesActionLiveData
+        val liveData = viewModel.favouritesActionLiveEvent
         viewModel.onItemSelected(getSampleData()[0])
 
         val action = waitForValue(liveData)

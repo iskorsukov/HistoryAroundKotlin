@@ -157,7 +157,7 @@ class DetailsViewModelTest {
 
     @Test
     fun pushesActionOnMapButtonClicked() {
-        val liveData = viewModel.detailActionLiveData
+        val liveData = viewModel.detailActionLiveEvent
 
         viewModel.onOpenInMapButtonClicked(1.0 to 1.0)
 
@@ -166,7 +166,7 @@ class DetailsViewModelTest {
 
     @Test
     fun pushesActionOnOpenInBrowserClicked() {
-        val liveData = viewModel.detailActionLiveData
+        val liveData = viewModel.detailActionLiveEvent
 
         viewModel.onViewInBrowserButtonClicked("")
 

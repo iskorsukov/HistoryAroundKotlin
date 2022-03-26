@@ -190,7 +190,7 @@ class MapViewModelTest {
         viewModel.mapDataLiveData
         TimeUnit.SECONDS.sleep(2)
 
-        val liveData = viewModel.mapActionLiveData
+        val liveData = viewModel.mapActionLiveEvent
         viewModel.onCenterOnUserLocationClicked()
 
         assertTrue(waitForValue(liveData) is CenterOnLocationAction)
@@ -201,7 +201,7 @@ class MapViewModelTest {
         viewModel.mapDataLiveData
         TimeUnit.SECONDS.sleep(2)
 
-        val liveData = viewModel.mapActionLiveData
+        val liveData = viewModel.mapActionLiveEvent
         viewModel.onItemSelected(getSampleArticles()[0])
 
         assertTrue(waitForValue(liveData) is NavigateToDetailsAction)
@@ -212,7 +212,7 @@ class MapViewModelTest {
         viewModel.mapDataLiveData
         TimeUnit.SECONDS.sleep(2)
 
-        val liveData = viewModel.mapActionLiveData
+        val liveData = viewModel.mapActionLiveEvent
         viewModel.onMarkerSelected(getSampleClusters()[0].toOverlayItem())
 
         assertTrue(waitForValue(liveData) is ShowArticleSelectorAction)

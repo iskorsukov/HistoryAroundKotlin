@@ -42,7 +42,7 @@ class MapFragmentTest: BaseViewModelFragmentTest<MapFragment, MapViewModel>() {
     @Before
     fun setupMockViewModel() {
         Mockito.`when`(mockViewModel.mapDataLiveData).thenReturn(viewStateLiveData)
-        Mockito.`when`(mockViewModel.mapActionLiveData).thenReturn(viewActionLiveData)
+        Mockito.`when`(mockViewModel.mapActionLiveEvent).thenReturn(viewActionLiveData)
     }
 
     private fun pushLoadingState() {

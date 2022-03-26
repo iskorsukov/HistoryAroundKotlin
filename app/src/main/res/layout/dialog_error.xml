@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="errorItem"
+            type="com.iskorsukov.historyaround.presentation.view.common.viewstate.ErrorItem" />
+        <variable
+            name="listener"
+            type="com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog.ErrorDialogListener" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@drawable/corners_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/error_image"
+            android:layout_width="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_error_outline"
+            android:layout_height="200dp" />
+
+        <TextView
+            android:id="@+id/error_header"
+            style="@style/Text.Medium.Black"
+            android:text="@{errorItem.labelRes}"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/error_text"
+            style="@style/Text.Regular.Black"
+            android:text="@{errorItem.messageRes}"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/error_action_button"
+            android:layout_width="match_parent"
+            style="@style/Button.Primary"
+            android:text="@{errorItem.actionLabelRes}"
+            android:onClick="@{(view) -> listener.onActionClick()}"
+            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/error_cancel_button"
+            android:layout_width="match_parent"
+            style="@style/Button.Primary"
+            android:text="@{errorItem.cancelLabelRes}"
+            android:onClick="@{(view) -> listener.onCancelClick()}"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</layout>
