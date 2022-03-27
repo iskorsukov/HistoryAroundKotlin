@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/navigation"
-    app:startDestination="@id/permissionFragment">
+    app:startDestination="@id/splashFragment">
     <fragment
         android:id="@+id/permissionFragment"
         android:name="com.iskorsukov.historyaround.presentation.view.permission.PermissionFragment"
@@ -50,4 +50,19 @@
         android:id="@+id/preferencesFragment"
         android:name="com.iskorsukov.historyaround.presentation.view.preferences.PreferencesFragment"
         android:label="PreferencesFragment" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.iskorsukov.historyaround.presentation.view.splash.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_permissionFragment"
+            app:destination="@id/permissionFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_mapFragment"
+            app:destination="@id/mapFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

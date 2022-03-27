@@ -9,6 +9,7 @@ import com.iskorsukov.historyaround.presentation.viewmodel.detail.DetailViewMode
 import com.iskorsukov.historyaround.presentation.viewmodel.favourites.FavouritesViewModel
 import com.iskorsukov.historyaround.presentation.viewmodel.map.MapViewModel
 import com.iskorsukov.historyaround.presentation.viewmodel.permission.PermissionViewModel
+import com.iskorsukov.historyaround.presentation.viewmodel.splash.SplashViewModel
 
 @Module
 abstract class ViewModelBindings {
@@ -32,4 +33,9 @@ abstract class ViewModelBindings {
     @IntoMap
     @ViewModelKey(FavouritesViewModel::class)
     abstract fun bindFavoritesViewModel(myViewModel: FavouritesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SplashViewModel::class)
+    abstract fun bindSplashViewModel(myViewModel: SplashViewModel): ViewModel
 }

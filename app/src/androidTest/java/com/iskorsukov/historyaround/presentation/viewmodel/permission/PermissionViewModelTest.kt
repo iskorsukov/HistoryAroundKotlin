@@ -9,7 +9,7 @@ import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
 import com.iskorsukov.historyaround.presentation.view.permission.PermissionFragment
-import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
+import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
 import com.iskorsukov.historyaround.service.permission.PermissionRationaleMapper
@@ -114,7 +114,7 @@ class PermissionViewModelTest {
         TimeUnit.SECONDS.sleep(2)
 
         val action = waitForValue(liveData)
-        assertTrue(action is NavigateToMapAction)
+        assertTrue(action is NavigateToMapPermissionsAction)
     }
 
     private fun pushErrorOnGetNotGrantedPermissions() {

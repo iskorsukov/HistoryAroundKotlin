@@ -18,7 +18,7 @@ import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
-import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
+import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.RequestPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
@@ -76,8 +76,10 @@ class PermissionFragment : BaseNavViewActionFragment() {
 
     override fun applyViewAction(viewAction: ViewAction<*>) {
         when (viewAction) {
-            is NavigateToMapAction ->
-                navController().navigate(PermissionFragmentDirections.actionPermissionFragmentToMapFragment())
+            is NavigateToMapPermissionsAction ->
+                navController().navigate(
+                    PermissionFragmentDirections.actionPermissionFragmentToMapFragment()
+                )
             is ShowPermissionDeniedDialogAction ->
                 showGrantPermissionFromSettingsDialog()
             is RequestPermissionsAction ->

@@ -7,7 +7,7 @@ import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.presentation.view.common.adapter.ItemListener
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
-import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
+import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.RequestPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
@@ -52,7 +52,7 @@ class PermissionViewModel @Inject constructor(
             .subscribe({ permissions: List<String> ->
                 val rationaleList = permissions.mapNotNull { permissionSource.mapPermissionToRationale(it) }
                 if (rationaleList.isEmpty()) {
-                    permissionActionLiveEvent.value = NavigateToMapAction()
+                    permissionActionLiveEvent.value =NavigateToMapPermissionsAction()
                 } else {
                     _permissionDataLiveData.value = PermissionsViewData(rationaleList)
                     _permissionIsLoadingLiveData.value = false

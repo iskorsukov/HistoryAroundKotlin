@@ -14,7 +14,7 @@ import com.iskorsukov.historyaround.injection.test.TestViewModelBindings
 import com.iskorsukov.historyaround.presentation.view.base.BaseViewModelFragmentTest
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.LCEState
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
-import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapAction
+import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionLoadingItem
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionViewState
@@ -81,7 +81,7 @@ class PermissionsFragmentTest: BaseViewModelFragmentTest<PermissionFragment, Per
     }
 
     private fun pushNavigateToMapAction() {
-        viewActionLiveData.postValue(NavigateToMapAction())
+        viewActionLiveData.postValue(NavigateToMapPermissionsAction())
     }
 
     private fun pushShowPermissionDeniedDialogAction() {
