@@ -29,6 +29,9 @@
     <string name="menu_favorites">Избранное</string>
     <string name="menu_refresh">Обновить</string>
     <string name="menu_settings">Настройки</string>
+    <string name="menu_favorites_add">Добавить в избранное</string>
+    <string name="menu_favorites_remove">Убрать из изрбранного</string>
+    <string name="menu_show_in_map">Показать на карте</string>
     <string name="network_state_permission_label">Доступ к состоянию сети</string>
     <string name="network_state_rationale">Приложению необходим доступ к состоянию сети, чтобы определять доступность соединения к Интернету</string>
     <string name="no_internet_error_label">Нет соединения с Интернетом</string>

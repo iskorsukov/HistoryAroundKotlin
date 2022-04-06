@@ -13,6 +13,7 @@ import com.iskorsukov.historyaround.model.article.ArticleItem
 import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
+import com.iskorsukov.historyaround.presentation.view.detail.DetailActivity
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListAdapter
 import com.iskorsukov.historyaround.presentation.view.map.utils.toGeoPoint
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLocationAction
@@ -127,12 +128,19 @@ class MapFragment : BaseNavViewActionFragment() {
     }
 
     private fun navigateToItemDetails(articleItem: ArticleItem) {
+        val intent = DetailActivity.getIntent(
+            requireContext(),
+            articleItem.pageid,
+            articleItem.languageCode
+        )
+        startActivity(intent)
+        /*
         navController().navigate(
             MapFragmentDirections.actionMapFragmentToDetailFragment(
                 articleItem.pageid,
                 articleItem.languageCode
             )
-        )
+        )*/
     }
 
     private fun showArticlesSelector(articleItems: List<ArticleItemViewData>) {
