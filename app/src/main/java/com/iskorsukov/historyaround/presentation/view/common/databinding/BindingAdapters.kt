@@ -1,12 +1,14 @@
 package com.iskorsukov.historyaround.presentation.view.common.databinding
 
-import android.content.Context
 import android.graphics.drawable.Drawable
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.core.text.toSpannable
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -15,12 +17,12 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.presentation.view.common.adapter.ItemListener
 import com.iskorsukov.historyaround.presentation.view.favorites.adapter.FavoritesAdapter
 import com.iskorsukov.historyaround.presentation.view.favorites.adapter.FavoritesListener
 import com.iskorsukov.historyaround.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
-import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListItemListener
 import com.iskorsukov.historyaround.presentation.view.map.utils.ArticlesOverlayListener
 import com.iskorsukov.historyaround.presentation.view.map.utils.ZoomLevelListener
 import com.iskorsukov.historyaround.presentation.view.map.utils.toGeoPoint
@@ -28,12 +30,10 @@ import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.Art
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.MapViewData
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.toOverlayItem
 import com.iskorsukov.historyaround.presentation.view.permission.adapter.PermissionsAdapter
-import com.iskorsukov.historyaround.presentation.view.permission.viewstate.viewdata.PermissionRationale
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.viewdata.PermissionsViewData
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.IconOverlay
-import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
 
 @BindingAdapter("android:text")
@@ -41,6 +41,16 @@ fun setText(textView: TextView, @StringRes textRes: Int) {
     if (textRes != 0) {
         textView.setText(textRes)
     }
+}
+
+@BindingAdapter("app:wiki_text")
+fun setWikiText(textView: TextView, wikiText: String?) {
+    if (wikiText == null) {
+        textView.text = ""
+        return
+    }
+    val app = textView.context.applicationContext as HistoryAroundApp
+    app.markwon.setMarkdown(textView, wikiText)
 }
 
 @BindingAdapter("android:src")

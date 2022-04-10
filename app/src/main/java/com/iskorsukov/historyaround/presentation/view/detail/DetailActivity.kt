@@ -22,6 +22,8 @@ import com.iskorsukov.historyaround.presentation.view.detail.viewaction.ViewInBr
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErrorItem
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.presentation.viewmodel.detail.DetailViewModel
+import io.noties.markwon.Markwon
+import javax.inject.Inject
 
 class DetailActivity: AppCompatActivity() {
 
@@ -61,9 +63,10 @@ class DetailActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val appComponent = (application as HistoryAroundApp).appComponent
         viewModel = ViewModelProvider(
             this,
-            (application as HistoryAroundApp).appComponent.viewModelFactory()
+            appComponent.viewModelFactory()
         )[DetailViewModel::class.java]
         contentBinding = ActivityDetailBinding.inflate(layoutInflater)
         contentBinding.lifecycleOwner = this

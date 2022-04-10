@@ -20,6 +20,6 @@ interface WikiApi {
     @GET("api.php?action=query&prop=coordinates|description|pageimages&colimit=500&pithumbsize=400&format=json")
     fun loadArticlesData(@Header(LANGUAGE_HEADER) languageCode: String?, @Query("pageids") pageidsString: String): Single<ArticleQueryResponse>
 
-    @GET("api.php?action=query&prop=extracts|pageimages|info|coordinates&explaintext=true&exlimit=1&exchars=1200&inprop=url&pithumbsize=600&format=json")
+    @GET("api.php?action=query&prop=extracts|pageimages|info|coordinates&exlimit=1&exchars=1200&inprop=url&pithumbsize=600&format=json")
     fun loadDetailsData(@Header(LANGUAGE_HEADER) languageCode: String?, @Query("pageids") pageid: String): Single<DetailQueryResponse>
 }

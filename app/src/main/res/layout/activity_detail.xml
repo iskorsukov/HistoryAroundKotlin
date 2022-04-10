@@ -50,6 +50,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         style="@style/Details.Text.Title"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:text="@{viewModel.detailDataLiveData.item.title}"/>
 
                 </androidx.appcompat.widget.Toolbar>
@@ -61,7 +63,7 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nested_content_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:visibility="@{viewModel.detailIsLoadingLiveData == false}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -74,17 +76,9 @@
                     android:id="@+id/articleDetailsExtract"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{viewModel.detailDataLiveData.item.extract}"
                     style="@style/Text.Medium.Black"
-                    android:layout_margin="8dp"/>
-
-                <TextView
-                    android:id="@+id/articleDetailsExtract1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.detailDataLiveData.item.extract}"
-                    style="@style/Text.Medium.Black"
-                    android:layout_margin="8dp"/>
+                    app:wiki_text="@{viewModel.detailDataLiveData.item.extract}"
+                    android:layout_margin="16dp"/>
 
             </LinearLayout>
 
