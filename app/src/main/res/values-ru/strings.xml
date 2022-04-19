@@ -52,4 +52,6 @@
     <string name="storage_permission_label">Разрешение на доступ к хранилищу</string>
     <string name="storage_rationale">Приложению необходимо разрешение на доступ к хранилищу, чтобы оно могло сохранять часто просматриваемые тайлы карт локально, а не загружать их через Интернет каждый раз</string>
     <string name="preferences_fragment_title">Настройки</string>
+    <string name="acc_drawer_open">Открыть боковое меню</string>
+    <string name="acc_drawer_close">Закрыть боковое меню</string>
 </resources>

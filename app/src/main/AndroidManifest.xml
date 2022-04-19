@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="com.iskorsukov.historyaround.presentation.view.MainActivity"
+            android:name="com.iskorsukov.historyaround.presentation.view.map.MapActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -26,6 +26,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.view.detail.DetailActivity" />
+        <activity
+            android:name=".presentation.view.favorites.FavoritesActivity"
+            android:theme="@style/AppTheme.ActionBar" />
+        <activity
+            android:name=".presentation.view.preferences.PreferencesActivity"
+            android:theme="@style/AppTheme.ActionBar" />
     </application>
 
 </manifest>

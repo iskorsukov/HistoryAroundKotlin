@@ -9,6 +9,20 @@
         <item name="drawerArrowStyle">@style/Drawer.Toggle</item>
     </style>
 
+    <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="drawerArrowStyle">@style/Drawer.Toggle</item>
+
+        <item name="actionBarTheme">@style/ToolbarStyle</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/textWhite</item>
+    </style>
+
     <style name="Drawer.Toggle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>

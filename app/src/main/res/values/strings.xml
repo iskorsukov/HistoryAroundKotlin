@@ -96,4 +96,8 @@
     <string name="permissions_fragment_title" translatable="false">@string/app_name</string>
     <string name="menu_favorites">Favorites</string>
     <string name="preferences_fragment_title">Preferences</string>
+
+    <!-- Accessibility strings -->
+    <string name="acc_drawer_open">Open drawer</string>
+    <string name="acc_drawer_close">Close drawer</string>
 </resources>

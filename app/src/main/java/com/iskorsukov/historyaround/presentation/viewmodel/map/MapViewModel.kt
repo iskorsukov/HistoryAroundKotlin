@@ -1,5 +1,6 @@
 package com.iskorsukov.historyaround.presentation.viewmodel.map
 
+import android.Manifest
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -190,6 +191,19 @@ class MapViewModel @Inject constructor(
 
     fun onRefresh() {
         loadArticles()
+    }
+
+    fun onPermissionsResult(permissions: Map<String, Boolean>) {
+        val locationPermissions = arrayOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        if (locationPermissions.any { permissions[it] == true }) {
+            // at least one location permission granted
+            loadArticles()
+        } else {
+            // TODO show dialog - need location permission
+        }
     }
 
     private fun List<ArticlesClusterItem>.toViewData(): List<ArticleItemViewData> {
