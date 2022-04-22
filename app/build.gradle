@@ -159,7 +159,7 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     // Google Location
-    def location_version = "18.0.0"
+    def location_version = "19.0.1"
     implementation "com.google.android.gms:play-services-location:$location_version"
 
     // OsmDroid

@@ -1,6 +1,7 @@
 package com.iskorsukov.historyaround.presentation.view.map
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -9,11 +10,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.ActivityMapBinding
@@ -54,18 +59,31 @@ class MapActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val viewModelFactory = (application as HistoryAroundApp).appComponent.viewModelFactory()
         viewModel = ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java]
+
         permissionResultLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
             viewModel::onPermissionsResult
         )
+
         Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
+
         contentBinding = ActivityMapBinding.inflate(layoutInflater)
         contentBinding.lifecycleOwner = this
         contentBinding.viewModel = viewModel
         setContentView(contentBinding.root)
 
+        configureToolbar()
+        initSettingsAndPermissions(savedInstanceState)
+        initMapView()
+        tryRestoreInstanceState(savedInstanceState)
+        restoreMapLocation()
+        observeViewState()
+    }
+
+    private fun configureToolbar() {
         setSupportActionBar(contentBinding.toolbar)
         contentBinding.toolbar.title = getString(R.string.app_name)
         val drawerToggle = ActionBarDrawerToggle(
@@ -85,12 +103,37 @@ class MapActivity: AppCompatActivity() {
             }
             true
         }
+    }
 
-        requestPermissions(savedInstanceState == null)
-        initMapView()
-        tryRestoreInstanceState(savedInstanceState)
-        restoreMapLocation()
-        observeViewState()
+    private fun initSettingsAndPermissions(savedInstanceState: Bundle?) {
+        viewModel.checkLocationServicesAvailability().addOnCompleteListener {
+            try {
+                val locationSettingsResponse = it.result
+                requestPermissions(savedInstanceState == null)
+            } catch (apiException: ApiException) {
+                when (apiException.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                        val resolvableApiException = apiException as ResolvableApiException
+                        val locationServicesResolution = registerForActivityResult(
+                            ActivityResultContracts.StartIntentSenderForResult()
+                        ) { result ->
+                            if (result.resultCode == Activity.RESULT_OK) {
+                                requestPermissions(savedInstanceState == null)
+                            } else {
+                                handleError(MapErrorItem.GOOGLE_SERVICES_ERROR)
+                            }
+                        }
+                        locationServicesResolution.launch(
+                            IntentSenderRequest.Builder(resolvableApiException.resolution.intentSender)
+                                .build()
+                        )
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                        handleError(MapErrorItem.GOOGLE_SERVICES_ERROR)
+                    }
+                }
+            }
+        }
     }
 
     private fun requestPermissions(isSavedInstanceStateNull: Boolean) {
@@ -107,11 +150,13 @@ class MapActivity: AppCompatActivity() {
     }
 
     private fun initMapView() {
-        contentBinding.mapView.setTileSource(TileSourceFactory.MAPNIK)
+        contentBinding.mapView.apply {
+            setTileSource(TileSourceFactory.MAPNIK)
 
-        contentBinding.mapView.setMultiTouchControls(true)
-        contentBinding.mapView.controller.setZoom(16.0)
-        contentBinding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+            setMultiTouchControls(true)
+            controller.setZoom(16.0)
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        }
     }
 
     private fun observeViewState() {
@@ -191,11 +236,14 @@ class MapActivity: AppCompatActivity() {
         val listener = object : ErrorDialog.ErrorDialogListener {
             override fun onActionClick() {
                 dialog.dismiss()
-                viewModel.onRefresh()
+                requestPermissions(true)
             }
 
             override fun onCancelClick() {
                 dialog.dismiss()
+                if (errorItem == MapErrorItem.LOCATION_PERMISSION_ERROR || errorItem == MapErrorItem.GOOGLE_SERVICES_ERROR) {
+                    finish()
+                }
             }
         }
         dialog.listener = listener

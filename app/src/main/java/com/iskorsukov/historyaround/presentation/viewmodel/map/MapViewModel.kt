@@ -5,6 +5,9 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.tasks.Task
 import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.article.ArticleItem
@@ -68,13 +71,16 @@ class MapViewModel @Inject constructor(
 
     val mapActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
+    fun checkLocationServicesAvailability(): Task<LocationSettingsResponse> {
+        return locationSource.checkLocationServicesAvailability()
+    }
+
     fun loadArticles() {
         _mapIsLoadingLiveData.value = true
         
         loadArticlesDisposable?.dispose()
 
-        loadArticlesDisposable = checkLocationServicesAvailable()
-            .andThen(loadLocation())
+        loadArticlesDisposable = loadLocation()
             .flatMapObservable {
                 _mapLocationLiveData.value = it.latitude to it.longitude
                 loadArticles(it)
@@ -94,19 +100,9 @@ class MapViewModel @Inject constructor(
             })
     }
 
-    private fun checkLocationServicesAvailable(): Completable {
-        return locationSource.checkLocationServicesAvailability().timeout(5, TimeUnit.SECONDS).onErrorResumeNext {
-            Completable.error(LocationServicesErrorThrowable())
-        }
-    }
-
     private fun loadLocation(): Single<Location> {
-        return locationSource.getLastKnownLocation()
-            .switchIfEmpty(locationSource.getLocationUpdatesObservable()
-                .firstOrError()
-                .doOnSubscribe { startLocationUpdates() }
-                .doOnEvent { _, _ -> stopLocationUpdates() }
-                .doOnDispose(this::stopLocationUpdates))
+        return locationSource.getCurrentLocation()
+            .toSingle()
             .timeout(15, TimeUnit.SECONDS)
             .onErrorResumeNext {
                 Single.error(LocationErrorThrowable())
@@ -154,14 +150,6 @@ class MapViewModel @Inject constructor(
             )
     }
 
-    private fun startLocationUpdates() {
-        locationSource.startLocationUpdates()
-    }
-
-    private fun stopLocationUpdates() {
-        locationSource.stopLocationUpdates()
-    }
-
     override fun onMarkerSelected(item: ArticlesOverlayItem) {
         mapActionLiveEvent.value = ShowArticleSelectorAction(item.articleItems)
     }
@@ -202,7 +190,7 @@ class MapViewModel @Inject constructor(
             // at least one location permission granted
             loadArticles()
         } else {
-            // TODO show dialog - need location permission
+            mapErrorLiveEvent.value = MapErrorItem.LOCATION_PERMISSION_ERROR
         }
     }
 

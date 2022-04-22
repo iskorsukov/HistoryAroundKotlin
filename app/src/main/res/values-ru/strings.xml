@@ -20,10 +20,14 @@
     <string name="loading_permissions_error_label">Не удалось проверить разрешения</string>
     <string name="loading_permissions_error_message">Пожалуйста, попробуйте снова</string>
     <string name="loading_permissions_label">Проверяем разрешения</string>
+    <string name="google_error_services_label">Службы Google недоступны</string>
+    <string name="google_error_services_message">Приложение использует службы Google для определения местоположения и не может работать без них. Попробуйте установить Службы Google из Google Play Store, и попробуйте снова.</string>
     <string name="location_error_label">Не удалось определить ваше метоположение</string>
     <string name="location_error_message">Убедитесь, что геолокация или передача данных включены и могут определить ваше местоположение и попробуйте снова</string>
     <string name="location_error_services_label">Средства геолокации недоступны</string>
     <string name="location_error_services_message">Убедитесь, что геолокация или передача данных включены в Настройках устройства</string>
+    <string name="location_error_permission_label">Доступ к местоположению</string>
+    <string name="location_error_permission_message">Приложению необходим доступ к вашему местоположению, чтобы искать интересные места вокруг вас</string>
     <string name="location_permission_label">Разрешение на доступ к местоположению</string>
     <string name="location_rationale">Приложению необходим доступ к вашему местоположению, чтобы искать интересные места вокруг вас</string>
     <string name="menu_favorites">Избранное</string>
