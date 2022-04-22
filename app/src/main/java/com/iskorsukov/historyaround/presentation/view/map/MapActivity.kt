@@ -1,24 +1,32 @@
 package com.iskorsukov.historyaround.presentation.view.map
 
 import android.Manifest
-import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.ui.onNavDestinationSelected
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
-import com.iskorsukov.historyaround.databinding.FragmentMapBinding
+import com.iskorsukov.historyaround.databinding.ActivityMapBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
 import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
-import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.detail.DetailActivity
+import com.iskorsukov.historyaround.presentation.view.favorites.FavoritesActivity
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListAdapter
 import com.iskorsukov.historyaround.presentation.view.map.utils.toGeoPoint
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLocationAction
@@ -26,17 +34,17 @@ import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToD
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.ShowArticleSelectorAction
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapErrorItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
-import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
+import com.iskorsukov.historyaround.presentation.view.preferences.PreferencesActivity
 import com.iskorsukov.historyaround.presentation.viewmodel.map.MapViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
 
-class MapFragment : BaseNavViewActionFragment() {
+class MapActivity: AppCompatActivity() {
 
     private lateinit var viewModel: MapViewModel
 
-    private lateinit var contentBinding: FragmentMapBinding
+    private lateinit var contentBinding: ActivityMapBinding
 
     private lateinit var permissionResultLauncher: ActivityResultLauncher<Array<String>>
 
@@ -49,72 +57,111 @@ class MapFragment : BaseNavViewActionFragment() {
         private const val ZOOM_KEY = "zoom"
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        viewModel = ViewModelProvider(this, viewModelFactory())[MapViewModel::class.java]
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val viewModelFactory = (application as HistoryAroundApp).appComponent.viewModelFactory()
+        viewModel = ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java]
+
         permissionResultLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
             viewModel::onPermissionsResult
         )
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Configuration.getInstance().load(requireContext().applicationContext, PreferenceManager.getDefaultSharedPreferences(requireContext().applicationContext))
-        setHasOptionsMenu(true)
-    }
+        Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
 
-    override fun inflateContent(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        contentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
+        contentBinding = ActivityMapBinding.inflate(layoutInflater)
         contentBinding.lifecycleOwner = this
         contentBinding.viewModel = viewModel
-        return contentBinding.root
-    }
+        setContentView(contentBinding.root)
 
-    override fun titleRes(): Int {
-        return R.string.map_fragment_title
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        requestPreciseLocationPermission(savedInstanceState == null)
+        configureToolbar()
+        initSettingsAndPermissions(savedInstanceState)
         initMapView()
         tryRestoreInstanceState(savedInstanceState)
         restoreMapLocation()
         observeViewState()
     }
 
-    private fun requestPreciseLocationPermission(isSavedInstanceStateNull: Boolean) {
-        val preciseLocationPermissions = arrayOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
+    private fun configureToolbar() {
+        setSupportActionBar(contentBinding.toolbar)
+        contentBinding.toolbar.title = getString(R.string.app_name)
+        val drawerToggle = ActionBarDrawerToggle(
+            this,
+            contentBinding.drawerLayout,
+            contentBinding.toolbar,
+            R.string.acc_drawer_open,
+            R.string.acc_drawer_close
         )
-        val preciseLocationPermissionGranted =
-            ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        if (preciseLocationPermissionGranted) {
+        contentBinding.drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+
+        contentBinding.navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menuFavorites -> navigateToFavorites()
+                R.id.menuPreferences -> navigateToPreferences()
+            }
+            true
+        }
+    }
+
+    private fun initSettingsAndPermissions(savedInstanceState: Bundle?) {
+        viewModel.checkLocationServicesAvailability().addOnCompleteListener {
+            try {
+                val locationSettingsResponse = it.result
+                requestPermissions(savedInstanceState == null)
+            } catch (apiException: ApiException) {
+                when (apiException.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                        val resolvableApiException = apiException as ResolvableApiException
+                        val locationServicesResolution = registerForActivityResult(
+                            ActivityResultContracts.StartIntentSenderForResult()
+                        ) { result ->
+                            if (result.resultCode == Activity.RESULT_OK) {
+                                requestPermissions(savedInstanceState == null)
+                            } else {
+                                handleError(MapErrorItem.GOOGLE_SERVICES_ERROR)
+                            }
+                        }
+                        locationServicesResolution.launch(
+                            IntentSenderRequest.Builder(resolvableApiException.resolution.intentSender)
+                                .build()
+                        )
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                        handleError(MapErrorItem.GOOGLE_SERVICES_ERROR)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun requestPermissions(isSavedInstanceStateNull: Boolean) {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (permissions.all { ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }) {
             if (isSavedInstanceStateNull) viewModel.loadArticles()
         } else {
-            permissionResultLauncher.launch(preciseLocationPermissions)
+            permissionResultLauncher.launch(permissions)
         }
     }
 
     private fun initMapView() {
-        contentBinding.mapView.setTileSource(TileSourceFactory.MAPNIK)
+        contentBinding.mapView.apply {
+            setTileSource(TileSourceFactory.MAPNIK)
 
-        contentBinding.mapView.setMultiTouchControls(true)
-        contentBinding.mapView.controller.setZoom(16.0)
-        contentBinding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+            setMultiTouchControls(true)
+            controller.setZoom(16.0)
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        }
     }
 
     private fun observeViewState() {
-        viewModel.mapActionLiveEvent.observe(viewLifecycleOwner, this::applyViewAction)
-        viewModel.mapErrorLiveEvent.observe(viewLifecycleOwner, this::handleError)
+        viewModel.mapActionLiveEvent.observe(this, this::applyViewAction)
+        viewModel.mapErrorLiveEvent.observe(this, this::handleError)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -146,7 +193,7 @@ class MapFragment : BaseNavViewActionFragment() {
         }
     }
 
-    override fun applyViewAction(viewAction: ViewAction<*>) {
+    private fun applyViewAction(viewAction: ViewAction<*>) {
         when (viewAction) {
             is ShowArticleSelectorAction -> showArticlesSelector(viewAction.data!!)
             is NavigateToDetailsAction -> navigateToItemDetails(viewAction.data!!)
@@ -156,18 +203,19 @@ class MapFragment : BaseNavViewActionFragment() {
 
     private fun navigateToItemDetails(articleItem: ArticleItem) {
         val intent = DetailActivity.getIntent(
-            requireContext(),
+            this,
             articleItem.pageid,
             articleItem.languageCode
         )
         startActivity(intent)
-        /*
-        navController().navigate(
-            MapFragmentDirections.actionMapFragmentToDetailFragment(
-                articleItem.pageid,
-                articleItem.languageCode
-            )
-        )*/
+    }
+
+    private fun navigateToFavorites() {
+        startActivity(Intent(this, FavoritesActivity::class.java))
+    }
+
+    private fun navigateToPreferences() {
+        startActivity(Intent(this, PreferencesActivity::class.java))
     }
 
     private fun showArticlesSelector(articleItems: List<ArticleItemViewData>) {
@@ -188,15 +236,18 @@ class MapFragment : BaseNavViewActionFragment() {
         val listener = object : ErrorDialog.ErrorDialogListener {
             override fun onActionClick() {
                 dialog.dismiss()
-                viewModel.onRefresh()
+                requestPermissions(true)
             }
 
             override fun onCancelClick() {
                 dialog.dismiss()
+                if (errorItem == MapErrorItem.LOCATION_PERMISSION_ERROR || errorItem == MapErrorItem.GOOGLE_SERVICES_ERROR) {
+                    finish()
+                }
             }
         }
         dialog.listener = listener
-        dialog.show(childFragmentManager, ErrorDialog.TAG)
+        dialog.show(supportFragmentManager, ErrorDialog.TAG)
     }
 
     override fun onResume() {
@@ -215,8 +266,9 @@ class MapFragment : BaseNavViewActionFragment() {
         lastZoomValue = contentBinding.mapView.zoomLevelDouble
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_map, menu)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_map, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -224,7 +276,7 @@ class MapFragment : BaseNavViewActionFragment() {
             viewModel.onRefresh()
             true
         } else {
-            item.onNavDestinationSelected(navController()) || super.onOptionsItemSelected(item)
+            super.onOptionsItemSelected(item)
         }
     }
 }

@@ -101,6 +101,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginEnd="8dp"
+            app:visibility="@{viewModel.detailIsLoadingLiveData == false}"
             app:layout_anchor="@id/appbar"
             app:layout_anchorGravity="bottom"
             android:elevation="4dp"

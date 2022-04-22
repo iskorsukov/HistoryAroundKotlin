@@ -30,5 +30,19 @@ class MapErrorItem(
                 RETRY_LABEL,
                 null
             )
+        val LOCATION_PERMISSION_ERROR =
+            MapErrorItem(
+                R.string.location_error_permission_label,
+                R.string.location_error_permission_message,
+                RETRY_LABEL,
+                CLOSE_LABEL
+            )
+        val GOOGLE_SERVICES_ERROR =
+            MapErrorItem(
+                R.string.google_error_services_label,
+                R.string.google_error_services_message,
+                null,
+                CLOSE_LABEL
+            )
     }
 }

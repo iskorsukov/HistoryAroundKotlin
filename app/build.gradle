@@ -23,12 +23,12 @@ android {
         }
     }
 
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     defaultConfig {
         applicationId "com.iskorsukov.historyaround"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -159,7 +159,7 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     // Google Location
-    def location_version = "18.0.0"
+    def location_version = "19.0.1"
     implementation "com.google.android.gms:play-services-location:$location_version"
 
     // OsmDroid

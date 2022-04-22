@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/favoritesFragment"
+        android:id="@+id/menuFavorites"
         android:title="@string/menu_favorites"
         android:icon="@drawable/ic_star_white" />
 
     <item
-        android:id="@+id/preferencesFragment"
+        android:id="@+id/menuPreferences"
         android:title="@string/menu_settings"
         android:icon="@drawable/ic_settings"/>
 

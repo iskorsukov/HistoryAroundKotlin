@@ -1,14 +1,11 @@
 package com.iskorsukov.historyaround.service.location
 
-import android.annotation.SuppressLint
 import android.location.Location
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import io.reactivex.Completable
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.Task
 import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,45 +15,19 @@ class LocationSourceImpl @Inject constructor(
 ): LocationSource {
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        interval = 500
+        interval = 5000
     }
 
-    private val locationUpdatesSubject: PublishSubject<Location> = PublishSubject.create()
+    private val cancellationTokenSource = CancellationTokenSource()
 
-    override fun checkLocationServicesAvailability(): Completable {
-        return Completable.create { emitter ->
-            locationClient.checkLocationServicesAvailability(locationRequest).addOnCompleteListener {
-                if (!it.isSuccessful || it.isCanceled) {
-                    emitter.onError(IllegalStateException("Location services unavailable"))
-                }
-                emitter.onComplete()
-            }
-        }
+    override fun checkLocationServicesAvailability(): Task<LocationSettingsResponse> {
+        return locationClient.checkLocationServicesAvailability(locationRequest)
     }
 
-    private val locationCallback: LocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
-            locationResult?.run {
-                this.locations.maxByOrNull { location -> location.accuracy }?.run {
-                    locationUpdatesSubject.onNext(this)
-                }
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun startLocationUpdates() {
-        locationClient.startLocationUpdates(locationRequest, locationCallback)
-    }
-
-    override fun stopLocationUpdates() {
-        locationClient.stopLocationUpdates(locationCallback)
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun getLastKnownLocation(): Maybe<Location> {
+    override fun getCurrentLocation(): Maybe<Location> {
+        val cancellationToken = cancellationTokenSource.token
         return Maybe.create { emitter ->
-            locationClient.lastLocation().addOnCompleteListener {
+            locationClient.currentLocation(cancellationToken).addOnCompleteListener {
                 if (!it.isSuccessful) {
                     it.exception?.apply {
                         emitter.onError(this)
@@ -68,9 +39,5 @@ class LocationSourceImpl @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun getLocationUpdatesObservable(): Observable<Location> {
-        return locationUpdatesSubject
     }
 }

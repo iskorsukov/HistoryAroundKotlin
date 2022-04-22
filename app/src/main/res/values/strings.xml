@@ -32,8 +32,16 @@
     <string name="network_state_permission_label">Access to network state</string>
     <string name="network_state_rationale">The app needs access to network state to figure out whether it is possible to load data from the Internet</string>
 
+    <!-- Google Services Error -->
+    <string name="google_error_services_label">Google Services are unavailable</string>
+    <string name="google_error_services_message">HistoryAround app relies on Google Services to determine location and cannot work without them. Please attempt to install them from Google Play Store if possible and try again.</string>
+
     <!-- Loading location -->
     <string name="loading_location_label">Figuring out your location</string>
+    <!-- Location Permission Error -->
+
+    <string name="location_error_permission_label">Permission to access location</string>
+    <string name="location_error_permission_message">The app need access to your location to look for interesting places around you\nIt will not store or use it in any other way</string>
     <!-- Location Service Error -->
     <string name="location_error_services_label">Location Services are unavailable</string>
     <string name="location_error_services_message">Make sure you have geolocation turned on in device settings and try again</string>
@@ -96,4 +104,8 @@
     <string name="permissions_fragment_title" translatable="false">@string/app_name</string>
     <string name="menu_favorites">Favorites</string>
     <string name="preferences_fragment_title">Preferences</string>
+
+    <!-- Accessibility strings -->
+    <string name="acc_drawer_open">Open drawer</string>
+    <string name="acc_drawer_close">Close drawer</string>
 </resources>
