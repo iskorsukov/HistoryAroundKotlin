@@ -56,7 +56,7 @@ class PreferencesFragment: PreferenceFragmentCompat() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setTitle()
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -77,11 +77,11 @@ class PreferencesFragment: PreferenceFragmentCompat() {
 
     override fun onResume() {
         super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(listener)
     }
 
     override fun onPause() {
         super.onPause()
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(listener)
     }
 }

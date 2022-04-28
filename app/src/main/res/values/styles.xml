@@ -95,7 +95,7 @@
         <item name="android:padding">16dp</item>
     </style>
 
-    <style name="Common.FAB" parent="Widget.MaterialComponents.FloatingActionButton">
+    <style name="Common.FAB" parent="Widget.Design.FloatingActionButton">
         <item name="fabSize">normal</item>
         <item name="borderWidth">0dp</item>
         <item name="backgroundTint">#FFFFFF</item>

@@ -5,9 +5,10 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.location.LocationSettingsResponse
-import com.google.android.gms.tasks.Task
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.hadilq.liveevent.LiveEvent
 import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.article.ArticleItem
@@ -19,6 +20,7 @@ import com.iskorsukov.historyaround.presentation.view.map.utils.ZoomLevelListene
 import com.iskorsukov.historyaround.presentation.view.map.utils.groupItemsIntoMarkers
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLocationAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToDetailsAction
+import com.iskorsukov.historyaround.presentation.view.map.viewaction.ResolveLocationServicesAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.ShowArticleSelectorAction
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapErrorItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
@@ -31,12 +33,11 @@ import com.iskorsukov.historyaround.presentation.viewmodel.map.throwable.Locatio
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.location.LocationSource
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -71,59 +72,40 @@ class MapViewModel @Inject constructor(
 
     val mapActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
-    fun checkLocationServicesAvailability(): Task<LocationSettingsResponse> {
-        return locationSource.checkLocationServicesAvailability()
-    }
-
-    fun loadArticles() {
-        _mapIsLoadingLiveData.value = true
-        
-        loadArticlesDisposable?.dispose()
-
-        loadArticlesDisposable = loadLocation()
-            .flatMapObservable {
-                _mapLocationLiveData.value = it.latitude to it.longitude
-                loadArticles(it)
+    fun loadArticlesCoroutine() {
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable -> handleError(throwable) }
+        viewModelScope.launch(exceptionHandler) {
+            _mapIsLoadingLiveData.value = true
+            locationSource.checkLocationServicesAvailability()
+            val location = try {
+                loadLocation()
+            } catch (e: Exception) {
+                throw LocationErrorThrowable(e)
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ articleItems ->
-                if (mapLocationLiveData.value == null) {
-                    handleError(LocationErrorThrowable())
-                } else {
-                    handleResult(articleItems)
-                }
+            _mapLocationLiveData.value = location.latitude to location.longitude
+            preferencesSource.getPreferencesFlow().collect { preferences ->
+                handleResult(loadArticles(location, preferences))
                 _mapIsLoadingLiveData.value = false
-            }, { throwable ->
-                handleError(throwable)
-                _mapIsLoadingLiveData.value = false
-            })
-    }
-
-    private fun loadLocation(): Single<Location> {
-        return locationSource.getCurrentLocation()
-            .toSingle()
-            .timeout(15, TimeUnit.SECONDS)
-            .onErrorResumeNext {
-                Single.error(LocationErrorThrowable())
             }
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    private fun loadArticles(location: Location): Observable<List<ArticleItem>> {
-        return preferencesSource.getPreferences().flatMapSingle {
-            loadArticleItems(location, it)
-        }.onErrorResumeNext { throwable: Throwable ->
-            throwable.printStackTrace()
-            Observable.error(ArticlesErrorThrowable())
         }
     }
 
-    private fun loadArticleItems(location: Location, preferences: PreferencesBundle): Single<List<ArticleItem>> {
-        return wikiSource.loadArticleItems(preferences.languageCode, Pair(location.latitude, location.longitude), preferences.radius)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    private suspend fun loadLocation(): Location {
+        return withTimeout(TimeUnit.SECONDS.toMillis(15)) {
+            locationSource.getCurrentLocation()
+        }
+    }
+
+    private suspend fun loadArticles(location: Location, preferences: PreferencesBundle): List<ArticleItem> {
+        return try {
+            wikiSource.loadArticleItems(
+                preferences.languageCode,
+                Pair(location.latitude, location.longitude),
+                preferences.radius
+            )
+        } catch (e: Exception) {
+            throw ArticlesErrorThrowable(e)
+        }
     }
 
     private fun handleError(throwable: Throwable) {
@@ -133,6 +115,13 @@ class MapViewModel @Inject constructor(
                 mapErrorLiveEvent.value = MapErrorItem.LOCATION_SERVICES_ERROR
             is LocationErrorThrowable ->
                 mapErrorLiveEvent.value = MapErrorItem.LOCATION_ERROR
+            is ApiException -> {
+                if (throwable.statusCode == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                    mapActionLiveEvent.value = ResolveLocationServicesAction(throwable as ResolvableApiException)
+                } else {
+                    mapErrorLiveEvent.value = MapErrorItem.GOOGLE_SERVICES_ERROR
+                }
+            }
             else ->
                 mapErrorLiveEvent.value = MapErrorItem.ARTICLES_ERROR
         }
@@ -177,10 +166,6 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun onRefresh() {
-        loadArticles()
-    }
-
     fun onPermissionsResult(permissions: Map<String, Boolean>) {
         val locationPermissions = arrayOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -188,17 +173,17 @@ class MapViewModel @Inject constructor(
         )
         if (locationPermissions.any { permissions[it] == true }) {
             // at least one location permission granted
-            loadArticles()
+            loadArticlesCoroutine()
         } else {
             mapErrorLiveEvent.value = MapErrorItem.LOCATION_PERMISSION_ERROR
         }
     }
 
     private fun List<ArticlesClusterItem>.toViewData(): List<ArticleItemViewData> {
-        return this.foldRight(HashSet(), { overlayItem: ArticlesClusterItem, set: HashSet<ArticleItemViewData> ->
+        return this.foldRight(HashSet()) { overlayItem: ArticlesClusterItem, set: HashSet<ArticleItemViewData> ->
             set.addAll(overlayItem.items)
             set
-        }).toList()
+        }.toList()
     }
 
     override fun onCleared() {

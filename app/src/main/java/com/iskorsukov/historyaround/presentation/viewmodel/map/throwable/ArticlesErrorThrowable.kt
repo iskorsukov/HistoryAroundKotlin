@@ -1,4 +1,3 @@
 package com.iskorsukov.historyaround.presentation.viewmodel.map.throwable
 
-class ArticlesErrorThrowable: Throwable() {
-}
+class ArticlesErrorThrowable(base: Throwable? = null): Throwable(base)

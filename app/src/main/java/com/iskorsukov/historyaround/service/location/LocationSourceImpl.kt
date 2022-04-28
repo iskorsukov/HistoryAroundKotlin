@@ -4,10 +4,10 @@ import android.location.Location
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.Task
-import io.reactivex.Maybe
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resumeWithException
 
 @Singleton
 class LocationSourceImpl @Inject constructor(
@@ -20,22 +20,38 @@ class LocationSourceImpl @Inject constructor(
 
     private val cancellationTokenSource = CancellationTokenSource()
 
-    override fun checkLocationServicesAvailability(): Task<LocationSettingsResponse> {
-        return locationClient.checkLocationServicesAvailability(locationRequest)
+    override suspend fun checkLocationServicesAvailability(): LocationSettingsResponse {
+        return suspendCancellableCoroutine { continuation ->
+            locationClient.checkLocationServicesAvailability(locationRequest).addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    it.exception?.apply {
+                        continuation.resumeWithException(this)
+                    } ?: continuation.resumeWithException(
+                        IllegalStateException("Location settings availability error")
+                    )
+                } else if (it.isCanceled) {
+                    continuation.cancel()
+                } else {
+                    continuation.resumeWith(Result.success(it.result))
+                }
+            }
+        }
     }
 
-    override fun getCurrentLocation(): Maybe<Location> {
+    override suspend fun getCurrentLocation(): Location {
         val cancellationToken = cancellationTokenSource.token
-        return Maybe.create { emitter ->
+        return suspendCancellableCoroutine { continuation ->
             locationClient.currentLocation(cancellationToken).addOnCompleteListener {
                 if (!it.isSuccessful) {
                     it.exception?.apply {
-                        emitter.onError(this)
-                    } ?: emitter.onError(IllegalStateException("Last location error"))
-                } else if (it.isCanceled || it.result == null) {
-                    emitter.onComplete()
+                        continuation.resumeWithException(this)
+                    } ?: continuation.resumeWithException(
+                        IllegalStateException("Current location not received")
+                    )
+                } else if (it.isCanceled) {
+                    continuation.cancel()
                 } else {
-                    emitter.onSuccess(it.result!!)
+                    continuation.resumeWith(Result.success(it.result))
                 }
             }
         }

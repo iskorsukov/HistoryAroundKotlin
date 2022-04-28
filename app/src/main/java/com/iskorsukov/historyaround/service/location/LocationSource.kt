@@ -9,7 +9,7 @@ import io.reactivex.Observable
 
 interface LocationSource {
 
-    fun checkLocationServicesAvailability(): Task<LocationSettingsResponse>
+    suspend fun checkLocationServicesAvailability(): LocationSettingsResponse
 
-    fun getCurrentLocation(): Maybe<Location>
+    suspend fun getCurrentLocation(): Location
 }

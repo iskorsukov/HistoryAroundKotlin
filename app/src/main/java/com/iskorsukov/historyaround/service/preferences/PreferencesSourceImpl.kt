@@ -1,36 +1,32 @@
 package com.iskorsukov.historyaround.service.preferences
 
 import com.iskorsukov.historyaround.model.preferences.PreferencesBundle
-import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class PreferencesSourceImpl @Inject constructor(private val preferencesStorage: PreferencesStorage): PreferencesSource {
 
-    private val radiusSubject: BehaviorSubject<Int> by lazy {
-        BehaviorSubject.create<Int>().also {
-            it.onNext(preferencesStorage.getRadiusPreference())
-        }
+    private val radiusFlow: MutableStateFlow<Int> by lazy {
+        MutableStateFlow(preferencesStorage.getRadiusPreference())
     }
 
-    private val languageCodeSubject: BehaviorSubject<String> by lazy {
-        BehaviorSubject.create<String>().also {
-            it.onNext(preferencesStorage.getLanguagePreference())
-        }
+    private val languageCodeFlow: MutableStateFlow<String> by lazy {
+        MutableStateFlow(preferencesStorage.getLanguagePreference())
     }
 
-    override fun getPreferences(): Observable<PreferencesBundle> {
-        return Observable.combineLatest(radiusSubject, languageCodeSubject, BiFunction {radius: Int, languageCode: String ->
-            PreferencesBundle(radius, if (languageCode.isEmpty()) null else languageCode)
-        })
+    override fun getPreferencesFlow(): Flow<PreferencesBundle> {
+        return radiusFlow.combine(languageCodeFlow) { radius: Int, languageCode: String ->
+            PreferencesBundle(radius, languageCode.ifEmpty { null })
+        }
     }
 
     override fun pushRadiusValueChanged(radius: Int) {
-        radiusSubject.onNext(radius)
+        radiusFlow.value = radius
     }
 
     override fun pushLanguageCodeChanged(languageCode: String) {
-        languageCodeSubject.onNext(languageCode)
+        languageCodeFlow.value = languageCode
     }
 }
