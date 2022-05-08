@@ -16,3 +16,7 @@ annotation class PermissionsList
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 @MapKey
 annotation class ViewModelKey(val value: KClass<out ViewModel>)
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DispatcherIO

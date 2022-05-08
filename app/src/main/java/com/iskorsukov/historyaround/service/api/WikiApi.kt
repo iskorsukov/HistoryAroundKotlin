@@ -19,6 +19,7 @@ interface WikiApi {
     @GET("api.php?action=query&prop=coordinates|description|pageimages&colimit=500&pithumbsize=400&format=json")
     suspend fun loadArticlesData(@Header(LANGUAGE_HEADER) languageCode: String?, @Query("pageids") pageidsString: String): ArticleQueryResponse
 
+    // TODO attempt to remove loadArticlesData and leave only details request
     @GET("api.php?action=query&prop=extracts|pageimages|info|coordinates&exlimit=1&exchars=1200&inprop=url&pithumbsize=600&format=json")
     suspend fun loadDetailsData(@Header(LANGUAGE_HEADER) languageCode: String?, @Query("pageids") pageid: String): DetailQueryResponse
 }

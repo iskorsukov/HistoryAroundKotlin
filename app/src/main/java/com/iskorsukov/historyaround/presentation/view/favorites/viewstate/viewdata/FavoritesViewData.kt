@@ -3,4 +3,4 @@ package com.iskorsukov.historyaround.presentation.view.favorites.viewstate.viewd
 import com.iskorsukov.historyaround.model.article.ArticleItem
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewdata.ViewData
 
-class FavoritesViewData(val items: List<ArticleItem>): ViewData
+data class FavoritesViewData(val items: List<ArticleItem>): ViewData

@@ -14,7 +14,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentPermissionBinding
-import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
 import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
@@ -25,7 +24,6 @@ import com.iskorsukov.historyaround.presentation.view.permission.viewstate.Permi
 import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.permission.PermissionViewModel
 
-@Mockable
 class PermissionFragment : BaseNavViewActionFragment() {
 
     private lateinit var viewModel: PermissionViewModel

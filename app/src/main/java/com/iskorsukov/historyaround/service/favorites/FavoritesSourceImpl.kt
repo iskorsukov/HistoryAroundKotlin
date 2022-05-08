@@ -21,9 +21,7 @@ class FavoritesSourceImpl @Inject constructor(
     }
 
     override suspend fun getFavoriteArticles(): Flow<List<ArticleItem>> {
-        return articlesDao.getArticles().map { favoritesEntities ->
-            favoritesEntities.map { mapper.mapArticleEntity(it) }
-        }
+        return articlesDao.getArticles().map { mapper.mapArticleEntityList(it) }
     }
 
     override suspend fun removeFromFavorites(articleItem: ArticleItem) {

@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hadilq.liveevent.LiveEvent
-import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.detail.ArticleDetails
 import com.iskorsukov.historyaround.model.detail.toArticleItem
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
@@ -20,7 +19,6 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Mockable
 class DetailViewModel @Inject constructor(
     private val wikiSource: WikiSource,
     private val favoritesSource: FavoritesSource
@@ -40,8 +38,7 @@ class DetailViewModel @Inject constructor(
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _detailIsLoadingLiveData.value = false
-        detailErrorLiveEvent.value = DetailErrorItem()
+        detailErrorLiveEvent.value = DetailErrorItem
     }
 
     fun loadArticleDetails(id: String, languageCode: String) {
@@ -49,11 +46,11 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch(exceptionHandler) {
             val articleDetails = wikiSource.loadArticleDetails(languageCode, id)
             val isFavorite = favoritesSource.isFavorite(id)
-            _detailIsLoadingLiveData.value = false
             _detailDataLiveData.value = DetailViewData(
                 articleDetails,
                 isFavorite
             )
+            _detailIsLoadingLiveData.value = false
         }
     }
 
@@ -65,7 +62,7 @@ class DetailViewModel @Inject constructor(
 
     fun onViewInBrowserButtonClicked() {
         _detailDataLiveData.value?.let {
-            detailActionLiveEvent.value = ViewInBrowserAction(Uri.parse(it.item.url))
+            detailActionLiveEvent.value = ViewInBrowserAction(it.item.url)
         }
     }
 

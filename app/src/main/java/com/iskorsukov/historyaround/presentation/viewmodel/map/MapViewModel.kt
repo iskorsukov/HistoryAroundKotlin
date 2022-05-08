@@ -8,16 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.hadilq.liveevent.LiveEvent
-import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.article.ArticleItem
 import com.iskorsukov.historyaround.model.preferences.PreferencesBundle
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
 import com.iskorsukov.historyaround.presentation.view.map.adapter.ArticleListItemListener
+import com.iskorsukov.historyaround.presentation.view.map.utils.ArticlesClusterFactory
 import com.iskorsukov.historyaround.presentation.view.map.utils.ArticlesOverlayListener
 import com.iskorsukov.historyaround.presentation.view.map.utils.ZoomLevelListener
-import com.iskorsukov.historyaround.presentation.view.map.utils.groupItemsIntoMarkers
+import com.iskorsukov.historyaround.presentation.view.map.utils.toViewData
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.CenterOnLocationAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.NavigateToDetailsAction
 import com.iskorsukov.historyaround.presentation.view.map.viewaction.ResolveLocationServicesAction
@@ -33,19 +34,17 @@ import com.iskorsukov.historyaround.presentation.viewmodel.map.throwable.Locatio
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.location.LocationSource
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@Mockable
 class MapViewModel @Inject constructor(
     private val locationSource: LocationSource,
     private val wikiSource: WikiSource,
-    private val preferencesSource: PreferencesSource
+    private val preferencesSource: PreferencesSource,
+    private val clusterFactory: ArticlesClusterFactory
 ) : ViewModel(), ArticleListItemListener, ArticlesOverlayListener.ArticleMarkerListener, ZoomLevelListener.OnZoomLevelChangedListener {
 
     companion object {
@@ -53,8 +52,6 @@ class MapViewModel @Inject constructor(
     }
 
     private var lastZoomValue = DEFAULT_ZOOM_VALUE
-
-    private var loadArticlesDisposable: Disposable? = null
 
     private val _mapLocationLiveData = MutableLiveData<Pair<Double, Double>>()
     val mapLocationLiveData: LiveData<Pair<Double, Double>>
@@ -76,13 +73,11 @@ class MapViewModel @Inject constructor(
         val exceptionHandler = CoroutineExceptionHandler { _, throwable -> handleError(throwable) }
         viewModelScope.launch(exceptionHandler) {
             _mapIsLoadingLiveData.value = true
-            locationSource.checkLocationServicesAvailability()
-            val location = try {
-                loadLocation()
-            } catch (e: Exception) {
-                throw LocationErrorThrowable(e)
-            }
+
+            checkGoogleLocationServices()
+            val location = loadLocation()
             _mapLocationLiveData.value = location.latitude to location.longitude
+
             preferencesSource.getPreferencesFlow().collect { preferences ->
                 handleResult(loadArticles(location, preferences))
                 _mapIsLoadingLiveData.value = false
@@ -90,9 +85,24 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    private suspend fun checkGoogleLocationServices() {
+        try {
+            locationSource.checkLocationServicesAvailability()
+        } catch (apiException: ApiException) {
+            throw apiException
+        } catch (otherException: Exception) {
+            otherException.printStackTrace()
+            throw ApiException(Status(LocationSettingsStatusCodes.INTERRUPTED))
+        }
+    }
+
     private suspend fun loadLocation(): Location {
         return withTimeout(TimeUnit.SECONDS.toMillis(15)) {
-            locationSource.getCurrentLocation()
+            try {
+                locationSource.getCurrentLocation()
+            } catch (e: Exception) {
+                throw LocationErrorThrowable(e)
+            }
         }
     }
 
@@ -132,7 +142,7 @@ class MapViewModel @Inject constructor(
         mapActionLiveEvent.value = CenterOnLocationAction(mapLocationLiveData.value!!)
         _mapDataLiveData.value =
             MapViewData(
-                groupItemsIntoMarkers(
+                clusterFactory.groupItemsIntoMarkers(
                     lastZoomValue,
                     articleItems.map { ArticleItemViewData(it, false) }
                 )
@@ -158,7 +168,7 @@ class MapViewModel @Inject constructor(
         mapDataLiveData.value?.apply {
             _mapDataLiveData.value =
                 MapViewData(
-                    groupItemsIntoMarkers(
+                    clusterFactory.groupItemsIntoMarkers(
                         lastZoomValue,
                         articlesOverlayData.toViewData()
                     )
@@ -178,17 +188,4 @@ class MapViewModel @Inject constructor(
             mapErrorLiveEvent.value = MapErrorItem.LOCATION_PERMISSION_ERROR
         }
     }
-
-    private fun List<ArticlesClusterItem>.toViewData(): List<ArticleItemViewData> {
-        return this.foldRight(HashSet()) { overlayItem: ArticlesClusterItem, set: HashSet<ArticleItemViewData> ->
-            set.addAll(overlayItem.items)
-            set
-        }.toList()
-    }
-
-    override fun onCleared() {
-        loadArticlesDisposable?.dispose()
-        super.onCleared()
-    }
-
 }

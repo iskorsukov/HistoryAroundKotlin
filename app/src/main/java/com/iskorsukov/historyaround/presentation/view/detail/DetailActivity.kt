@@ -111,7 +111,7 @@ class DetailActivity: AppCompatActivity() {
     private fun applyViewAction(viewAction: ViewAction<*>) {
         when (viewAction) {
             is OpenInMapAction -> openInMap(viewAction.data!!)
-            is ViewInBrowserAction -> openInBrowser(viewAction.data!!)
+            is ViewInBrowserAction -> openInBrowser(Uri.parse(viewAction.data!!))
         }
     }
 
