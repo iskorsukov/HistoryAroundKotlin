@@ -4,12 +4,19 @@ import android.location.Location
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.Task
-import io.reactivex.Maybe
+import com.iskorsukov.historyaround.injection.DispatcherIO
+import com.iskorsukov.historyaround.presentation.viewmodel.map.throwable.LocationErrorThrowable
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.tasks.asDeferred
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@ExperimentalCoroutinesApi
 class LocationSourceImpl @Inject constructor(
     private val locationClient: LocationClient
 ): LocationSource {
@@ -20,24 +27,21 @@ class LocationSourceImpl @Inject constructor(
 
     private val cancellationTokenSource = CancellationTokenSource()
 
-    override fun checkLocationServicesAvailability(): Task<LocationSettingsResponse> {
-        return locationClient.checkLocationServicesAvailability(locationRequest)
+    override suspend fun checkLocationServicesAvailability(): LocationSettingsResponse {
+        return locationClient.checkLocationServicesAvailability(locationRequest).await()
     }
 
-    override fun getCurrentLocation(): Maybe<Location> {
+    override suspend fun getCurrentLocation(): Location {
         val cancellationToken = cancellationTokenSource.token
-        return Maybe.create { emitter ->
-            locationClient.currentLocation(cancellationToken).addOnCompleteListener {
-                if (!it.isSuccessful) {
-                    it.exception?.apply {
-                        emitter.onError(this)
-                    } ?: emitter.onError(IllegalStateException("Last location error"))
-                } else if (it.isCanceled || it.result == null) {
-                    emitter.onComplete()
-                } else {
-                    emitter.onSuccess(it.result!!)
-                }
-            }
+        val location = locationClient.currentLocation(cancellationToken).await(cancellationTokenSource)
+        if (location == null) {
+            throw IllegalStateException("Failed to get current location")
+        } else {
+            return location
         }
+    }
+
+    override fun cancel() {
+        cancellationTokenSource.cancel()
     }
 }

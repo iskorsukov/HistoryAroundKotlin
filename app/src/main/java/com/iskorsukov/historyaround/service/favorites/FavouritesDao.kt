@@ -1,22 +1,20 @@
 package com.iskorsukov.historyaround.service.favorites
 
 import androidx.room.*
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
 import com.iskorsukov.historyaround.data.entity.ArticleEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class FavouritesDao {
     @Query("select * from articles")
-    abstract fun getArticles(): Observable<List<ArticleEntity>>
+    abstract fun getArticles(): Flow<List<ArticleEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertArticle(article: ArticleEntity): Completable
+    abstract suspend fun insertArticle(article: ArticleEntity)
 
     @Delete
-    abstract fun deleteArticle(article: ArticleEntity): Completable
+    abstract suspend fun deleteArticle(article: ArticleEntity)
 
     @Query("select * from articles where pageid = :pageid")
-    abstract fun getArticleByPageId(pageid: Long): Maybe<ArticleEntity>
+    abstract suspend fun getArticleByPageId(pageid: Long): ArticleEntity?
 }

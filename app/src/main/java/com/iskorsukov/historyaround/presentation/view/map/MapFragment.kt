@@ -98,7 +98,7 @@ class MapFragment : BaseNavViewActionFragment() {
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         if (preciseLocationPermissionGranted) {
-            if (isSavedInstanceStateNull) viewModel.loadArticles()
+            if (isSavedInstanceStateNull) viewModel.loadArticlesCoroutine()
         } else {
             permissionResultLauncher.launch(preciseLocationPermissions)
         }
@@ -161,13 +161,6 @@ class MapFragment : BaseNavViewActionFragment() {
             articleItem.languageCode
         )
         startActivity(intent)
-        /*
-        navController().navigate(
-            MapFragmentDirections.actionMapFragmentToDetailFragment(
-                articleItem.pageid,
-                articleItem.languageCode
-            )
-        )*/
     }
 
     private fun showArticlesSelector(articleItems: List<ArticleItemViewData>) {
@@ -188,7 +181,7 @@ class MapFragment : BaseNavViewActionFragment() {
         val listener = object : ErrorDialog.ErrorDialogListener {
             override fun onActionClick() {
                 dialog.dismiss()
-                viewModel.onRefresh()
+                viewModel.loadArticlesCoroutine()
             }
 
             override fun onCancelClick() {
@@ -221,7 +214,7 @@ class MapFragment : BaseNavViewActionFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.menuRefresh) {
-            viewModel.onRefresh()
+            viewModel.loadArticlesCoroutine()
             true
         } else {
             item.onNavDestinationSelected(navController()) || super.onOptionsItemSelected(item)

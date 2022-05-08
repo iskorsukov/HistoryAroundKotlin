@@ -1,6 +1,5 @@
 package com.iskorsukov.historyaround.presentation.view.preferences
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,19 +15,6 @@ import com.iskorsukov.historyaround.service.preferences.PreferencesSource
 class PreferencesFragment: PreferenceFragmentCompat() {
 
     private lateinit var preferencesSource: PreferencesSource
-
-    private val listener: SharedPreferences.OnSharedPreferenceChangeListener =
-        SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-            if (key == getString(R.string.prefs_radius_key)) {
-                sharedPreferences.getString(key, null)?.apply {
-                    preferencesSource.pushRadiusValueChanged(this.toInt())
-                }
-            } else if (key == getString(R.string.prefs_lang_code_key)) {
-                sharedPreferences.getString(key, null)?.apply {
-                    preferencesSource.pushLanguageCodeChanged(this)
-                }
-            }
-        }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -56,7 +42,7 @@ class PreferencesFragment: PreferenceFragmentCompat() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setTitle()
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -77,11 +63,11 @@ class PreferencesFragment: PreferenceFragmentCompat() {
 
     override fun onResume() {
         super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(preferencesSource)
     }
 
     override fun onPause() {
         super.onPause()
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferencesSource)
     }
 }

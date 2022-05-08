@@ -3,21 +3,18 @@ package com.iskorsukov.historyaround.service.location
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
-import android.os.Looper
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.Task
-import com.iskorsukov.historyaround.mock.Mockable
 import javax.inject.Inject
 
 // Delegate class for FusedLocationProviderClient
-@Mockable
 class LocationClient @Inject constructor(
     private val context: Context,
     private val fusedLocationProviderClient: FusedLocationProviderClient) {
 
     @SuppressLint("MissingPermission")
-    fun currentLocation(cancellationToken: CancellationToken): Task<Location> {
+    fun currentLocation(cancellationToken: CancellationToken): Task<Location?> {
         return fusedLocationProviderClient.getCurrentLocation(
             LocationRequest.PRIORITY_HIGH_ACCURACY, cancellationToken
         )

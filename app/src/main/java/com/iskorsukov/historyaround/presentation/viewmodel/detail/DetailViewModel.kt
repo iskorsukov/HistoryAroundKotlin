@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hadilq.liveevent.LiveEvent
-import com.iskorsukov.historyaround.mock.Mockable
 import com.iskorsukov.historyaround.model.detail.ArticleDetails
 import com.iskorsukov.historyaround.model.detail.toArticleItem
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
@@ -15,19 +15,14 @@ import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErr
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.favorites.FavoritesSource
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.zipWith
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Mockable
 class DetailViewModel @Inject constructor(
     private val wikiSource: WikiSource,
     private val favoritesSource: FavoritesSource
     ) : ViewModel() {
-
-    private var detailsDisposable: Disposable? = null
 
     private val _detailDataLiveData = MutableLiveData<DetailViewData>()
     val detailDataLiveData: LiveData<DetailViewData>
@@ -41,28 +36,22 @@ class DetailViewModel @Inject constructor(
 
     val detailActionLiveEvent: LiveEvent<ViewAction<*>> = LiveEvent()
 
-    fun loadArticleDetails(id: String, languageCode: String) {
-        detailsDisposable?.dispose()
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
+        detailErrorLiveEvent.value = DetailErrorItem
+    }
 
+    fun loadArticleDetails(id: String, languageCode: String) {
         _detailIsLoadingLiveData.value = true
-        detailsDisposable =
-            wikiSource.loadArticleDetails(languageCode, id)
-                .zipWith(favoritesSource.isFavorite(id)) { details, isFavorite ->
-                    DetailViewData(
-                        details,
-                        isFavorite
-                    )
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewData ->
-                    _detailIsLoadingLiveData.value = false
-                    _detailDataLiveData.value = viewData
-                }, { throwable ->
-                    throwable.printStackTrace()
-                    _detailIsLoadingLiveData.value = false
-                    detailErrorLiveEvent.value = DetailErrorItem()
-                })
+        viewModelScope.launch(exceptionHandler) {
+            val articleDetails = wikiSource.loadArticleDetails(languageCode, id)
+            val isFavorite = favoritesSource.isFavorite(id)
+            _detailDataLiveData.value = DetailViewData(
+                articleDetails,
+                isFavorite
+            )
+            _detailIsLoadingLiveData.value = false
+        }
     }
 
     fun onOpenInMapButtonClicked() {
@@ -73,7 +62,7 @@ class DetailViewModel @Inject constructor(
 
     fun onViewInBrowserButtonClicked() {
         _detailDataLiveData.value?.let {
-            detailActionLiveEvent.value = ViewInBrowserAction(Uri.parse(it.item.url))
+            detailActionLiveEvent.value = ViewInBrowserAction(it.item.url)
         }
     }
 
@@ -87,33 +76,16 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun addToFavorites(details: ArticleDetails) {
-        detailsDisposable?.dispose()
-
-        detailsDisposable = favoritesSource.addToFavorites(details.toArticleItem())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _detailDataLiveData.value = DetailViewData(details, true)
-            }, {
-                it.printStackTrace()
-            })
+        viewModelScope.launch(exceptionHandler) {
+            favoritesSource.addToFavorites(details.toArticleItem())
+            _detailDataLiveData.value = DetailViewData(details, true)
+        }
     }
 
     private fun removeFromFavorites(details: ArticleDetails) {
-        detailsDisposable?.dispose()
-
-        detailsDisposable = favoritesSource.removeFromFavorites(details.toArticleItem())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _detailDataLiveData.value = DetailViewData(details, false)
-            }, {
-                it.printStackTrace()
-            })
-    }
-
-    override fun onCleared() {
-        detailsDisposable?.dispose()
-        super.onCleared()
+        viewModelScope.launch(exceptionHandler) {
+            favoritesSource.removeFromFavorites(details.toArticleItem())
+            _detailDataLiveData.value = DetailViewData(details, false)
+        }
     }
 }

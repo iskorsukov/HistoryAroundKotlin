@@ -8,6 +8,10 @@ import javax.inject.Inject
 
 class ArticleEntitiesMapper @Inject constructor() {
 
+    fun mapArticleEntityList(articleEntityList: List<ArticleEntity>): List<ArticleItem> {
+        return articleEntityList.map { mapArticleEntity(it) }
+    }
+
     fun mapArticleEntity(articleEntity: ArticleEntity): ArticleItem {
         return ArticleItem(
             articleEntity.pageid.toString(),

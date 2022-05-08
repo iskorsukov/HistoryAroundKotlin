@@ -1,36 +1,51 @@
 package com.iskorsukov.historyaround.service.preferences
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.model.preferences.PreferencesBundle
-import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
-class PreferencesSourceImpl @Inject constructor(private val preferencesStorage: PreferencesStorage): PreferencesSource {
+class PreferencesSourceImpl @Inject constructor(
+    context: Context,
+    private val sharedPreferences: SharedPreferences): PreferencesSource {
 
-    private val radiusSubject: BehaviorSubject<Int> by lazy {
-        BehaviorSubject.create<Int>().also {
-            it.onNext(preferencesStorage.getRadiusPreference())
+    private val defaultRadiusString = context.getString(R.string.prefs_radius_default_value)
+    private val radiusKey = context.getString(R.string.prefs_radius_key)
+
+    private val defaultLanguageString = context.getString(R.string.prefs_lang_code_default_value)
+    private val languageCodeKey = context.getString(R.string.prefs_lang_code_key)
+
+    private val radiusFlow: MutableStateFlow<Int> by lazy {
+        MutableStateFlow(getRadiusPreference())
+    }
+
+    private val languageCodeFlow: MutableStateFlow<String> by lazy {
+        MutableStateFlow(getLanguagePreference())
+    }
+
+    override fun getPreferencesFlow(): Flow<PreferencesBundle> {
+        return radiusFlow.combine(languageCodeFlow) { radius: Int, languageCode: String ->
+            PreferencesBundle(radius, languageCode.ifEmpty { null })
         }
     }
 
-    private val languageCodeSubject: BehaviorSubject<String> by lazy {
-        BehaviorSubject.create<String>().also {
-            it.onNext(preferencesStorage.getLanguagePreference())
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == radiusKey) {
+            radiusFlow.value = getRadiusPreference()
+        } else if (key == languageCodeKey) {
+            languageCodeFlow.value = getLanguagePreference()
         }
     }
 
-    override fun getPreferences(): Observable<PreferencesBundle> {
-        return Observable.combineLatest(radiusSubject, languageCodeSubject, BiFunction {radius: Int, languageCode: String ->
-            PreferencesBundle(radius, if (languageCode.isEmpty()) null else languageCode)
-        })
+    private fun getRadiusPreference(): Int {
+        return sharedPreferences.getString(radiusKey, defaultRadiusString)?.toInt() ?: defaultRadiusString.toInt()
     }
 
-    override fun pushRadiusValueChanged(radius: Int) {
-        radiusSubject.onNext(radius)
-    }
-
-    override fun pushLanguageCodeChanged(languageCode: String) {
-        languageCodeSubject.onNext(languageCode)
+    private fun getLanguagePreference(): String {
+        return sharedPreferences.getString(languageCodeKey, defaultLanguageString) ?: defaultLanguageString
     }
 }

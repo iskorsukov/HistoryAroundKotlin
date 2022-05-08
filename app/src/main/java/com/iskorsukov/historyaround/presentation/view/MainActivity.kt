@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 arguments: Bundle?
             ) {
                 if (destination.id == R.id.mapFragment) {
-                    navController.graph.startDestination = R.id.mapFragment
+                    navController.graph.setStartDestination(R.id.mapFragment)
                     setupNavigationDrawer()
                     configureNavigationDrawerVisibility()
                     navController.removeOnDestinationChangedListener(this)
