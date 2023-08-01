@@ -29,7 +29,7 @@ class ArticleResponsesMapper @Inject constructor() {
         return ArticleItem(
             articleResponse.pageid.toString(),
             articleResponse.title!!,
-            articleResponse.description!!,
+            articleResponse.description ?: "",
             articleResponse.coordinates!!.first().lat to articleResponse.coordinates.first().lon,
             articleResponse.thumbnail?.run {
                 mapThumbnailResponse(this)
@@ -39,13 +39,10 @@ class ArticleResponsesMapper @Inject constructor() {
     }
 
     private fun isArticleItemResponseValid(articleResponse: ArticleItemResponse): Boolean {
-        if (articleResponse.coordinates == null || articleResponse.coordinates.isEmpty()) {
+        if (articleResponse.coordinates.isNullOrEmpty()) {
             return false
         }
-        if (articleResponse.title == null || articleResponse.title.isEmpty()) {
-            return false
-        }
-        if (articleResponse.description == null || articleResponse.description.isEmpty()) {
+        if (articleResponse.title.isNullOrEmpty()) {
             return false
         }
         return true

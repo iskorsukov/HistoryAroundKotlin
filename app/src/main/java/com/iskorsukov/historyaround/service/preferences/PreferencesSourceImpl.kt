@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,7 +20,6 @@ class PreferencesSourceImpl @Inject constructor(
     private val defaultRadiusString = context.getString(R.string.prefs_radius_default_value)
     private val radiusKey = context.getString(R.string.prefs_radius_key)
 
-    private val defaultLanguageString = context.getString(R.string.prefs_lang_code_default_value)
     private val languageCodeKey = context.getString(R.string.prefs_lang_code_key)
 
     private val radiusFlow: MutableStateFlow<Int> by lazy {
@@ -49,6 +49,6 @@ class PreferencesSourceImpl @Inject constructor(
     }
 
     private fun getLanguagePreference(): String {
-        return sharedPreferences.getString(languageCodeKey, defaultLanguageString) ?: defaultLanguageString
+        return sharedPreferences.getString(languageCodeKey, Locale.getDefault().language) ?: Locale.getDefault().language
     }
 }
