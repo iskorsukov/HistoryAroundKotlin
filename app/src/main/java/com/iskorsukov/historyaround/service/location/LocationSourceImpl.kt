@@ -15,8 +15,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 @ExperimentalCoroutinesApi
+@Singleton
 class LocationSourceImpl @Inject constructor(
     private val locationClient: LocationClient
 ): LocationSource {

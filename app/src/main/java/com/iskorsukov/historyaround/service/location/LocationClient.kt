@@ -6,11 +6,12 @@ import android.location.Location
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.Task
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 // Delegate class for FusedLocationProviderClient
 class LocationClient @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val fusedLocationProviderClient: FusedLocationProviderClient) {
 
     @SuppressLint("MissingPermission")

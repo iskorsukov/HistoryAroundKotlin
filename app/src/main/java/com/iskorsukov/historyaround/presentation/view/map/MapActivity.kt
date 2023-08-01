@@ -5,19 +5,18 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.ResolvableApiException
-import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.ActivityMapBinding
 import com.iskorsukov.historyaround.model.article.ArticleItem
@@ -35,13 +34,15 @@ import com.iskorsukov.historyaround.presentation.view.map.viewstate.MapErrorItem
 import com.iskorsukov.historyaround.presentation.view.map.viewstate.viewdata.ArticleItemViewData
 import com.iskorsukov.historyaround.presentation.view.preferences.PreferencesActivity
 import com.iskorsukov.historyaround.presentation.viewmodel.map.MapViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
 
+@AndroidEntryPoint
 class MapActivity: AppCompatActivity() {
 
-    private lateinit var viewModel: MapViewModel
+    private val viewModel: MapViewModel by viewModels()
 
     private lateinit var contentBinding: ActivityMapBinding
 
@@ -59,15 +60,15 @@ class MapActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModelFactory = (application as HistoryAroundApp).appComponent.viewModelFactory()
-        viewModel = ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java]
-
         permissionResultLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
             viewModel::onPermissionsResult
         )
 
-        Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
+        Configuration.getInstance().load(
+            applicationContext,
+            PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        )
 
         contentBinding = ActivityMapBinding.inflate(layoutInflater)
         contentBinding.lifecycleOwner = this

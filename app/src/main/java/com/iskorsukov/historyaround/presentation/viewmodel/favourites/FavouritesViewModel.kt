@@ -12,13 +12,16 @@ import com.iskorsukov.historyaround.presentation.view.favorites.viewaction.Navig
 import com.iskorsukov.historyaround.presentation.view.favorites.viewstate.FavoritesErrorItem
 import com.iskorsukov.historyaround.presentation.view.favorites.viewstate.viewdata.FavoritesViewData
 import com.iskorsukov.historyaround.service.favorites.FavoritesSource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class FavouritesViewModel @Inject constructor(private val favoritesSource: FavoritesSource) : ViewModel(),
-    FavoritesListener {
+@HiltViewModel
+class FavouritesViewModel @Inject constructor(
+    private val favoritesSource: FavoritesSource
+    ) : ViewModel(), FavoritesListener {
 
     private val _favouritesDataLiveData = MutableLiveData<FavoritesViewData>()
     val favouritesDataLiveData: LiveData<FavoritesViewData>

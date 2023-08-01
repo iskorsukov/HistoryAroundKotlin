@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class WikiSourceImpl @Inject constructor (
     private val api: WikiApi,
     private val mapper: ArticleResponsesMapper,

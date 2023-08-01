@@ -11,10 +11,14 @@ import androidx.preference.PreferenceFragmentCompat
 import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PreferencesFragment: PreferenceFragmentCompat() {
 
-    private lateinit var preferencesSource: PreferencesSource
+    @Inject
+    lateinit var preferencesSource: PreferencesSource
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -50,16 +54,6 @@ class PreferencesFragment: PreferenceFragmentCompat() {
     private fun setTitle() {
         activity?.findViewById<Toolbar>(R.id.toolbar)?.setTitle(R.string.preferences_fragment_title)
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initPreferencesSource()
-    }
-
-    private fun initPreferencesSource() {
-        preferencesSource = (requireContext().applicationContext as HistoryAroundApp).appComponent.preferencesSource()
-    }
-
 
     override fun onResume() {
         super.onResume()

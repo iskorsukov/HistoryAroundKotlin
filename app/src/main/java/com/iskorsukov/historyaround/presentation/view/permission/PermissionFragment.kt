@@ -15,16 +15,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.FragmentPermissionBinding
 import com.iskorsukov.historyaround.presentation.view.common.error.ErrorDialog
-import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseNavViewActionFragment
+import com.iskorsukov.historyaround.presentation.view.common.fragment.BaseTitledViewActionFragment
 import com.iskorsukov.historyaround.presentation.view.common.viewstate.viewaction.ViewAction
+import com.iskorsukov.historyaround.presentation.view.map.MapActivity
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.NavigateToMapPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.RequestPermissionsAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewaction.ShowPermissionDeniedDialogAction
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.PermissionErrorItem
-import com.iskorsukov.historyaround.presentation.view.util.viewModelFactory
 import com.iskorsukov.historyaround.presentation.viewmodel.permission.PermissionViewModel
 
-class PermissionFragment : BaseNavViewActionFragment() {
+class PermissionFragment : BaseTitledViewActionFragment() {
 
     private lateinit var viewModel: PermissionViewModel
 
@@ -49,7 +49,6 @@ class PermissionFragment : BaseNavViewActionFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProvider(this, viewModelFactory())[PermissionViewModel::class.java]
         requestPermissionsLauncher =
             registerForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions(),
@@ -75,9 +74,7 @@ class PermissionFragment : BaseNavViewActionFragment() {
     override fun applyViewAction(viewAction: ViewAction<*>) {
         when (viewAction) {
             is NavigateToMapPermissionsAction ->
-                navController().navigate(
-                    PermissionFragmentDirections.actionPermissionFragmentToMapFragment()
-                )
+                startActivity(Intent(requireContext(), MapActivity::class.java))
             is ShowPermissionDeniedDialogAction ->
                 showGrantPermissionFromSettingsDialog()
             is RequestPermissionsAction ->
@@ -115,7 +112,6 @@ class PermissionFragment : BaseNavViewActionFragment() {
 
             override fun onCancelClick() {
                 dialog.dismiss()
-                navController().popBackStack()
             }
         }
         dialog.listener = listener

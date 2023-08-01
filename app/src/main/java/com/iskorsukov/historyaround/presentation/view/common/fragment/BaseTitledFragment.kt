@@ -7,18 +7,9 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
-import com.iskorsukov.historyaround.service.navigation.NavControllerSource
 
-abstract class BaseNavFragment: Fragment() {
-
-    private lateinit var navControllerSource: NavControllerSource
-
-    protected fun navController(): NavController {
-        return navControllerSource.navController(this)
-    }
+abstract class BaseTitledFragment: Fragment() {
 
     abstract fun inflateContent(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
 
@@ -30,15 +21,6 @@ abstract class BaseNavFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setTitle()
         return inflateContent(inflater, container, savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initNavControllerSource()
-    }
-
-    private fun initNavControllerSource() {
-        navControllerSource = (requireContext().applicationContext as HistoryAroundApp).appComponent.navControllerSource()
     }
 
     private fun setTitle() {

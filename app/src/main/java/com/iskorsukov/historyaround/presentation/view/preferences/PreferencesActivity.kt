@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import com.iskorsukov.historyaround.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PreferencesActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

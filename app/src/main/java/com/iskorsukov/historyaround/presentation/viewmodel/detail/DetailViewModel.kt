@@ -1,6 +1,5 @@
 package com.iskorsukov.historyaround.presentation.viewmodel.detail
 
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,10 +14,12 @@ import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErr
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.favorites.FavoritesSource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class DetailViewModel @Inject constructor(
     private val wikiSource: WikiSource,
     private val favoritesSource: FavoritesSource

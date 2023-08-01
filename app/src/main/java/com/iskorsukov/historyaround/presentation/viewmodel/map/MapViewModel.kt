@@ -34,18 +34,23 @@ import com.iskorsukov.historyaround.presentation.viewmodel.map.throwable.Locatio
 import com.iskorsukov.historyaround.service.api.WikiSource
 import com.iskorsukov.historyaround.service.location.LocationSource
 import com.iskorsukov.historyaround.service.preferences.PreferencesSource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+@HiltViewModel
 class MapViewModel @Inject constructor(
     private val locationSource: LocationSource,
     private val wikiSource: WikiSource,
     private val preferencesSource: PreferencesSource,
     private val clusterFactory: ArticlesClusterFactory
-) : ViewModel(), ArticleListItemListener, ArticlesOverlayListener.ArticleMarkerListener, ZoomLevelListener.OnZoomLevelChangedListener {
+) : ViewModel(),
+    ArticleListItemListener,
+    ArticlesOverlayListener.ArticleMarkerListener,
+    ZoomLevelListener.OnZoomLevelChangedListener {
 
     companion object {
         const val DEFAULT_ZOOM_VALUE = 16.0

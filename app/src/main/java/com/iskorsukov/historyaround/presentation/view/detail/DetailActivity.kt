@@ -8,10 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
-import com.iskorsukov.historyaround.HistoryAroundApp
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.databinding.ActivityDetailBinding
 import com.iskorsukov.historyaround.presentation.view.common.appbar.AppBarStateChangeListener
@@ -22,12 +21,12 @@ import com.iskorsukov.historyaround.presentation.view.detail.viewaction.ViewInBr
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.DetailErrorItem
 import com.iskorsukov.historyaround.presentation.view.detail.viewstate.viewdata.DetailViewData
 import com.iskorsukov.historyaround.presentation.viewmodel.detail.DetailViewModel
-import io.noties.markwon.Markwon
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailActivity: AppCompatActivity() {
 
-    private lateinit var viewModel: DetailViewModel
+    private val viewModel: DetailViewModel by viewModels()
 
     private lateinit var contentBinding: ActivityDetailBinding
 
@@ -63,11 +62,6 @@ class DetailActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val appComponent = (application as HistoryAroundApp).appComponent
-        viewModel = ViewModelProvider(
-            this,
-            appComponent.viewModelFactory()
-        )[DetailViewModel::class.java]
         contentBinding = ActivityDetailBinding.inflate(layoutInflater)
         contentBinding.lifecycleOwner = this
         contentBinding.viewModel = viewModel

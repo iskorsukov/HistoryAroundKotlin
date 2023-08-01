@@ -4,13 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.iskorsukov.historyaround.R
 import com.iskorsukov.historyaround.model.preferences.PreferencesBundle
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PreferencesSourceImpl @Inject constructor(
-    context: Context,
+    @ApplicationContext context: Context,
     private val sharedPreferences: SharedPreferences): PreferencesSource {
 
     private val defaultRadiusString = context.getString(R.string.prefs_radius_default_value)

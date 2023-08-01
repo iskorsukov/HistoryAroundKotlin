@@ -7,10 +7,11 @@ import androidx.fragment.app.Fragment
 import io.reactivex.Single
 import com.iskorsukov.historyaround.injection.PermissionsList
 import com.iskorsukov.historyaround.presentation.view.permission.viewstate.viewdata.PermissionRationale
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class PermissionSourceImpl @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     @PermissionsList private val permissions: List<String>,
     private val permissionMapper: PermissionRationaleMapper
 ): PermissionSource {
